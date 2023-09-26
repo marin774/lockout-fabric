@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "lockout_but_better",
+  "version": "${version}",
+  "name": "LockoutButBetter",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/LockoutButBetter/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "me.marin.lockoutbutbetter.client.LockoutButBetterClient"
+    ],
+    "server": [
+      "me.marin.lockoutbutbetter.server.LockoutButBetterServer"
+    ],
+    "main": [
+      "me.marin.lockoutbutbetter.LockoutButBetter"
+    ]
+  },
+  "mixins": [
+    "LockoutButBetter.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

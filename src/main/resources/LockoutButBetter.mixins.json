@@ -4,9 +4,16 @@
   "package": "me.marin.lockoutbutbetter.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "server.BedBlockMixin",
+    "server.BlockMixin",
+    "server.PlayerInventoryAccessor",
+    "server.PlayerInventoryMixin",
+    "server.PlayerMixin",
+    "server.RespawnAnchorBlockMixin"
   ],
   "client": [
-    "DebugHudMixin"
+    "client.DebugHudMixin",
+    "client.InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

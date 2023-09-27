@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "lockout_but_better",
+  "id": "lockout",
   "version": "${version}",
   "name": "LockoutButBetter",
   "description": "",
-  "authors": [],
+  "authors": ["Mar1n"],
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/LockoutButBetter/icon.png",

@@ -1,4 +1,4 @@
-package me.marin.lockoutbutbetter.mixin;
+package me.marin.lockoutbutbetter.mixin.client;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
@@ -7,7 +7,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.entity.Entity;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +94,7 @@ public abstract class DebugHudMixin {
             text.add("Waiting for chunk...");
         } else {
             if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
-                RegistryEntry var27 = this.client.world.getBiome(blockPos);
+                RegistryEntry<Biome> var27 = this.client.world.getBiome(blockPos);
                 text.add("Biome: " + getBiomeString(var27));
             }
         }

@@ -1,0 +1,34 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.marin.lockout.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "server.AnvilScreenHandlerMixin",
+    "server.ArmorStandMixin",
+    "server.BlockMixin",
+    "server.BredAnimalsCriterionMixin",
+    "server.BrewedPotionCriterionMixin",
+    "server.BrewingStandScreenHandlerPotionSlotMixin",
+    "server.ComposterBlockMixin",
+    "server.GlowInkSacItemMixin",
+    "server.GoatHornItemMixin",
+    "server.PlayerAdvancementTrackerMixin",
+    "server.PlayerInventoryAccessor",
+    "server.PlayerInventoryMixin",
+    "server.PlayerMixin",
+    "server.SlotMixin",
+    "server.SmithingScreenHandlerMixin",
+    "server.StatusEffectMixin",
+    "server.TameAnimalCriterionMixin",
+    "server.ZombifiedPiglinEntityMixin"
+  ],
+  "client": [
+    "client.DebugHudMixin",
+    "client.InGameHudMixin",
+    "client.KeyboardMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

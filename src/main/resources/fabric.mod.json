@@ -2,26 +2,26 @@
   "schemaVersion": 1,
   "id": "lockout",
   "version": "${version}",
-  "name": "LockoutButBetter",
+  "name": "Lockout",
   "description": "",
   "authors": ["Mar1n"],
   "contact": {},
   "license": "All-Rights-Reserved",
-  "icon": "assets/LockoutButBetter/icon.png",
   "environment": "*",
+  "accessWidener": "lockout.accesswidener",
   "entrypoints": {
     "client": [
-      "me.marin.lockoutbutbetter.client.LockoutButBetterClient"
+      "me.marin.lockout.client.LockoutClient"
     ],
     "server": [
-      "me.marin.lockoutbutbetter.server.LockoutButBetterServer"
+      "me.marin.lockout.server.LockoutServer"
     ],
     "main": [
-      "me.marin.lockoutbutbetter.LockoutButBetter"
+      "me.marin.lockout.LockoutInitializer"
     ]
   },
   "mixins": [
-    "LockoutButBetter.mixins.json"
+    "Lockout.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

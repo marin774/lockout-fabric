@@ -2,13 +2,14 @@ package me.marin.lockout;
 
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -25,18 +26,23 @@ public class Lockout {
     public static final Random random = new Random();
     public final static int[] COLOR_ORDERS = new int[]{12, 9, 10, 14, 6, 13, 11, 5, 3, 2, 15, 4, 7, 1, 8, 0};
 
-    public Map<PlayerEntity, Set<EntityType<?>>> bredAnimalTypes = new HashMap<>();
-    public Map<PlayerEntity, Set<EntityType<?>>> killedHostileTypes = new HashMap<>();
-    public Map<PlayerEntity, Integer> killedUndeadMobs = new HashMap<>();
-    public Map<PlayerEntity, Integer> killedArthropods = new HashMap<>();
-    public Map<PlayerEntity, Set<FoodComponent>> foodTypesEaten = new HashMap<>();
-    public Map<PlayerEntity, Set<Identifier>> uniqueAdvancementsMap = new HashMap<>();
-    public Map<PlayerEntity, Long> pumpkinWearStart = new HashMap<>();
+    public Map<UUID, Set<EntityType<?>>> bredAnimalTypes = new HashMap<>();
+    public Map<UUID, Set<EntityType<?>>> killedHostileTypes = new HashMap<>();
+    public Map<UUID, Integer> killedUndeadMobs = new HashMap<>();
+    public Map<UUID, Integer> killedArthropods = new HashMap<>();
+    public Map<UUID, Set<FoodComponent>> foodTypesEaten = new HashMap<>();
+    public Map<UUID, Set<Identifier>> uniqueAdvancementsMap = new HashMap<>();
+    public Map<UUID, Long> pumpkinWearStart = new HashMap<>();
+    public Map<UUID, Double> damageTaken = new HashMap<>();
+    public Map<UUID, Integer> deaths = new HashMap<>();
+    public Map<UUID, Integer> most_x_Item = new HashMap<>();
+    public UUID mostLevelsPlayer;
 
     private static Lockout INSTANCE;
     private final LockoutBoard board;
     private final List<? extends LockoutTeam> teams;
     private long startTime;
+    private long endTime;
     private boolean hasStarted = false;
     private boolean isRunning = true;
 
@@ -57,12 +63,36 @@ public class Lockout {
     public static Lockout getInstance() {
         return INSTANCE;
     };
+    public static void removeInstance(MinecraftClient client) {
+        if (client == null) return;
+        INSTANCE = null;
+    }
     public static boolean exists() {
         return INSTANCE != null;
     };
     public static boolean isLockoutRunning() {
         return exists() && INSTANCE.isRunning;
     };
+
+
+    public void opponentCompletedGoal(Goal goal, PlayerEntity player, String message) {
+        if (goal.isCompleted()) return;
+        if (!isLockoutPlayer(player)) {
+            return;
+        }
+
+        LockoutTeam team = getOpponentTeam(player);
+        team.addPoint();
+
+        goal.setCompleted(true, team);
+
+        MinecraftServer server = player.getServer();
+        PlayerManager playerManager = server.getPlayerManager();
+        playerManager.broadcast(Text.literal(message), false);
+
+        sendGoalCompletedPacket(goal, team, server);
+        evaulateWinnerAndEndGame(team, server);
+    }
 
     public void completeGoal(Goal goal, PlayerEntity player) {
         if (goal.isCompleted()) return;
@@ -71,32 +101,79 @@ public class Lockout {
         }
 
         LockoutTeam team = getPlayerTeam(player);
-        goal.setCompleted(true, team);
-
-        PlayerManager playerManager = player.getServer().getPlayerManager();
         team.addPoint();
 
-        player.getServer().getPlayerManager().broadcast(Text.literal(player.getName().getString() + " completed " + goal.getGoalName() + "."), false);
+        goal.setCompleted(true, team);
 
+        MinecraftServer server = player.getServer();
+        PlayerManager playerManager = server.getPlayerManager();
+        playerManager.broadcast(Text.literal(player.getName().getString() + " completed " + goal.getGoalName() + "."), false);
+
+        sendGoalCompletedPacket(goal, team, server);
+        evaulateWinnerAndEndGame(team, server);
+    }
+
+    public void updateGoalCompletion(Goal goal, PlayerEntity player) {
+        if (goal.isCompleted()) {
+            clearGoalCompletion(goal, player.getServer(), false);
+        }
+        completeGoal(goal, player);
+    }
+
+    public void clearGoalCompletion(Goal goal, MinecraftServer server, boolean sendPacket) {
+        if (!goal.isCompleted()) return;
+
+        goal.getCompletedTeam().takePoint();
+        goal.setCompleted(false, null);
+
+        if (server != null && sendPacket) {
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeString(goal.getId());
+            buf.writeInt(-1);
+            for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
+                ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
+            }
+        }
+    }
+
+    private void sendGoalCompletedPacket(Goal goal, LockoutTeam team, MinecraftServer server) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString(goal.getId());
+        buf.writeInt(teams.indexOf(team));
+
+        for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
+            ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
+        }
+    }
+
+    private void evaulateWinnerAndEndGame(LockoutTeam team, MinecraftServer server) {
+        PlayerManager playerManager = server.getPlayerManager();
+
+        List<LockoutTeam> winners = new ArrayList<>();
         if (isWinner(team)) {
+            playerManager.broadcast(Text.literal(team.getDisplayName() + " wins."), false);
+            winners.add(team);
             setRunning(false);
         } else {
             if (getRemainingGoals() == 0 && teams.size() > 1) {
                 int maxCompleted = teams.stream().max(Comparator.comparingInt(LockoutTeam::getPoints)).get().getPoints();
                 List<? extends LockoutTeam> winnerTeams = teams.stream().filter(t -> t.getPoints() == maxCompleted).toList();
-                playerManager.broadcast(Text.literal("It's a tie! Teams " + getWinnerTeamsString(winnerTeams) + " win."), false);
+                winners.addAll(winnerTeams);
+                playerManager.broadcast(Text.literal("It's a tie! " + getWinnerTeamsString(winnerTeams) + " win."), false);
                 setRunning(false);
             }
         }
 
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeString(goal.getId());
-        buf.writeInt(teams.indexOf(team));
+        if (!this.isRunning) {
+            PacketByteBuf bufEnd = PacketByteBufs.create();
+            bufEnd.writeInt(winners.size());
+            for (LockoutTeam winner : winners) {
+                bufEnd.writeInt(teams.indexOf(winner));
+            }
+            bufEnd.writeLong(System.currentTimeMillis());
 
-        for (ServerPlayerEntity serverPlayer : player.getServer().getPlayerManager().getPlayerList()) {
-            ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
-            if (!this.isRunning) {
-                ServerPlayNetworking.send(serverPlayer, Constants.END_LOCKOUT_PACKET, PacketByteBufs.empty());
+            for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
+                ServerPlayNetworking.send(serverPlayer, Constants.END_LOCKOUT_PACKET, bufEnd);
             }
         }
     }
@@ -107,6 +184,14 @@ public class Lockout {
 
     public boolean isRunning() {
         return isRunning;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
     }
 
     public void setStarted(boolean hasStarted) {
@@ -122,19 +207,26 @@ public class Lockout {
     }
 
     public boolean isLockoutPlayer(PlayerEntity player) {
-        if (player.getServer() != null) {
-            for (LockoutTeam team : teams) {
-                // If there's issues with logging on and off - replace this check with UUIDs.
-                if (((LockoutTeamServer)team).getPlayers().contains((ServerPlayerEntity) player)) return true;
+        for (LockoutTeam team : teams) {
+            if (((LockoutTeamServer)team).getPlayers().contains(player.getUuid())) {
+                return true;
             }
-            return false;
         }
-        return true;
+        return false;
     }
 
     public LockoutTeam getPlayerTeam(PlayerEntity player) {
         for (LockoutTeam team : teams) {
-            if (((LockoutTeamServer)team).getPlayers().contains((ServerPlayerEntity) player)) {
+            if (((LockoutTeamServer)team).getPlayers().contains(player.getUuid())) {
+                return team;
+            }
+        }
+        return null;
+    }
+
+    public LockoutTeam getOpponentTeam(PlayerEntity player) {
+        for (LockoutTeam team : teams) {
+            if (!((LockoutTeamServer)team).getPlayers().contains(player.getUuid())) {
                 return team;
             }
         }
@@ -145,7 +237,6 @@ public class Lockout {
         for (LockoutTeam teamIt : teams) {
             if (team == teamIt) continue;
             if (teamIt.getPoints() + getRemainingGoals() >= team.getPoints()) {
-                System.out.println("Not a winner: " + teamIt.getDisplayName() + " can still win with " + (teamIt.getPoints() + getRemainingGoals()) + " points (" + team.getDisplayName() + " has " + team.getPoints() + ")");
                 return false;
             }
         }
@@ -177,7 +268,7 @@ public class Lockout {
                 }
             }
             LockoutTeam team = teams.get(i);
-            sb.append(team.getColor());
+            sb.append(team.getDisplayName());
         }
         return sb.toString();
     }
@@ -209,6 +300,8 @@ public class Lockout {
             buf.writeString(goal.getData());
             buf.writeInt(goal.isCompleted() ? teams.indexOf(goal.getCompletedTeam()) : -1);
         }
+
+        buf.writeBoolean(this.isRunning);
 
         return buf;
     }

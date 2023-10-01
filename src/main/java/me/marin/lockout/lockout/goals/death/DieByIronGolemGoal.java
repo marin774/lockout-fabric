@@ -2,12 +2,8 @@ package me.marin.lockout.lockout.goals.death;
 
 import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.interfaces.DieToDamageTypeGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
 public class DieByIronGolemGoal extends Goal implements TextureProvider {

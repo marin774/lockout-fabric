@@ -1,7 +1,6 @@
 package me.marin.lockout.lockout.goals.workstation;
 
 import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
-import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.stat.Stats;

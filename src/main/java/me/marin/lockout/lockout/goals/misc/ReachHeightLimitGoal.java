@@ -27,4 +27,5 @@ public class ReachHeightLimitGoal extends Goal implements TextureProvider {
     public Identifier getTextureIdentifier() {
         return TEXTURE;
     }
+
 }

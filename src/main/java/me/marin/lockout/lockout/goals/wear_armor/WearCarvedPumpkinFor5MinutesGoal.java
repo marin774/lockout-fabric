@@ -7,9 +7,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.Text;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WearCarvedPumpkinFor5MinutesGoal extends WearArmorPieceGoal {
@@ -35,7 +33,7 @@ public class WearCarvedPumpkinFor5MinutesGoal extends WearArmorPieceGoal {
         PlayerEntity player = playerInventory.player;
         var map = Lockout.getInstance().pumpkinWearStart;
 
-        Long startTime = map.get(player);
+        Long startTime = map.get(player.getUuid());
 
         boolean wearingPumpkin = false;
         for (ItemStack item : playerInventory.armor) {
@@ -48,13 +46,13 @@ public class WearCarvedPumpkinFor5MinutesGoal extends WearArmorPieceGoal {
 
         if (wearingPumpkin) {
             if (startTime == null) {
-                map.put(player, System.currentTimeMillis());
+                map.put(player.getUuid(), System.currentTimeMillis());
                 return false;
             } else {
                 return System.currentTimeMillis() - startTime >= (1000 * 60 * 5);
             }
         } else {
-            map.remove(player);
+            map.remove(player.getUuid());
         }
 
         return false;

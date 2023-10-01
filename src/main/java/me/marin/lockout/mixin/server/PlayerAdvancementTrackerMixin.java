@@ -44,10 +44,10 @@ public abstract class PlayerAdvancementTrackerMixin {
             }
             if (goal instanceof GetUniqueAdvancementsGoal getUniqueAdvancementsGoal) {
                 advancement.value().display().ifPresent((advancementDisplay) -> {
-                    getUniqueAdvancementsGoal.getTrackerMap().putIfAbsent(owner, new HashSet<>());
-                    getUniqueAdvancementsGoal.getTrackerMap().get(owner).add(advancement.id());
+                    getUniqueAdvancementsGoal.getTrackerMap().putIfAbsent(owner.getUuid(), new HashSet<>());
+                    getUniqueAdvancementsGoal.getTrackerMap().get(owner.getUuid()).add(advancement.id());
 
-                    int size = getUniqueAdvancementsGoal.getTrackerMap().get(owner).size();
+                    int size = getUniqueAdvancementsGoal.getTrackerMap().get(owner.getUuid()).size();
                     if (size >= getUniqueAdvancementsGoal.getAmount()) {
                         lockout.completeGoal(goal, owner);
                     }

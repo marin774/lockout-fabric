@@ -1,5 +1,6 @@
 package me.marin.lockout.lockout;
 
+import me.marin.lockout.GoalGeneratorProvider;
 import me.marin.lockout.lockout.goals.advancement.*;
 import me.marin.lockout.lockout.goals.advancement.unique.*;
 import me.marin.lockout.lockout.goals.biome.*;
@@ -14,21 +15,53 @@ import me.marin.lockout.lockout.goals.kill.unique.*;
 import me.marin.lockout.lockout.goals.mine.*;
 import me.marin.lockout.lockout.goals.dimension.*;
 import me.marin.lockout.lockout.goals.misc.*;
+import me.marin.lockout.lockout.goals.more.HaveMoreXPLevelsGoal;
 import me.marin.lockout.lockout.goals.obtain.*;
+import me.marin.lockout.lockout.goals.opponent.*;
 import me.marin.lockout.lockout.goals.ride.*;
 import me.marin.lockout.lockout.goals.status_effect.*;
 import me.marin.lockout.lockout.goals.status_effect.unique.*;
 import me.marin.lockout.lockout.goals.tame_animal.*;
 import me.marin.lockout.lockout.goals.wear_armor.*;
 import me.marin.lockout.lockout.goals.workstation.*;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureKeys;
+
+import java.util.List;
 
 public class DefaultGoalRegister {
 
     public static void registerGoals() {
         GoalRegistry.INSTANCE.register(GoalType.MINE_DIAMOND_ORE, MineDiamondOreGoal.class);
-        GoalRegistry.INSTANCE.register(GoalType.MINE_EMERALD_ORE, MineEmeraldOreGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.MINE_EMERALD_ORE, MineEmeraldOreGoal.class,
+                new GoalGeneratorProvider() {
+                    // check for: Jagged Peaks, Frozen Peaks, Stony Peaks, Grove, Snowy slopes
+                    @Override
+                    public List<RegistryKey<Biome>> getRequiredBiomes() {
+                        return List.of(BiomeKeys.JAGGED_PEAKS, BiomeKeys.FROZEN_PEAKS, BiomeKeys.STONY_PEAKS, BiomeKeys.GROVE, BiomeKeys.SNOWY_SLOPES);
+                    }
+
+                    @Override
+                    public List<RegistryKey<Structure>> getRequiredStructures() {
+                        return null;
+                    }
+                });
         GoalRegistry.INSTANCE.register(GoalType.MINE_MOB_SPAWNER, MineMobSpawnerGoal.class);
-        GoalRegistry.INSTANCE.register(GoalType.MINE_TURTLE_EGG, MineTurtleEggGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.MINE_TURTLE_EGG, MineTurtleEggGoal.class,
+                new GoalGeneratorProvider() {
+                    @Override
+                    public List<RegistryKey<Biome>> getRequiredBiomes() {
+                        return List.of(BiomeKeys.BEACH);
+                    }
+
+                    @Override
+                    public List<RegistryKey<Structure>> getRequiredStructures() {
+                        return null;
+                    }
+                });
         GoalRegistry.INSTANCE.register(GoalType.ENTER_NETHER, EnterNetherGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.ENTER_END, EnterEndGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.KILL_ENDER_DRAGON, GetFreeTheEndAdvancementGoal.class);
@@ -42,7 +75,18 @@ public class DefaultGoalRegister {
         GoalRegistry.INSTANCE.register(GoalType.WEAR_GOLDEN_ARMOR, WearGoldenArmorGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.WEAR_DIAMOND_ARMOR, WearDiamondArmorGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.WEAR_IRON_ARMOR, WearIronArmorGoal.class);
-        GoalRegistry.INSTANCE.register(GoalType.WEAR_CHAIN_ARMOR_PIECE, WearChainArmorPieceGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.WEAR_CHAIN_ARMOR_PIECE, WearChainArmorPieceGoal.class,
+                new GoalGeneratorProvider() {
+                    @Override
+                    public List<RegistryKey<Biome>> getRequiredBiomes() {
+                        return null;
+                    }
+
+                    @Override
+                    public List<RegistryKey<Structure>> getRequiredStructures() {
+                        return List.of(StructureKeys.VILLAGE_DESERT, StructureKeys.VILLAGE_PLAINS, StructureKeys.VILLAGE_SAVANNA, StructureKeys.VILLAGE_SNOWY, StructureKeys.VILLAGE_TAIGA);
+                    }
+                });
         GoalRegistry.INSTANCE.register(GoalType.WEAR_COLORED_LEATHER_ARMOR_PIECE, WearColoredLeatherPieceGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.TAME_CAT, TameCatGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.TAME_PARROT, TameParrotGoal.class);
@@ -212,6 +256,24 @@ public class DefaultGoalRegister {
         GoalRegistry.INSTANCE.register(GoalType.GET_20_ADVANCEMENTS, Get20UniqueAdvancementsGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.GET_30_ADVANCEMENTS, Get30UniqueAdvancementsGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WearUniqueColoredLeatherArmorGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.KILL_OTHER_PLAYER, KillOtherTeamPlayer.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_OBTAINS_CRAFTING_TABLE, OpponentObtainsCraftingTableGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_OBTAINS_OBSIDIAN, OpponentObtainsObsidianGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_OBTAINS_SEEDS, OpponentObtainsSeedsGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_CATCHES_ON_FIRE, OpponentCatchesOnFireGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.TAKE_200_DAMAGE, Take200DamageGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_DIES_3_TIMES, OpponentDies3TimesGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_DIES, OpponentDiesGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_HIT_BY_EGG, OpponentHitByEggGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_HIT_BY_SNOWBALL, OpponentHitBySnowballGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_JUMPS, OpponentJumpsGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_TAKES_100_DAMAGE, OpponentTakes100DamageGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_TAKES_FALL_DAMAGE, OpponentTakesFallDamageGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OPPONENT_TOUCHES_WATER, OpponentTouchesWaterGoal.class);
+
+        GoalRegistry.INSTANCE.register(GoalType.REACH_NETHER_ROOF, ReachNetherRoofGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.HAVE_MORE_XP_LEVELS, HaveMoreXPLevelsGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.FREEZE_TO_DEATH, DieByFreezingGoal.class);
 
 
     }

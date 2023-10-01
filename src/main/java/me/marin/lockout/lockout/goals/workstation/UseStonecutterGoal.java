@@ -3,7 +3,6 @@ package me.marin.lockout.lockout.goals.workstation;
 import me.marin.lockout.lockout.Goal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
 
 public class UseStonecutterGoal extends Goal {
 

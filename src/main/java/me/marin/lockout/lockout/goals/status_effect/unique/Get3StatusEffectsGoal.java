@@ -2,7 +2,6 @@ package me.marin.lockout.lockout.goals.status_effect.unique;
 
 import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.goals.status_effect.GetXStatusEffectsGoal;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 

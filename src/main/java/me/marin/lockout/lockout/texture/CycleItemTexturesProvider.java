@@ -2,7 +2,6 @@ package me.marin.lockout.lockout.texture;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
 import java.util.List;
 

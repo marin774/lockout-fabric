@@ -1,21 +1,17 @@
 package me.marin.lockout.lockout.interfaces;
 
-import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import me.marin.lockout.lockout.texture.TextureProvider;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
-public abstract class GetUniqueAdvancementsGoal extends Goal implements RequiresAmount, Trackable<PlayerEntity, Set<Identifier>>, TextureProvider {
+public abstract class GetUniqueAdvancementsGoal extends Goal implements RequiresAmount, Trackable<UUID, Set<Identifier>>, TextureProvider {
 
     private final ItemStack DISPLAY_ITEM_STACK = Items.APPLE.getDefaultStack();
 
@@ -30,7 +26,7 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
     }
 
     @Override
-    public Map<PlayerEntity, Set<Identifier>> getTrackerMap() {
+    public Map<UUID, Set<Identifier>> getTrackerMap() {
         return Lockout.getInstance().uniqueAdvancementsMap;
     }
 

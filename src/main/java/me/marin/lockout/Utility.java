@@ -6,16 +6,12 @@ import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Formatting;
 
-import java.awt.*;
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 
 import static me.marin.lockout.Constants.*;
-import static me.marin.lockout.Constants.GUI_ITEM_SLOT_SIZE;
 
 public class Utility {
 
@@ -35,7 +31,7 @@ public class Utility {
                 Goal goal = lockout.getBoard().getGoals().get(j + 5 * i);
                 if (goal != null) {
                     if (goal.isCompleted()) {
-                        context.fill(x, y, x + 16, y + 16, goal.getCompletedTeam().getColor().getColorValue());
+                        context.fill(x, y, x + 16, y + 16, (0xFF << 24) | goal.getCompletedTeam().getColor().getColorValue());
                     }
 
                     boolean success = false;
@@ -61,9 +57,9 @@ public class Utility {
             pointsList.add(team.getColor() + "" + team.getPoints() + "" + Formatting.RESET);
         }
 
-        context.drawText(textRenderer, String.join(Formatting.RESET + "" + Formatting.GRAY + ":", pointsList), x, y, 0, true);
+        context.drawText(textRenderer, String.join(Formatting.RESET + "" + Formatting.GRAY + "-", pointsList), x, y, 0, true);
         if (lockout.hasStarted()) {
-            long duration = System.currentTimeMillis() - lockout.getStartTime();
+            long duration = (lockout.isRunning() ? System.currentTimeMillis() : lockout.getEndTime()) - lockout.getStartTime();
             long second = (duration / 1000) % 60;
             long minute = (duration / (1000 * 60)) % 60;
             long hour = (duration / (1000 * 60 * 60)) % 24;
@@ -75,7 +71,24 @@ public class Utility {
                 time = String.format("%02d:%02d", minute, second);
             }
 
-            context.drawText(textRenderer, Formatting.WHITE + time, context.getScaledWindowWidth() - textRenderer.getWidth(time) - 3, y, 0, true);
+            context.drawText(textRenderer, Formatting.WHITE + time, context.getScaledWindowWidth() - textRenderer.getWidth(time) - 4, y, 0, true);
+        }
+
+        List<String> formattedNames = new ArrayList<>();
+        int maxWidth = 0;
+        for (LockoutTeam team : lockout.getTeams()) {
+            for (String playerName : team.getPlayerNames()) {
+                formattedNames.add(team.getColor() + playerName);
+                maxWidth = Math.max(maxWidth, textRenderer.getWidth(playerName));
+            }
+        }
+
+        y += 20;
+        context.fill(context.getScaledWindowWidth() - maxWidth - 4,  y - 2, context.getScaledWindowWidth() - 1, y + formattedNames.size() * textRenderer.fontHeight + 1, 0x80_00_00_00);
+
+        for (String formattedName : formattedNames) {
+            context.drawText(textRenderer, formattedName, context.getScaledWindowWidth() - textRenderer.getWidth(formattedName) - 2, y, 0, true);
+            y += textRenderer.fontHeight;
         }
     }
 

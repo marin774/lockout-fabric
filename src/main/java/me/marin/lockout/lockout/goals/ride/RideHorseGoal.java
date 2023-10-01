@@ -1,6 +1,5 @@
 package me.marin.lockout.lockout.goals.ride;
 
-import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.RideEntityGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;

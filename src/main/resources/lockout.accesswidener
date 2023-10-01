@@ -9,3 +9,7 @@ accessible field net/minecraft/client/gui/hud/DebugHud renderingAndTickChartsVis
 accessible field net/minecraft/client/Keyboard debugCrashStartTime J
 accessible field net/minecraft/client/Keyboard client Lnet/minecraft/client/MinecraftClient;
 accessible field net/minecraft/screen/StonecutterScreenHandler outputSlot Lnet/minecraft/screen/slot/Slot;
+accessible field net/minecraft/entity/damage/DamageTracker recentDamage Ljava/util/List;
+accessible method net/minecraft/server/command/LocateCommand executeLocateBiome (Lnet/minecraft/server/command/ServerCommandSource;Lnet/minecraft/command/argument/RegistryEntryPredicateArgumentType$EntryPredicate;)I
+accessible method net/minecraft/server/command/LocateCommand getDistance (IIII)F
+accessible method net/minecraft/server/command/LocateCommand getStructureListForPredicate (Lnet/minecraft/command/argument/RegistryPredicateArgumentType$RegistryPredicate;Lnet/minecraft/registry/Registry;)Ljava/util/Optional;

@@ -3,8 +3,6 @@ package me.marin.lockout.lockout.goals.obtain;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.interfaces.ObtainAllItemsGoal;
 import me.marin.lockout.lockout.interfaces.RequiresAmount;
-import me.marin.lockout.lockout.texture.CycleItemTexturesProvider;
-import me.marin.lockout.lockout.texture.CycleTexturesProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
@@ -12,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.DyeColor;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class Obtain64ColoredConcreteGoal extends ObtainAllItemsGoal implements RequiresAmount {

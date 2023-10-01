@@ -190,6 +190,24 @@ public class GoalType {
     public static final String GET_20_ADVANCEMENTS = "GET_20_ADVANCEMENTS";
     public static final String GET_30_ADVANCEMENTS = "GET_30_ADVANCEMENTS";
     public static final String WEAR_UNIQUE_COLORED_LEATHER_ARMOR = "WEAR_UNIQUE_COLORED_LEATHER_ARMOR";
+    public static final String KILL_OTHER_PLAYER = "KILL_OTHER_PLAYER";
+    public static final String TAKE_200_DAMAGE = "TAKE_200_DAMAGE";
+    public static final String OPPONENT_OBTAINS_CRAFTING_TABLE = "OPPONENT_OBTAINS_CRAFTING_TABLE";
+    public static final String OPPONENT_OBTAINS_OBSIDIAN = "OPPONENT_OBTAINS_OBSIDIAN";
+    public static final String OPPONENT_OBTAINS_SEEDS = "OPPONENT_OBTAINS_SEEDS";
+    public static final String OPPONENT_CATCHES_ON_FIRE = "OPPONENT_CATCHES_ON_FIRE";
+    public static final String OPPONENT_DIES_3_TIMES = "OPPONENT_DIES_3_TIMES";
+    public static final String OPPONENT_DIES = "OPPONENT_DIES";
+    public static final String OPPONENT_HIT_BY_EGG = "OPPONENT_HIT_BY_EGG";
+    public static final String OPPONENT_HIT_BY_SNOWBALL = "OPPONENT_HIT_BY_SNOWBALL";
+    public static final String OPPONENT_JUMPS = "OPPONENT_JUMPS";
+    public static final String OPPONENT_TAKES_100_DAMAGE = "OPPONENT_TAKES_100_DAMAGE";
+    public static final String OPPONENT_TAKES_FALL_DAMAGE = "OPPONENT_TAKES_FALL_DAMAGE";
+    public static final String OPPONENT_TOUCHES_WATER = "OPPONENT_TOUCHES_WATER";
+
+    public static final String REACH_NETHER_ROOF = "REACH_NETHER_ROOF";
+    public static final String HAVE_MORE_XP_LEVELS = "HAVE_MORE_XP_LEVELS";
+    public static final String FREEZE_TO_DEATH = "FREEZE_TO_DEATH";
 
 
 

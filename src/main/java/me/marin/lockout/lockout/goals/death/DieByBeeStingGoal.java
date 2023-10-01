@@ -5,7 +5,6 @@ import me.marin.lockout.lockout.interfaces.DieToDamageTypeGoal;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class DieByBeeStingGoal extends DieToDamageTypeGoal {

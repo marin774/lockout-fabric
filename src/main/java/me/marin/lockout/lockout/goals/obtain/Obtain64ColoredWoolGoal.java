@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.DyeColor;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class Obtain64ColoredWoolGoal extends ObtainAllItemsGoal implements RequiresAmount {

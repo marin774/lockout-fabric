@@ -37,9 +37,9 @@ public class BredAnimalsCriterionMixin {
                     lockout.completeGoal(breedAnimalGoal, player);
                 }
             } else if (goal instanceof BreedUniqueAnimalsGoal breedUniqueAnimalsGoal) {
-                lockout.bredAnimalTypes.computeIfAbsent(player, player_ -> new HashSet<>());
-                lockout.bredAnimalTypes.get(player).add(parent.getType());
-                int size = lockout.bredAnimalTypes.get(player).size();
+                lockout.bredAnimalTypes.computeIfAbsent(player.getUuid(), player_ -> new HashSet<>());
+                lockout.bredAnimalTypes.get(player.getUuid()).add(parent.getType());
+                int size = lockout.bredAnimalTypes.get(player.getUuid()).size();
 
                 if (size >= breedUniqueAnimalsGoal.getAmount()) {
                     lockout.completeGoal(breedUniqueAnimalsGoal, player);

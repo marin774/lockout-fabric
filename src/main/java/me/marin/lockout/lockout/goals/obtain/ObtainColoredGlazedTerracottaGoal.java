@@ -6,7 +6,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.DyeColor;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class ObtainColoredGlazedTerracottaGoal extends ObtainAllItemsGoal {

@@ -7,13 +7,13 @@ import me.marin.lockout.lockout.texture.CycleTexturesProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements CycleTexturesProvider {
 
@@ -62,7 +62,7 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
     }
 
     @Override
-    public Map<PlayerEntity, Integer> getTrackerMap() {
+    public Map<UUID, Integer> getTrackerMap() {
         return Lockout.getInstance().killedArthropods;
     }
 

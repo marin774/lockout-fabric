@@ -4,10 +4,8 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
-import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -15,8 +13,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
-public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount, Trackable<PlayerEntity, Set<FoodComponent>>, CustomTextureRenderer {
+public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount, Trackable<UUID, Set<FoodComponent>>, CustomTextureRenderer {
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/eat_unique.png");
     private final ItemStack DISPLAY_ITEM_STACK = Items.APPLE.getDefaultStack();
@@ -39,7 +38,7 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
     }
 
     @Override
-    public Map<PlayerEntity, Set<FoodComponent>> getTrackerMap() {
+    public Map<UUID, Set<FoodComponent>> getTrackerMap() {
         return Lockout.getInstance().foodTypesEaten;
     }
 

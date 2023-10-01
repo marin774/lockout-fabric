@@ -3,7 +3,6 @@ package me.marin.lockout;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.text.Format;
 import java.util.List;
 
 public class LockoutTeam {
@@ -35,6 +34,9 @@ public class LockoutTeam {
 
     public void addPoint() {
         this.points++;
+    }
+    public void takePoint() {
+        this.points--;
     }
 
     public static String formattingToString(Formatting formatting) {

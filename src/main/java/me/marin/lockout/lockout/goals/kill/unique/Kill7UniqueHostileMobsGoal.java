@@ -1,11 +1,8 @@
 package me.marin.lockout.lockout.goals.kill.unique;
 
-import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.interfaces.KillUniqueHostileMobsGoal;
-import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
 
 public class Kill7UniqueHostileMobsGoal extends KillUniqueHostileMobsGoal {
 

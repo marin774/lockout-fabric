@@ -22,7 +22,6 @@ public class Obtain64ColoredWoolGoal extends ObtainAllItemsGoal implements Requi
 
     public Obtain64ColoredWoolGoal(String id, String data) {
         super(id, data);
-        System.out.println(data);
         DyeColor DYE_COLOR = GoalDataConstants.getDyeColor(data);
 
         GOAL_NAME = "Obtain 64 " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " Wool";

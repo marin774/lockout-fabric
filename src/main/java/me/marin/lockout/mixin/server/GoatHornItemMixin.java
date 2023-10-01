@@ -22,7 +22,7 @@ public class GoatHornItemMixin {
     @Inject(method = "use", at = @At(value = "INVOKE", target="Lnet/minecraft/item/GoatHornItem;playSound(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/Instrument;)V", shift = At.Shift.AFTER))
     public void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

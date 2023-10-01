@@ -3,7 +3,6 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.AngerZombifiedPiglinGoal;
-import me.marin.lockout.lockout.interfaces.TameAnimalGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
@@ -21,11 +20,11 @@ public class ZombifiedPiglinEntityMixin {
     @Inject(method = "setAngryAt", at = @At("HEAD"))
     public void setAngryAt(UUID angryAt, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
         ServerPlayerEntity player = ((ZombifiedPiglinEntity) (Object) this).getServer().getPlayerManager().getPlayer(angryAt);
 
         if (player == null) {
-            System.out.println("Player with UUID could not be set as angry: " + angryAt);
+            System.err.println("Player with UUID could not be set as angry: " + angryAt);
             return;
         }
 

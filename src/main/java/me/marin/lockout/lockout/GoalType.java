@@ -15,7 +15,7 @@ public class GoalType {
     public static final String OBTAIN_GOLDEN_TOOLS = "obtain_golden_tools";
     public static final String OBTAIN_DIAMOND_TOOLS = "obtain_diamond_tools";
     public static final String FILL_ARMOR_STAND = "fill_armor_stand";
-    public static final String WEAR_CARVED_PUMPKIN = "wear_carved_pumpkin";
+    public static final String WEAR_CARVED_PUMPKIN_FOR_5_MINUTES = "WEAR_CARVED_PUMPKIN_FOR_5_MINUTES";
     public static final String WEAR_GOLDEN_ARMOR = "wear_golden_armor";
     public static final String WEAR_LEATHER_ARMOR = "wear_leather_armor";
     public static final String WEAR_IRON_ARMOR = "wear_iron_armor";
@@ -184,7 +184,12 @@ public class GoalType {
     public static final String OBTAIN_REDSTONE_LAMP = "OBTAIN_REDSTONE_LAMP";
     public static final String OBTAIN_SOUL_CAMPFIRE = "OBTAIN_SOUL_CAMPFIRE";
     public static final String OBTAIN_ALL_PUMPKINS = "OBTAIN_ALL_PUMPKINS";
-    public static final String ENRAGE_ZOMBIFIED_PIGLIN = "    public static final String OBTAIN_ALL_PUMPKINS = \"OBTAIN_ALL_PUMPKINS\";\n";
+    public static final String ENRAGE_ZOMBIFIED_PIGLIN = "ENRAGE_ZOMBIFIED_PIGLIN";
+    public static final String OBTAIN_BRICK_WALL = "OBTAIN_BRICK_WALL";
+    public static final String GET_10_ADVANCEMENTS = "GET_10_ADVANCEMENTS";
+    public static final String GET_20_ADVANCEMENTS = "GET_20_ADVANCEMENTS";
+    public static final String GET_30_ADVANCEMENTS = "GET_30_ADVANCEMENTS";
+    public static final String WEAR_UNIQUE_COLORED_LEATHER_ARMOR = "WEAR_UNIQUE_COLORED_LEATHER_ARMOR";
 
 
 

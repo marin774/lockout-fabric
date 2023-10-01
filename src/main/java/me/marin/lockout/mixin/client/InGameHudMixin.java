@@ -19,7 +19,7 @@ public abstract class InGameHudMixin {
             target="Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
     private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
         // Show lockout screen
-        if (!Lockout.isRunning()) {
+        if (!Lockout.exists()) {
             return;
         }
 

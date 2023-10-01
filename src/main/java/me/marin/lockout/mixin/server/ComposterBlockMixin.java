@@ -2,7 +2,6 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.workstation.UseAnvilGoal;
 import me.marin.lockout.lockout.goals.workstation.UseComposterGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -23,7 +22,7 @@ public class ComposterBlockMixin {
     @Inject(method = "emptyFullComposter", at = @At("RETURN"))
     private static void emptyFullComposterMixin(Entity user, BlockState state, World world, BlockPos pos, CallbackInfoReturnable<BlockState> cir) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
         if (!(user instanceof PlayerEntity player)) return;
 
         Lockout lockout = Lockout.getInstance();

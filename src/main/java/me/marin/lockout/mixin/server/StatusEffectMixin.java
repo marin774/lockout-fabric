@@ -20,7 +20,7 @@ public class StatusEffectMixin {
     @Inject(method = "onApplied(Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"))
     public void onApplied(LivingEntity entity, int amplifier, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
         if (!(entity instanceof PlayerEntity player)) return;
 
         Lockout lockout = Lockout.getInstance();

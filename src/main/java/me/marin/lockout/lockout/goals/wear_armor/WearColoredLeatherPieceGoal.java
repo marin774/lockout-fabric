@@ -21,8 +21,6 @@ public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
     public WearColoredLeatherPieceGoal(String id, String data) {
         super(id, data);
 
-        System.out.println(data);
-
         String[] parts = data.split(GoalDataConstants.DATA_SEPARATOR);
         ITEM = GoalDataConstants.getLeatherArmor(parts[0]);
         DyeColor DYE_COLOR = GoalDataConstants.getDyeColor(parts[1]);

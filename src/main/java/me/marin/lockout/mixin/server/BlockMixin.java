@@ -21,7 +21,7 @@ public class BlockMixin {
     @Inject(method = "onBreak", at = @At("HEAD"))
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

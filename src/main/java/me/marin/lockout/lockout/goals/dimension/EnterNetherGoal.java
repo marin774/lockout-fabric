@@ -12,8 +12,6 @@ import static me.marin.lockout.Constants.NAMESPACE;
 
 public class EnterNetherGoal extends EnterDimensionGoal implements TextureProvider {
 
-    private static final Identifier TEXTURE = new Identifier(NAMESPACE, "textures/custom/nether_portal.png");
-
     public EnterNetherGoal(String id, String data) {
         super(id, data);
     }
@@ -33,6 +31,7 @@ public class EnterNetherGoal extends EnterDimensionGoal implements TextureProvid
         return DimensionTypes.THE_NETHER;
     }
 
+    private static final Identifier TEXTURE = new Identifier(NAMESPACE, "textures/custom/nether_portal.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

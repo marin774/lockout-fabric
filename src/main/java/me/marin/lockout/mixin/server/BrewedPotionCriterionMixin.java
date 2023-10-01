@@ -19,7 +19,7 @@ public class BrewedPotionCriterionMixin {
     @Inject(method = "trigger", at = @At("HEAD"))
     public void onTrigger(ServerPlayerEntity player, Potion potion, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

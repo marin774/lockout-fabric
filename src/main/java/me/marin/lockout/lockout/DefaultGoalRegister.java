@@ -1,29 +1,23 @@
 package me.marin.lockout.lockout;
 
 import me.marin.lockout.lockout.goals.advancement.*;
-import me.marin.lockout.lockout.goals.biome.VisitBadlandsBiomeGoal;
-import me.marin.lockout.lockout.goals.biome.VisitIceSpikesBiomeGoal;
-import me.marin.lockout.lockout.goals.biome.VisitMushroomBiomeGoal;
+import me.marin.lockout.lockout.goals.advancement.unique.*;
+import me.marin.lockout.lockout.goals.biome.*;
 import me.marin.lockout.lockout.goals.breed_animals.*;
 import me.marin.lockout.lockout.goals.brewing.*;
 import me.marin.lockout.lockout.goals.consume.*;
 import me.marin.lockout.lockout.goals.consume.unique.*;
 import me.marin.lockout.lockout.goals.death.*;
-import me.marin.lockout.lockout.goals.experience.ReachXPLevel15Goal;
-import me.marin.lockout.lockout.goals.experience.ReachXPLevel30Goal;
+import me.marin.lockout.lockout.goals.experience.*;
 import me.marin.lockout.lockout.goals.kill.*;
 import me.marin.lockout.lockout.goals.kill.unique.*;
 import me.marin.lockout.lockout.goals.mine.*;
 import me.marin.lockout.lockout.goals.dimension.*;
 import me.marin.lockout.lockout.goals.misc.*;
 import me.marin.lockout.lockout.goals.obtain.*;
-import me.marin.lockout.lockout.goals.ride.RideHorseGoal;
-import me.marin.lockout.lockout.goals.ride.RideMinecartGoal;
-import me.marin.lockout.lockout.goals.ride.RidePigGoal;
+import me.marin.lockout.lockout.goals.ride.*;
 import me.marin.lockout.lockout.goals.status_effect.*;
-import me.marin.lockout.lockout.goals.status_effect.unique.Get3StatusEffectsGoal;
-import me.marin.lockout.lockout.goals.status_effect.unique.Get4StatusEffectsGoal;
-import me.marin.lockout.lockout.goals.status_effect.unique.Get6StatusEffectsGoal;
+import me.marin.lockout.lockout.goals.status_effect.unique.*;
 import me.marin.lockout.lockout.goals.tame_animal.*;
 import me.marin.lockout.lockout.goals.wear_armor.*;
 import me.marin.lockout.lockout.goals.workstation.*;
@@ -123,7 +117,7 @@ public class DefaultGoalRegister {
         GoalRegistry.INSTANCE.register(GoalType.OBTAIN_WRITTEN_BOOK, ObtainWrittenBookGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.FILL_INVENTORY_UNIQUE_ITEMS, FillInventoryWithUniqueItemsGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.GET_THIS_BOAT_HAS_LEGS_ADVANCEMENT, GetThisBoatHasLegsAdvancementGoal.class);
-        GoalRegistry.INSTANCE.register(GoalType.WEAR_CARVED_PUMPKIN, WearCarvedPumpkinArmorPieceGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.WEAR_CARVED_PUMPKIN_FOR_5_MINUTES, WearCarvedPumpkinFor5MinutesGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.USE_BREWING_STAND, GetLocalBreweryAdvancementGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.BREW_HEALING_POTION, BrewHealingPotionGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.BREW_INVISIBILITY_POTION, BrewInvisibilityPotionGoal.class);
@@ -213,6 +207,11 @@ public class DefaultGoalRegister {
         GoalRegistry.INSTANCE.register(GoalType.OBTAIN_SOUL_CAMPFIRE, ObtainSoulCampfireGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.OBTAIN_ALL_PUMPKINS, ObtainAllPumpkinsGoal.class);
         GoalRegistry.INSTANCE.register(GoalType.ENRAGE_ZOMBIFIED_PIGLIN, AngerZombifiedPiglinGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.OBTAIN_BRICK_WALL, ObtainBrickWallGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.GET_10_ADVANCEMENTS, Get10UniqueAdvancementsGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.GET_20_ADVANCEMENTS, Get20UniqueAdvancementsGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.GET_30_ADVANCEMENTS, Get30UniqueAdvancementsGoal.class);
+        GoalRegistry.INSTANCE.register(GoalType.WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WearUniqueColoredLeatherArmorGoal.class);
 
 
     }

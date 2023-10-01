@@ -24,7 +24,7 @@ public class ArmorStandMixin {
     @Inject(method = "interactAt", at = @At("RETURN"))
     public void onInteractAt(PlayerEntity player, Vec3d hitPos, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
         ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
 
         ArmorStandEntity thiz = (ArmorStandEntity) (Object) this;

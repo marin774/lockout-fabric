@@ -84,14 +84,20 @@ loom {
     accessWidenerPath = file("src/main/resources/lockout.accesswidener")
 }
 
-task copyJarToClient(type: Copy) {
+task copyJarToServer(type: Copy) {
     from remapJar
     into "C:\\Users\\Marin\\Desktop\\lockout but better\\mods"
 }
-build.dependsOn copyJarToClient
+build.dependsOn copyJarToServer
 
-task copyJarToServer(type: Copy) {
+task copyJarToClient1(type: Copy) {
     from remapJar
     into "C:\\Games\\MultiMC\\instances\\1.20.2\\.minecraft\\mods"
 }
-build.dependsOn copyJarToServer
+build.dependsOn copyJarToClient1
+
+task copyJarToClient2(type: Copy) {
+    from remapJar
+    into "C:\\Games\\MultiMC\\instances\\1.20.2 2\\.minecraft\\mods"
+}
+build.dependsOn copyJarToClient2

@@ -17,4 +17,5 @@ public class Eat10UniqueFoodsGoal extends EatUniqueFoodsGoal {
     public int getAmount() {
         return 10;
     }
+
 }

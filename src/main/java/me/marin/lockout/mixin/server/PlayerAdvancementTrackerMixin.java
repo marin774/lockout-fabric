@@ -3,6 +3,7 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.AdvancementGoal;
+import me.marin.lockout.lockout.interfaces.GetUniqueAdvancementsGoal;
 import me.marin.lockout.lockout.interfaces.VisitBiomeGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -16,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashSet;
+
 
 @Mixin(PlayerAdvancementTracker.class)
 public abstract class PlayerAdvancementTrackerMixin {
@@ -26,7 +29,7 @@ public abstract class PlayerAdvancementTrackerMixin {
     @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/AdvancementEntry;value()Lnet/minecraft/advancement/Advancement;", ordinal = 1, shift = At.Shift.AFTER) )
     public void onGrantCriterion(AdvancementEntry advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 
@@ -39,6 +42,17 @@ public abstract class PlayerAdvancementTrackerMixin {
                     lockout.completeGoal(goal, owner);
                 }
             }
+            if (goal instanceof GetUniqueAdvancementsGoal getUniqueAdvancementsGoal) {
+                advancement.value().display().ifPresent((advancementDisplay) -> {
+                    getUniqueAdvancementsGoal.getTrackerMap().putIfAbsent(owner, new HashSet<>());
+                    getUniqueAdvancementsGoal.getTrackerMap().get(owner).add(advancement.id());
+
+                    int size = getUniqueAdvancementsGoal.getTrackerMap().get(owner).size();
+                    if (size >= getUniqueAdvancementsGoal.getAmount()) {
+                        lockout.completeGoal(goal, owner);
+                    }
+                });
+            }
         }
     }
 
@@ -46,7 +60,7 @@ public abstract class PlayerAdvancementTrackerMixin {
     @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/AdvancementProgress;isDone()Z", ordinal = 1, shift = At.Shift.BEFORE) )
     public void onAdvancementProgress(AdvancementEntry advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

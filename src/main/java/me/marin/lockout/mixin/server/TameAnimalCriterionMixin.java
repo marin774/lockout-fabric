@@ -19,7 +19,7 @@ public class TameAnimalCriterionMixin {
     @Inject(method = "trigger", at = @At("HEAD"))
     public void onTameAnimal(ServerPlayerEntity player, AnimalEntity entity, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

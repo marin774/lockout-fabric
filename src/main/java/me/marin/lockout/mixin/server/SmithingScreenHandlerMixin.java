@@ -2,7 +2,6 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.workstation.UseAnvilGoal;
 import me.marin.lockout.lockout.goals.workstation.UseSmithingTableGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -20,7 +19,7 @@ public class SmithingScreenHandlerMixin {
     @Inject(method = "onTakeOutput", at = @At("TAIL"))
     public void onTakeOutputMixin(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

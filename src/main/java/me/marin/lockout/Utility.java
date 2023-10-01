@@ -6,6 +6,13 @@ import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.Formatting;
+
+import java.awt.*;
+import java.text.Format;
+import java.util.ArrayList;
+import java.util.List;
 
 import static me.marin.lockout.Constants.*;
 import static me.marin.lockout.Constants.GUI_ITEM_SLOT_SIZE;
@@ -21,12 +28,14 @@ public class Utility {
         y += GUI_FIRST_ITEM_OFFSET;
         final int startX = x;
 
+        Lockout lockout = Lockout.getInstance();
+
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                Goal goal = Lockout.getInstance().getBoard().getGoals().get(j + 5 * i);
+                Goal goal = lockout.getBoard().getGoals().get(j + 5 * i);
                 if (goal != null) {
                     if (goal.isCompleted()) {
-                        context.fill(x, y, x + 16, y + 16, 0xFF00BBAA);
+                        context.fill(x, y, x + 16, y + 16, goal.getCompletedTeam().getColor().getColorValue());
                     }
 
                     boolean success = false;
@@ -44,6 +53,29 @@ public class Utility {
             }
             y += GUI_ITEM_SLOT_SIZE;
             x = startX;
+        }
+        x += 2;
+        y += 1;
+        List<String> pointsList = new ArrayList<>();
+        for (LockoutTeam team : lockout.getTeams()) {
+            pointsList.add(team.getColor() + "" + team.getPoints() + "" + Formatting.RESET);
+        }
+
+        context.drawText(textRenderer, String.join(Formatting.RESET + "" + Formatting.GRAY + ":", pointsList), x, y, 0, true);
+        if (lockout.hasStarted()) {
+            long duration = System.currentTimeMillis() - lockout.getStartTime();
+            long second = (duration / 1000) % 60;
+            long minute = (duration / (1000 * 60)) % 60;
+            long hour = (duration / (1000 * 60 * 60)) % 24;
+
+            String time;
+            if (hour > 0) {
+                time = String.format("%02d:%02d:%02d", hour, minute, second);
+            } else {
+                time = String.format("%02d:%02d", minute, second);
+            }
+
+            context.drawText(textRenderer, Formatting.WHITE + time, context.getScaledWindowWidth() - textRenderer.getWidth(time) - 3, y, 0, true);
         }
     }
 
@@ -67,7 +99,7 @@ public class Utility {
                 Goal goal = Lockout.getInstance().getBoard().getGoals().get(j + 5 * i);
                 if (goal != null) {
                     if (goal.isCompleted()) {
-                        context.fill(x, y, x + 16, y + 16, 0xFF00BBAA);
+                        context.fill(x, y, x + 16, y + 16, goal.getCompletedTeam().getColor().getColorValue());
                     }
 
                     boolean success = false;

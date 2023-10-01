@@ -1,5 +1,6 @@
 package me.marin.lockout.lockout;
 
+import me.marin.lockout.LockoutTeam;
 import net.minecraft.item.ItemStack;
 
 public abstract class Goal {
@@ -8,6 +9,7 @@ public abstract class Goal {
     @SuppressWarnings("unused")
     private final String data;
     private boolean isCompleted = false;
+    private LockoutTeam completedTeam = null;
 
     public Goal(String id, String data) {
         this.id = id;
@@ -22,14 +24,23 @@ public abstract class Goal {
      */
     public abstract ItemStack getTextureItemStack();
 
-    public void setCompleted(boolean isCompleted) {
+    public void setCompleted(boolean isCompleted, LockoutTeam team) {
         this.isCompleted = isCompleted;
+        this.completedTeam = team;
     }
     public boolean isCompleted() {
         return isCompleted;
     }
+
+    public LockoutTeam getCompletedTeam() {
+        return completedTeam;
+    }
+
     public String getId() {
         return id;
     }
 
+    public String getData() {
+        return data;
+    }
 }

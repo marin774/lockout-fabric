@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
-import java.util.Objects;
 
 @Mixin(PlayerEntity.class)
 public class PlayerMixin {
@@ -31,7 +30,7 @@ public class PlayerMixin {
     public void onEat(World world, ItemStack itemStack, CallbackInfoReturnable<ItemStack> cir) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
 
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
         PlayerEntity player = (PlayerEntity) (Object) this;
@@ -56,7 +55,6 @@ public class PlayerMixin {
                         lockout.completeGoal(goal, player);
                     }
                 }
-
             }
             if (goal instanceof RemoveStatusEffectUsingMilkGoal) {
                 if (itemStack.getItem().equals(Items.MILK_BUCKET)) {
@@ -73,7 +71,7 @@ public class PlayerMixin {
     @Inject(method = "incrementStat(Lnet/minecraft/util/Identifier;)V", at = @At("HEAD"))
     public void onIncrementStat(Identifier stat, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
         PlayerEntity player = (PlayerEntity) (Object) this;
@@ -92,7 +90,7 @@ public class PlayerMixin {
     @Inject(method = "addExperienceLevels", at = @At("TAIL"))
     public void onExperienceLevelUp(int levels, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
         PlayerEntity player = (PlayerEntity) (Object) this;

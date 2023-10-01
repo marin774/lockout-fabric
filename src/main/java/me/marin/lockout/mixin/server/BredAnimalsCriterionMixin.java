@@ -24,7 +24,7 @@ public class BredAnimalsCriterionMixin {
     @Inject(method = "trigger", at = @At("HEAD"))
     public void onBreedAnimal(ServerPlayerEntity player, AnimalEntity parent, AnimalEntity partner, @Nullable PassiveEntity child, CallbackInfo ci) {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isRunning()) return;
+        if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
 

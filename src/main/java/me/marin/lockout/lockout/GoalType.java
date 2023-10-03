@@ -130,6 +130,9 @@ public class GoalType {
     public static final String GET_OH_SHINY_ADVANCEMENT = "get_oh_shiny_advancement";
     public static final String GET_SNIPER_DUEL_ADVANCEMENT = "get_sniper_duel_advancement";
     public static final String GET_WHAT_A_DEAL_ADVANCEMENT = "get_what_a_deal_advancement";
+    public static final String GET_WAX_ON_ADVANCEMENT = "GET_WAX_ON_ADVANCEMENT";
+    public static final String GET_WAX_OFF_ADVANCEMENT = "GET_WAX_OFF_ADVANCEMENT";
+    public static final String GET_HIRED_HELP_ADVANCEMENT = "GET_HIRED_HELP_ADVANCEMENT";
     public static final String GET_ABSORPTION_STATUS_EFFECT = "get_absorption_status_effect";
     public static final String GET_BAD_OMEN_STATUS_EFFECT = "get_bad_omen_status_effect";
     public static final String GET_GLOWING_STATUS_EFFECT = "get_glowing_status_effect";
@@ -204,11 +207,14 @@ public class GoalType {
     public static final String OPPONENT_TAKES_100_DAMAGE = "OPPONENT_TAKES_100_DAMAGE";
     public static final String OPPONENT_TAKES_FALL_DAMAGE = "OPPONENT_TAKES_FALL_DAMAGE";
     public static final String OPPONENT_TOUCHES_WATER = "OPPONENT_TOUCHES_WATER";
-
     public static final String REACH_NETHER_ROOF = "REACH_NETHER_ROOF";
     public static final String HAVE_MORE_XP_LEVELS = "HAVE_MORE_XP_LEVELS";
     public static final String FREEZE_TO_DEATH = "FREEZE_TO_DEATH";
-
+    public static final String KILL_100_MOBS = "KILL_100_MOBS";
+    public static final String DEAL_400_DAMAGE = "DEAL_400_DAMAGE";
+    public static final String SPRINT_1_KM = "SPRINT_1_KM";
+    public static final String PUT_BANNER_ON_SHIELD = "PUT_BANNER_ON_SHIELD";
+    public static final String HAVE_MORE_UNIQUE_CRAFTS = "HAVE_MORE_UNIQUE_CRAFTS";
 
 
 }

@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 public abstract class Goal {
 
     private final String id;
-    @SuppressWarnings("unused")
     private final String data;
     private boolean isCompleted = false;
     private LockoutTeam completedTeam = null;

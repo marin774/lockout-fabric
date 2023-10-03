@@ -31,8 +31,6 @@ public class PlayerInventoryMixin {
         if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
         if (!Lockout.isRunning()) return;
 
-        // TODO: this can be used for armor/offhand too
-
         obtainedItem(player, stack);
     }
 

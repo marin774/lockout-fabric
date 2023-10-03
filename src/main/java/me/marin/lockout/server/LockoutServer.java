@@ -5,9 +5,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.datafixers.util.Either;
 import me.marin.lockout.*;
 import me.marin.lockout.client.LockoutBoard;
+import me.marin.lockout.generator.BoardGenerator;
+import me.marin.lockout.generator.GoalRequirementsProvider;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
-import me.marin.lockout.lockout.GoalType;
 import me.marin.lockout.lockout.goals.death.DieByFallingOffVinesGoal;
 import me.marin.lockout.lockout.goals.death.DieByIronGolemGoal;
 import me.marin.lockout.lockout.goals.death.DieByTNTMinecartGoal;
@@ -18,9 +19,10 @@ import me.marin.lockout.lockout.goals.misc.EmptyHungerBarGoal;
 import me.marin.lockout.lockout.goals.misc.ReachBedrockGoal;
 import me.marin.lockout.lockout.goals.misc.ReachHeightLimitGoal;
 import me.marin.lockout.lockout.goals.misc.ReachNetherRoofGoal;
-import me.marin.lockout.lockout.goals.more.HaveMoreXPLevelsGoal;
+import me.marin.lockout.lockout.goals.have_more.HaveMoreXPLevelsGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDies3TimesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
+import me.marin.lockout.lockout.goals.opponent.OpponentJumpsGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentTouchesWaterGoal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.interfaces.*;
@@ -30,9 +32,12 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.damage.DamageTypes;
@@ -44,6 +49,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.EnchantRandomlyLootFunction;
+import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
+import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -59,9 +74,12 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.LocateCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.StatType;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
@@ -92,7 +110,69 @@ public class LockoutServer implements DedicatedServerModInitializer {
             commandNode.addChild(playersNode);
             teamsNode.addChild(teamListNode);
             playersNode.addChild(playerListNode);
+
+
+            var chatCommandNode = CommandManager.literal("chat").build();
+            var chatTeamNode = CommandManager.literal("team").executes(context -> LockoutServer.setChat(context, ChatManager.Type.TEAM)).build();
+            var chatLocalNode = CommandManager.literal("local").executes(context -> LockoutServer.setChat(context, ChatManager.Type.LOCAL)).build();
+
+            dispatcher.getRoot().addChild(chatCommandNode);
+            chatCommandNode.addChild(chatTeamNode);
+            chatCommandNode.addChild(chatLocalNode);
         });
+
+        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
+            if (Lockout.isLockoutRunning() && ChatManager.getChat(sender) == ChatManager.Type.TEAM) {
+                LockoutTeamServer team = (LockoutTeamServer) Lockout.getInstance().getPlayerTeam(sender);
+                team.sendMessage(team.getColor() + "[Team Chat] " + Formatting.RESET + "<" + sender.getName().getString() + "> " + message.getContent().getString());
+
+                return false;
+            }
+            return true;
+        });
+
+        LootTableEvents.REPLACE.register(((resourceManager, lootManager, id, original, source) -> {
+            if (Objects.equals(id, LootTables.PIGLIN_BARTERING_GAMEPLAY)) {
+                NbtCompound fireRes = new NbtCompound();
+                fireRes.putString("Potion", "minecraft:fire_resistance");
+
+                UniformLootNumberProvider ironNuggetsCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(9.0F), ConstantLootNumberProvider.create(36.0F));
+                UniformLootNumberProvider quartzCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(8.0F), ConstantLootNumberProvider.create(16.0F));
+                UniformLootNumberProvider glowstoneDustCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(5.0F), ConstantLootNumberProvider.create(12.0F));
+                UniformLootNumberProvider magmaCreamCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(2.0F), ConstantLootNumberProvider.create(6.0F));
+                UniformLootNumberProvider enderPearlCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(8.0F));
+                UniformLootNumberProvider stringCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(8.0F), ConstantLootNumberProvider.create(24.0F));
+                UniformLootNumberProvider fireChargeCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(1.0F), ConstantLootNumberProvider.create(5.0F));
+                UniformLootNumberProvider gravelCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(8.0F), ConstantLootNumberProvider.create(16.0F));
+                UniformLootNumberProvider leatherCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(10.0F));
+                UniformLootNumberProvider netherBrickCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(16.0F));
+                UniformLootNumberProvider cryingObsidianCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(1.0F), ConstantLootNumberProvider.create(3.0F));
+                UniformLootNumberProvider soulSandCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(16.0F));
+
+                @SuppressWarnings("deprecation")
+                LootPool pool = LootPool.builder()
+                        .with(ItemEntry.builder(Items.BOOK).apply(EnchantRandomlyLootFunction.create().add(Enchantments.SOUL_SPEED)).weight(5))
+                        .with(ItemEntry.builder(Items.IRON_BOOTS).apply(EnchantRandomlyLootFunction.create().add(Enchantments.SOUL_SPEED)).weight(8))
+                        .with(ItemEntry.builder(Items.POTION).apply(SetNbtLootFunction.builder(fireRes)).weight(10))
+                        .with(ItemEntry.builder(Items.SPLASH_POTION).apply(SetNbtLootFunction.builder(fireRes)).weight(10))
+                        .with(ItemEntry.builder(Items.IRON_NUGGET).apply(SetCountLootFunction.builder(ironNuggetsCount)).weight(10))
+                        .with(ItemEntry.builder(Items.QUARTZ).apply(SetCountLootFunction.builder(quartzCount)).weight(20))
+                        .with(ItemEntry.builder(Items.GLOWSTONE_DUST).apply(SetCountLootFunction.builder(glowstoneDustCount)).weight(20))
+                        .with(ItemEntry.builder(Items.MAGMA_CREAM).apply(SetCountLootFunction.builder(magmaCreamCount)).weight(20))
+                        .with(ItemEntry.builder(Items.ENDER_PEARL).apply(SetCountLootFunction.builder(enderPearlCount)).weight(20))
+                        .with(ItemEntry.builder(Items.STRING).apply(SetCountLootFunction.builder(stringCount)).weight(20))
+                        .with(ItemEntry.builder(Items.FIRE_CHARGE).apply(SetCountLootFunction.builder(fireChargeCount)).weight(40))
+                        .with(ItemEntry.builder(Items.GRAVEL).apply(SetCountLootFunction.builder(gravelCount)).weight(40))
+                        .with(ItemEntry.builder(Items.LEATHER).apply(SetCountLootFunction.builder(leatherCount)).weight(40))
+                        .with(ItemEntry.builder(Items.NETHER_BRICK).apply(SetCountLootFunction.builder(netherBrickCount)).weight(40))
+                        .with(ItemEntry.builder(Items.OBSIDIAN).weight(40))
+                        .with(ItemEntry.builder(Items.CRYING_OBSIDIAN).apply(SetCountLootFunction.builder(cryingObsidianCount)).weight(40))
+                        .with(ItemEntry.builder(Items.SOUL_SAND).apply(SetCountLootFunction.builder(soulSandCount)).weight(40))
+                        .build();
+                return LootTable.builder().pool(pool).build();
+            }
+            return null;
+        }));
 
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             if (!Lockout.isLockoutRunning()) return;
@@ -109,6 +189,8 @@ public class LockoutServer implements DedicatedServerModInitializer {
                 }
             }
         });
+
+
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (!Lockout.isLockoutRunning()) return;
@@ -226,6 +308,20 @@ public class LockoutServer implements DedicatedServerModInitializer {
 
         });
 
+        ServerPlayNetworking.registerGlobalReceiver(Constants.PLAYER_JUMP_PACKET, ((server, player, handler, buf, responseSender) -> {
+            if (!Lockout.isLockoutRunning()) return;
+
+            Lockout lockout = Lockout.getInstance();
+            for (Goal goal : lockout.getBoard().getGoals()) {
+                if (goal == null) continue;
+                if (goal.isCompleted()) continue;
+
+                if (goal instanceof OpponentJumpsGoal) {
+                    lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " jumped.");
+                }
+            }
+        }));
+
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (!Lockout.isLockoutRunning()) return;
 
@@ -234,13 +330,18 @@ public class LockoutServer implements DedicatedServerModInitializer {
             if (entity instanceof PlayerEntity player) {
                 lockout.deaths.putIfAbsent(player.getUuid(), 0);
                 lockout.deaths.merge(player.getUuid(), 1, Integer::sum);
+            } else {
+                if (entity.getPrimeAdversary() instanceof PlayerEntity player) {
+                    lockout.mobsKilled.putIfAbsent(player.getUuid(), 0);
+                    lockout.mobsKilled.merge(player.getUuid(), 1, Integer::sum);
+                }
             }
 
             for (Goal goal : lockout.getBoard().getGoals()) {
                 if (goal == null) continue;
                 if (goal.isCompleted()) continue;
 
-                if (source.getAttacker() instanceof PlayerEntity attackerPlayer) {
+                if (entity.getPrimeAdversary() instanceof PlayerEntity attackerPlayer) {
                     if (goal instanceof KillMobGoal killMobGoal) {
                         if (killMobGoal.getEntity().equals(entity.getType())) {
                             boolean allow = true;
@@ -372,21 +473,23 @@ public class LockoutServer implements DedicatedServerModInitializer {
                 availableDyeColors.add(DyeColor.BROWN);
             }
 
-            Lockout.log("Available colors: " + String.join(", ", availableDyeColors.stream().map(GoalDataConstants::getDyeColorFormatted).toList()));
+            // Lockout.log("Available colors: " + String.join(", ", availableDyeColors.stream().map(GoalDataConstants::getDyeColorFormatted).toList()));
 
             for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-                GoalGeneratorProvider goalGeneratorProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);
-                if (goalGeneratorProvider == null) continue;
+                GoalRequirementsProvider goalRequirementsProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);
+                if (goalRequirementsProvider == null) continue;
 
-                if (goalGeneratorProvider.getRequiredBiomes() != null) {
-                    for (RegistryKey<Biome> biome : goalGeneratorProvider.getRequiredBiomes()) {
-                        locateBiome(server, biome);
+                if (goalRequirementsProvider.getRequiredBiomes() != null) {
+                    for (RegistryKey<Biome> biome : goalRequirementsProvider.getRequiredBiomes()) {
+                        LocateData data = locateBiome(server, biome);
+                        // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
                 }
 
-                if (goalGeneratorProvider.getRequiredStructures() != null) {
-                    for (RegistryKey<Structure> structure : goalGeneratorProvider.getRequiredStructures()) {
-                        locateStructure(server, structure);
+                if (goalRequirementsProvider.getRequiredStructures() != null) {
+                    for (RegistryKey<Structure> structure : goalRequirementsProvider.getRequiredStructures()) {
+                        LocateData data = locateStructure(server, structure);
+                        // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
                 }
             }
@@ -403,7 +506,7 @@ public class LockoutServer implements DedicatedServerModInitializer {
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
         if (BIOME_LOCATE_DATA.containsKey(biome)) return BIOME_LOCATE_DATA.get(biome);
 
-        Lockout.log("Locating biome " + biome.getValue());
+        // Lockout.log("Locating biome " + biome.getValue());
 
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
@@ -418,19 +521,19 @@ public class LockoutServer implements DedicatedServerModInitializer {
         LocateData data;
         if (pair == null) {
             data = new LocateData(false, false,0);
-            BIOME_LOCATE_DATA.put(biome, data);
         } else {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
             data = new LocateData(true, distance < LOCATE_SEARCH, distance);
-            BIOME_LOCATE_DATA.put(biome, data);
         }
+        BIOME_LOCATE_DATA.put(biome, data);
+
         return data;
     }
 
     public static LocateData locateStructure(MinecraftServer server, RegistryKey<Structure> structure) {
         if (STRUCTURE_LOCATE_DATA.containsKey(structure)) return STRUCTURE_LOCATE_DATA.get(structure);
 
-        Lockout.log("Locating structure " + structure.getValue());
+        // Lockout.log("Locating structure " + structure.getValue());
 
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
@@ -450,12 +553,12 @@ public class LockoutServer implements DedicatedServerModInitializer {
         LocateData data;
         if (pair == null) {
             data = new LocateData(false, false,0);
-            STRUCTURE_LOCATE_DATA.put(structure, data);
         } else {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
             data = new LocateData(true, distance < LOCATE_SEARCH, distance);
-            STRUCTURE_LOCATE_DATA.put(structure, data);
         }
+        STRUCTURE_LOCATE_DATA.put(structure, data);
+
         return data;
     }
 
@@ -530,7 +633,6 @@ public class LockoutServer implements DedicatedServerModInitializer {
                         boolean found = false;
                         for (int colorOrder : Lockout.COLOR_ORDERS) {
                             if (!teamHasColor(teams, Formatting.byColorIndex(colorOrder))) {
-                                System.out.println(Formatting.byColorIndex(colorOrder).asString());
                                 found = true;
                                 team.setColor(Formatting.byColorIndex(colorOrder));
                                 break;
@@ -567,6 +669,7 @@ public class LockoutServer implements DedicatedServerModInitializer {
             }
         });
 
+
         for (ServerPlayerEntity serverPlayer : allPlayers) {
             serverPlayer.getInventory().clear();
             serverPlayer.changeGameMode(GameMode.SURVIVAL);
@@ -577,8 +680,18 @@ public class LockoutServer implements DedicatedServerModInitializer {
             serverPlayer.getHungerManager().setFoodLevel(20);
             serverPlayer.setExperienceLevel(0);
             serverPlayer.setExperiencePoints(0);
+
+
+            for (@SuppressWarnings("unchecked")StatType<Object> statType : new StatType[]{Stats.CRAFTED, Stats.MINED, Stats.USED, Stats.BROKEN, Stats.PICKED_UP, Stats.DROPPED, Stats.KILLED, Stats.KILLED_BY, Stats.CUSTOM}) {
+                for (Identifier id : statType.getRegistry().getIds()) {
+                    serverPlayer.resetStat(statType.getOrCreateStat(statType.getRegistry().get(id)));
+                }
+            }
+            serverPlayer.getStatHandler().sendStats(serverPlayer);
+            serverPlayer.changeGameMode(GameMode.ADVENTURE);
         }
-        // TODO: clear all stats
+        server.getCommandSource().getWorld().setTimeOfDay(0);
+        server.getCommandSource().getWorld().setWeather(12000, 0, false, false);
 
         // Clear all advancements
         ServerPlayerEntity serverPlayerEntity;
@@ -586,15 +699,19 @@ public class LockoutServer implements DedicatedServerModInitializer {
             serverPlayerEntity = it.next();
         }
 
-        // Create lockout instance
-        Lockout lockout = new Lockout(new LockoutBoard(generateGoals()), teams);
+
+        BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, availableDyeColors, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
+        // Create lockout instance & generate board
+        List<Pair<String,String>> board = boardGenerator.generateBoard();
+        // Lockout.log("Generated board of size " + board.size());
+        Lockout lockout = new Lockout(new LockoutBoard(board), teams);
         PacketByteBuf buf = lockout.getTeamsGoalsPacket();
 
         for (ServerPlayerEntity player : allPlayers) {
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, buf);
         }
 
-        int timeToStart = 10;
+        int timeToStart = 60;
         for (int i = 3; i >= 0; i--) {
             if (i > 0) {
                 int secs = i;
@@ -609,6 +726,7 @@ public class LockoutServer implements DedicatedServerModInitializer {
                     for (ServerPlayerEntity player : allPlayers) {
                         if (player == null) continue;
                         ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, Lockout.getInstance().getStartTimePacket());
+                        player.changeGameMode(GameMode.SURVIVAL);
                     }
                     context.getSource().getServer().getPlayerManager().broadcast(Text.literal("Lockout has begun."), false);
                 }).runTaskAfter(20 * timeToStart);
@@ -626,49 +744,22 @@ public class LockoutServer implements DedicatedServerModInitializer {
         return false;
     }
 
-    private static List<Pair<String, String>> generateGoals() {
-        List<Pair<String, String>> goals = List.of(
-                new Pair<>(GoalType.KILL_OTHER_PLAYER, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.REACH_BEDROCK, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_CATCHES_ON_FIRE, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_OBTAINS_SEEDS, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_OBTAINS_OBSIDIAN, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_OBTAINS_CRAFTING_TABLE, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_DIES, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_DIES_3_TIMES, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_HIT_BY_EGG, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_HIT_BY_SNOWBALL, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_JUMPS, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_TAKES_100_DAMAGE, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_TAKES_FALL_DAMAGE, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OPPONENT_TOUCHES_WATER, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.TAKE_200_DAMAGE, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.HAVE_MORE_XP_LEVELS, GoalDataConstants.DATA_COLOR_RED),
-                new Pair<>(GoalType.REACH_NETHER_ROOF, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OBTAIN_7_UNIQUE_WORKSTATIONS, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OBTAIN_REDSTONE_LAMP, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.FREEZE_TO_DEATH, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.GET_OH_SHINY_ADVANCEMENT, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.ENRAGE_ZOMBIFIED_PIGLIN, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OBTAIN_BRICK_WALL, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.WEAR_UNIQUE_COLORED_LEATHER_ARMOR, GoalDataConstants.DATA_NONE),
-                new Pair<>(GoalType.OBTAIN_DISPENSER, GoalDataConstants.DATA_NONE)
-        );
-
-        /*
-        List<Pair<String, String>> goals = new ArrayList<>();
-        List<String> registeredGoals = new ArrayList<>(GoalRegistry.INSTANCE.getRegisteredGoals());
-        Collections.shuffle(registeredGoals);
-        ListIterator<String> iterator = registeredGoals.listIterator();
-        while (goals.size() < 25 && iterator.hasNext()) {
-            String goalId = iterator.next();
-            Goal goal = GoalRegistry.INSTANCE.newGoal(goalId, GoalDataConstants.DATA_NONE);
-
+    private static int setChat(CommandContext<ServerCommandSource> context, ChatManager.Type type) {
+        ServerPlayerEntity player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("This is a player-only command."));
+            return 0;
         }
 
-         */
-
-        return goals;
+        ChatManager.Type curr = ChatManager.getChat(player);
+        if (curr == type) {
+            player.sendMessage(Text.of("You are already chatting in " + type.name() + "."));
+        } else {
+            player.sendMessage(Text.of("You are now chatting in " + type.name() + "." + ((!Lockout.exists() && type == ChatManager.Type.TEAM) ? " " + Formatting.GRAY + "This chat only works once Lockout begins." : "")));
+            ChatManager.setChat(player, type);
+        }
+        return 1;
     }
+
 
 }

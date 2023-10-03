@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmount, CustomTextureRenderer {
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/eat_x.png");
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_x.png");
     private final ItemStack DISPLAY_ITEM_STACK = Items.WHEAT.getDefaultStack();
 
     public BreedUniqueAnimalsGoal(String id, String data) {

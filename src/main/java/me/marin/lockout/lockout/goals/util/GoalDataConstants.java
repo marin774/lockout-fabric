@@ -5,6 +5,8 @@ import net.minecraft.item.Items;
 import net.minecraft.util.DyeColor;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class GoalDataConstants {
 
@@ -43,6 +45,10 @@ public class GoalDataConstants {
         };
     }
 
+    public static List<String> getLeatherArmor() {
+        return List.of(DATA_LEATHER_HELMET, DATA_LEATHER_CHESTPLATE, DATA_LEATHER_LEGGINGS, DATA_LEATHER_BOOTS);
+    }
+
     public static DyeColor getDyeColor(String dyeColorString) {
         return switch (dyeColorString) {
             default -> null;
@@ -62,6 +68,27 @@ public class GoalDataConstants {
             case "green" -> DyeColor.GREEN;
             case "red" -> DyeColor.RED;
             case "black" -> DyeColor.BLACK;
+        };
+    }
+
+    public static String getDyeColorDataString(DyeColor dyeColor) {
+        return switch (dyeColor) {
+            case WHITE -> GoalDataConstants.DATA_COLOR_WHITE;
+            case ORANGE -> GoalDataConstants.DATA_COLOR_ORANGE;
+            case MAGENTA -> GoalDataConstants.DATA_COLOR_MAGENTA;
+            case LIGHT_BLUE -> GoalDataConstants.DATA_COLOR_LIGHT_BLUE;
+            case YELLOW -> GoalDataConstants.DATA_COLOR_YELLOW;
+            case LIME -> GoalDataConstants.DATA_COLOR_LIME;
+            case PINK -> GoalDataConstants.DATA_COLOR_PINK;
+            case GRAY -> GoalDataConstants.DATA_COLOR_GRAY;
+            case LIGHT_GRAY -> GoalDataConstants.DATA_COLOR_LIGHT_GRAY;
+            case CYAN -> GoalDataConstants.DATA_COLOR_CYAN;
+            case PURPLE -> GoalDataConstants.DATA_COLOR_PURPLE;
+            case BLUE -> GoalDataConstants.DATA_COLOR_BLUE;
+            case BROWN -> GoalDataConstants.DATA_COLOR_BROWN;
+            case GREEN -> GoalDataConstants.DATA_COLOR_GREEN;
+            case RED -> GoalDataConstants.DATA_COLOR_RED;
+            case BLACK -> GoalDataConstants.DATA_COLOR_BLACK;
         };
     }
 

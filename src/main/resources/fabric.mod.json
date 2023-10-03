@@ -3,7 +3,7 @@
   "id": "lockout",
   "version": "${version}",
   "name": "Lockout",
-  "description": "",
+  "description": "Lockout Bingo with over 200 goals. Developed by Mar1n, heavily inspired by Smallant's Lockout Bingo mod.",
   "authors": ["Mar1n"],
   "contact": {},
   "license": "All-Rights-Reserved",

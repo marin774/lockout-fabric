@@ -1,10 +1,12 @@
 package me.marin.lockout.lockout.goals.death;
 
+import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 
-public class DieByTNTMinecartGoal extends Goal {
+public class DieByTNTMinecartGoal extends Goal implements TextureProvider {
 
     public DieByTNTMinecartGoal(String id, String data) {
         super(id, data);
@@ -15,10 +17,15 @@ public class DieByTNTMinecartGoal extends Goal {
         return "Die to TNT Minecart";
     }
 
-    private static final ItemStack ITEM_STACK = Items.TNT_MINECART.getDefaultStack();
     @Override
     public ItemStack getTextureItemStack() {
-        return ITEM_STACK;
+        return null;
+    }
+
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_tnt_minecart.png");
+    @Override
+    public Identifier getTextureIdentifier() {
+        return TEXTURE;
     }
 
 }

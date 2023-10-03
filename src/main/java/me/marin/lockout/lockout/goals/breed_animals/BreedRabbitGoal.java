@@ -28,7 +28,7 @@ public class BreedRabbitGoal extends BreedAnimalGoal implements TextureProvider 
         return EntityType.RABBIT;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed_rabbit.png");
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_rabbit.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

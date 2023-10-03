@@ -48,7 +48,7 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
 
     @Override
     public ItemStack getTextureItemStack() {
-        return Items.WOODEN_SWORD.getDefaultStack();
+        return ITEM_STACK;
     }
 
     @Override

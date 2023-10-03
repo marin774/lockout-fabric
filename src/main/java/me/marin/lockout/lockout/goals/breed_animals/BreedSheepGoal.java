@@ -28,7 +28,7 @@ public class BreedSheepGoal extends BreedAnimalGoal implements TextureProvider {
         return EntityType.SHEEP;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed_sheep.png");
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_sheep.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

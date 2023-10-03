@@ -1,14 +1,15 @@
 package me.marin.lockout.lockout.goals.kill;
 
+import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.interfaces.KillMobGoal;
+import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 
-public class KillWitchGoal extends KillMobGoal {
-
-    private static final Item ITEM = Items.WITCH_SPAWN_EGG;
+public class KillWitchGoal extends KillMobGoal implements TextureProvider {
 
     public KillWitchGoal(String id, String data) {
         super(id, data);
@@ -21,7 +22,13 @@ public class KillWitchGoal extends KillMobGoal {
 
     @Override
     public ItemStack getTextureItemStack() {
-        return ITEM.getDefaultStack();
+        return null;
+    }
+
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/kill/kill_witch.png");
+    @Override
+    public Identifier getTextureIdentifier() {
+        return TEXTURE;
     }
 
     @Override

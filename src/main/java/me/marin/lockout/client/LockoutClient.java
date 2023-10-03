@@ -7,15 +7,18 @@ import me.marin.lockout.client.gui.BoardScreen;
 import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.lockout.Goal;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -123,7 +126,7 @@ public class LockoutClient implements ClientModInitializer {
                 Lockout.getInstance().setRunning(false);
                 Lockout.getInstance().setEndTime(buf.readLong());
 
-                if (client.player == null) {
+                if (client.player != null) {
                     boolean didIWin = false;
                     for (Integer winner : winners) {
                         LockoutTeam team = Lockout.getInstance().getTeams().get(winner);

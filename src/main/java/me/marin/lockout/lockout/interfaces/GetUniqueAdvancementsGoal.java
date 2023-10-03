@@ -27,7 +27,7 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
 
     @Override
     public Map<UUID, Set<Identifier>> getTrackerMap() {
-        return Lockout.getInstance().uniqueAdvancementsMap;
+        return Lockout.getInstance().uniqueAdvancements;
     }
 
 }

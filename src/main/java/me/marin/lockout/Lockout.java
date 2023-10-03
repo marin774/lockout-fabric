@@ -8,11 +8,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
+import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -26,17 +28,25 @@ public class Lockout {
     public static final Random random = new Random();
     public final static int[] COLOR_ORDERS = new int[]{12, 9, 10, 14, 6, 13, 11, 5, 3, 2, 15, 4, 7, 1, 8, 0};
 
+    public boolean sentJumpPacket = false;
+
     public Map<UUID, Set<EntityType<?>>> bredAnimalTypes = new HashMap<>();
     public Map<UUID, Set<EntityType<?>>> killedHostileTypes = new HashMap<>();
     public Map<UUID, Integer> killedUndeadMobs = new HashMap<>();
     public Map<UUID, Integer> killedArthropods = new HashMap<>();
     public Map<UUID, Set<FoodComponent>> foodTypesEaten = new HashMap<>();
-    public Map<UUID, Set<Identifier>> uniqueAdvancementsMap = new HashMap<>();
+    public Map<UUID, Set<Identifier>> uniqueAdvancements = new HashMap<>();
     public Map<UUID, Long> pumpkinWearStart = new HashMap<>();
     public Map<UUID, Double> damageTaken = new HashMap<>();
+    public Map<UUID, Double> damageDealt = new HashMap<>();
     public Map<UUID, Integer> deaths = new HashMap<>();
+    public Map<UUID, Integer> mobsKilled = new HashMap<>();
     public Map<UUID, Integer> most_x_Item = new HashMap<>();
+    public Map<UUID, Integer> distanceSprinted = new HashMap<>();
+    public Map<UUID, Set<Item>> uniqueCrafts = new HashMap<>();
     public UUID mostLevelsPlayer;
+    public UUID mostUniqueCraftsPlayer;
+    public int mostUniqueCrafts;
 
     private static Lockout INSTANCE;
     private final LockoutBoard board;
@@ -77,18 +87,20 @@ public class Lockout {
 
     public void opponentCompletedGoal(Goal goal, PlayerEntity player, String message) {
         if (goal.isCompleted()) return;
-        if (!isLockoutPlayer(player)) {
-            return;
-        }
+        if (!isLockoutPlayer(player)) return;
+        if (!hasStarted()) return;
 
-        LockoutTeam team = getOpponentTeam(player);
+        LockoutTeamServer team = (LockoutTeamServer) getOpponentTeam(player);
+        LockoutTeamServer thisTeam = (LockoutTeamServer) getPlayerTeam(player);
         team.addPoint();
 
         goal.setCompleted(true, team);
 
         MinecraftServer server = player.getServer();
-        PlayerManager playerManager = server.getPlayerManager();
-        playerManager.broadcast(Text.literal(message), false);
+        // PlayerManager playerManager = server.getPlayerManager();
+        // playerManager.broadcast(Text.literal(message), false);
+        team.sendMessage(Formatting.GREEN + message);
+        thisTeam.sendMessage(Formatting.RED + message);
 
         sendGoalCompletedPacket(goal, team, server);
         evaulateWinnerAndEndGame(team, server);
@@ -96,9 +108,8 @@ public class Lockout {
 
     public void completeGoal(Goal goal, PlayerEntity player) {
         if (goal.isCompleted()) return;
-        if (!isLockoutPlayer(player)) {
-            return;
-        }
+        if (!isLockoutPlayer(player)) return;
+        if (!hasStarted()) return;
 
         LockoutTeam team = getPlayerTeam(player);
         team.addPoint();
@@ -106,8 +117,15 @@ public class Lockout {
         goal.setCompleted(true, team);
 
         MinecraftServer server = player.getServer();
-        PlayerManager playerManager = server.getPlayerManager();
-        playerManager.broadcast(Text.literal(player.getName().getString() + " completed " + goal.getGoalName() + "."), false);
+        String message = player.getName().getString() + " completed " + goal.getGoalName() + ".";
+        for (LockoutTeam lockoutTeam : teams) {
+            if (!(lockoutTeam instanceof LockoutTeamServer lockoutTeamServer)) continue;
+            if (Objects.equals(lockoutTeamServer, team)) {
+                lockoutTeamServer.sendMessage(Formatting.GREEN + message);
+            } else {
+                lockoutTeamServer.sendMessage(Formatting.RED + message);
+            }
+        }
 
         sendGoalCompletedPacket(goal, team, server);
         evaulateWinnerAndEndGame(team, server);

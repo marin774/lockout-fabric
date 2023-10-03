@@ -11,9 +11,6 @@ import net.minecraft.util.Identifier;
 
 public class KillZombieVillagerGoal extends KillMobGoal implements TextureProvider {
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_zombie_villager.png");
-    private static final Item ITEM = Items.ZOMBIE_VILLAGER_SPAWN_EGG;
-
     public KillZombieVillagerGoal(String id, String data) {
         super(id, data);
     }
@@ -25,7 +22,13 @@ public class KillZombieVillagerGoal extends KillMobGoal implements TextureProvid
 
     @Override
     public ItemStack getTextureItemStack() {
-        return ITEM.getDefaultStack();
+        return null;
+    }
+
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/kill/kill_zombie_villager.png");
+    @Override
+    public Identifier getTextureIdentifier() {
+        return TEXTURE;
     }
 
     @Override
@@ -33,8 +36,4 @@ public class KillZombieVillagerGoal extends KillMobGoal implements TextureProvid
         return EntityType.ZOMBIE_VILLAGER;
     }
 
-    @Override
-    public Identifier getTextureIdentifier() {
-        return TEXTURE;
-    }
 }

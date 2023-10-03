@@ -1,6 +1,9 @@
 package me.marin.lockout;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -30,5 +33,13 @@ public class LockoutTeamServer extends LockoutTeam {
         return players;
     }
 
+    public void sendMessage(String message) {
+        for (UUID uuid : players) {
+            ServerPlayerEntity player = server.getPlayerManager().getPlayer(uuid);
+            if (player != null) {
+                player.sendMessage(Text.literal(message));
+            }
+        }
+    }
 
 }

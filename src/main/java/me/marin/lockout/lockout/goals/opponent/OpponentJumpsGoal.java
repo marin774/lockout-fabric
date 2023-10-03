@@ -1,6 +1,7 @@
 package me.marin.lockout.lockout.goals.opponent;
 
 import me.marin.lockout.Constants;
+import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
@@ -9,16 +10,10 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class OpponentJumpsGoal extends IncrementStatGoal implements TextureProvider {
+public class OpponentJumpsGoal extends Goal implements TextureProvider {
 
     public OpponentJumpsGoal(String id, String data) {
         super(id, data);
-    }
-
-    private static final List<Identifier> STATS = List.of(Stats.JUMP);
-    @Override
-    public List<Identifier> getStats() {
-        return STATS;
     }
 
     @Override

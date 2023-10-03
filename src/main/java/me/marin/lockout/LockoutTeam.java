@@ -41,7 +41,6 @@ public class LockoutTeam {
 
     public static String formattingToString(Formatting formatting) {
         return WordUtils.capitalize(formatting.asString().replace("_", " "));
-
     }
 
 }

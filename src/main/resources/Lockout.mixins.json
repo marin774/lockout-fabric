@@ -11,10 +11,12 @@
     "server.BrewedPotionCriterionMixin",
     "server.BrewingStandScreenHandlerPotionSlotMixin",
     "server.ComposterBlockMixin",
+    "server.CraftingResultSlotMixin",
     "server.EntityMixin",
     "server.GlowInkSacItemMixin",
     "server.GoatHornItemMixin",
     "server.GrindstoneScreenHandlerOutputSlotMixin",
+    "server.LivingEntityMixin",
     "server.PlayerAdvancementTrackerMixin",
     "server.PlayerInventoryAccessor",
     "server.PlayerInventoryMixin",
@@ -26,9 +28,11 @@
     "server.ZombifiedPiglinEntityMixin"
   ],
   "client": [
+    "client.ClientPlayerEntityMixin",
     "client.DebugHudMixin",
     "client.InGameHudMixin",
-    "client.KeyboardMixin"
+    "client.InputMixin",
+    "client.KeyboardMixin",
   ],
   "injectors": {
     "defaultRequire": 1

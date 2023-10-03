@@ -2,6 +2,7 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
 import me.marin.lockout.lockout.goals.opponent.*;
 import me.marin.lockout.lockout.goals.status_effect.RemoveStatusEffectUsingMilkGoal;
@@ -20,6 +21,7 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -60,6 +62,17 @@ public class PlayerMixin {
                     }
                 }
             }
+        }
+    }
+
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    public void onStartMatch(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
+        if (!Lockout.isLockoutRunning()) return;
+
+        Lockout lockout = Lockout.getInstance();
+        if (!lockout.hasStarted()) {
+            cir.setReturnValue(false);
         }
     }
 
@@ -152,9 +165,27 @@ public class PlayerMixin {
             if (!(goal instanceof IncrementStatGoal incrementStatGoal)) continue;
 
             if (incrementStatGoal.getStats().contains(stat)) {
-                if (goal instanceof OpponentJumpsGoal) {
-                    lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " jumped.");
-                } else {
+                lockout.completeGoal(goal, player);
+            }
+        }
+    }
+
+    @Inject(method = "increaseStat(Lnet/minecraft/util/Identifier;I)V", at = @At("HEAD"))
+    public void onIncreaseStat(Identifier stat, int amount, CallbackInfo ci) {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
+        if (!Lockout.isLockoutRunning()) return;
+
+        Lockout lockout = Lockout.getInstance();
+        PlayerEntity player = (PlayerEntity) (Object) this;
+
+        for (Goal goal : lockout.getBoard().getGoals()) {
+            if (goal == null) continue;
+            if (goal.isCompleted()) continue;
+            if (goal instanceof Sprint1KmGoal && stat.equals(Stats.SPRINT_ONE_CM)) {
+                lockout.distanceSprinted.putIfAbsent(player.getUuid(), 0);
+                lockout.distanceSprinted.merge(player.getUuid(), amount, Integer::sum);
+
+                if (lockout.distanceSprinted.get(player.getUuid()) >= (100 * 1000)) {
                     lockout.completeGoal(goal, player);
                 }
             }

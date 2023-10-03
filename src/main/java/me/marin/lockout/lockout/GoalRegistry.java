@@ -1,7 +1,7 @@
 package me.marin.lockout.lockout;
 
-import me.marin.lockout.GoalDataGenerator;
-import me.marin.lockout.GoalGeneratorProvider;
+import me.marin.lockout.generator.GoalDataGenerator;
+import me.marin.lockout.generator.GoalRequirementsProvider;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.Structure;
@@ -15,32 +15,19 @@ public class GoalRegistry {
 
     private final Map<String, Class<? extends Goal>> registry = new HashMap<>();
     private final Map<String, GoalDataGenerator> goalDataGenerators = new HashMap<>();
-    private final Map<String, GoalGeneratorProvider> goalGeneratorProviders = new HashMap<>();
-
-    public static GoalDataGenerator EMPTY_DATA_GENERATOR = (attainableDyes) -> null;
-    public static GoalGeneratorProvider EMPTY_GOAL_PROVIDER = new GoalGeneratorProvider() {
-        @Override
-        public List<RegistryKey<Biome>> getRequiredBiomes() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public List<RegistryKey<Structure>> getRequiredStructures() {
-            return Collections.emptyList();
-        }
-    };
+    private final Map<String, GoalRequirementsProvider> goalGeneratorProviders = new HashMap<>();
 
     private GoalRegistry() {}
 
     public void register(String id, Class<? extends Goal> goalClass) {
-        register(id, goalClass, EMPTY_GOAL_PROVIDER);
+        register(id, goalClass, null);
     }
-    public void register(String id, Class<? extends Goal> goalClass, GoalGeneratorProvider goalGeneratorProvider) {
-        register(id, goalClass, goalGeneratorProvider, EMPTY_DATA_GENERATOR);
+    public void register(String id, Class<? extends Goal> goalClass, GoalRequirementsProvider goalRequirementsProvider) {
+        register(id, goalClass, goalRequirementsProvider, null);
     }
-    public void register(String id, Class<? extends Goal> goalClass, GoalGeneratorProvider goalGeneratorProvider, GoalDataGenerator goalDataGenerator) {
+    public void register(String id, Class<? extends Goal> goalClass, GoalRequirementsProvider goalRequirementsProvider, GoalDataGenerator goalDataGenerator) {
         registry.put(id, goalClass);
-        goalGeneratorProviders.put(id, goalGeneratorProvider);
+        goalGeneratorProviders.put(id, goalRequirementsProvider);
         goalDataGenerators.put(id, goalDataGenerator);
     }
 
@@ -57,12 +44,12 @@ public class GoalRegistry {
         return goalDataGenerators.get(id);
     }
 
-    public GoalGeneratorProvider getGoalGenerator(String id) {
+    public GoalRequirementsProvider getGoalGenerator(String id) {
         return goalGeneratorProviders.get(id);
     }
 
-    public Set<String> getRegisteredGoals() {
-        return new HashSet<>(registry.keySet());
+    public List<String> getRegisteredGoals() {
+        return new ArrayList<>(registry.keySet());
     }
 
 }

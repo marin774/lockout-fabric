@@ -25,7 +25,8 @@ Create your teams using the vanilla `/team` command (`/team add <team name>`, `/
 
 To start a lockout match, run:
 `/lockout teams <team name> <team name> ...` (there can be up to 16 teams)
-or, if you wanna do FFA:
+
+Or if you wanna do FFA:
 `/lockout players <player name> <player name> ...` (there can be up to 16 players)
 
 If you want to chat with your team, run `/chat team` (currently, this will only send messages in your team chat after a lockout match begins).

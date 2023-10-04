@@ -10,19 +10,23 @@
     "server.BredAnimalsCriterionMixin",
     "server.BrewedPotionCriterionMixin",
     "server.BrewingStandScreenHandlerPotionSlotMixin",
+    "server.CampfireBlockEntityMixin",
     "server.CompassItemMixin",
     "server.ComposterBlockMixin",
+    "server.ConsumeItemCriterionMixin",
     "server.CraftingResultSlotMixin",
     "server.EntityMixin",
     "server.GlowInkSacItemMixin",
     "server.GoatHornItemMixin",
     "server.GrindstoneScreenHandlerOutputSlotMixin",
+    "server.ItemFrameEntityMixin",
     "server.ItemMixin",
     "server.LivingEntityMixin",
     "server.PlayerAdvancementTrackerMixin",
     "server.PlayerInventoryAccessor",
     "server.PlayerInventoryMixin",
     "server.PlayerMixin",
+    "server.RaidMixin",
     "server.ServerPlayerEntityMixin",
     "server.SlotMixin",
     "server.SmithingScreenHandlerMixin",
@@ -31,12 +35,15 @@
     "server.ZombifiedPiglinEntityMixin"
   ],
   "client": [
-    "client.ClientPlayerEntityMixin",
     "client.DebugHudMixin",
     "client.InGameHudMixin",
     "client.InputMixin",
+    "client.ItemInHandRendererMixin",
     "client.KeyboardMixin",
-    "client.ItemInHandRendererMixin"
+    "client.toasts.AdvancementToastMixin",
+    "client.toasts.RecipeToastMixin",
+    "client.toasts.SystemToastMixin",
+    "client.toasts.TutorialToastMixin"
   ],
   "injectors": {
     "defaultRequire": 1

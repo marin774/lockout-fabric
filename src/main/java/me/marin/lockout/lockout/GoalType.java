@@ -215,6 +215,10 @@ public class GoalType {
     public static final String SPRINT_1_KM = "SPRINT_1_KM";
     public static final String PUT_BANNER_ON_SHIELD = "PUT_BANNER_ON_SHIELD";
     public static final String HAVE_MORE_UNIQUE_CRAFTS = "HAVE_MORE_UNIQUE_CRAFTS";
-
+    public static final String HAVE_YOUR_SHIELD_DISABLED = "HAVE_YOUR_SHIELD_DISABLED";
+    public static final String ITEM_FRAME_IN_ITEM_FRAME = "ITEM_FRAME_IN_ITEM_FRAME";
+    public static final String FILL_CAMPFIRE = "FILL_CAMPFIRE";
+    public static final String PUT_FLOWER_IN_POT = "PUT_FLOWER_IN_POT";
+    public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
 
 }

@@ -86,7 +86,7 @@ loom {
 
 task copyJarToServer(type: Copy) {
     from remapJar
-    into "C:\\Users\\Marin\\Desktop\\lockout but better\\mods"
+    into "C:\\Users\\Marin\\Desktop\\lockout fabric\\mods"
 }
 build.dependsOn copyJarToServer
 

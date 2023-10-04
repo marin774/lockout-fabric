@@ -14,3 +14,5 @@ accessible method net/minecraft/server/command/LocateCommand executeLocateBiome 
 accessible method net/minecraft/server/command/LocateCommand getDistance (IIII)F
 accessible method net/minecraft/server/command/LocateCommand getStructureListForPredicate (Lnet/minecraft/command/argument/RegistryPredicateArgumentType$RegistryPredicate;Lnet/minecraft/registry/Registry;)Ljava/util/Optional;
 accessible method net/minecraft/item/CompassItem writeNbt (Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/nbt/NbtCompound;)V
+accessible field net/minecraft/server/world/ServerWorld worldProperties Lnet/minecraft/world/level/ServerWorldProperties;
+accessible class net/minecraft/village/raid/Raid$Member

@@ -2,8 +2,11 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
+import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.goals.status_effect.RemoveStatusEffectUsingMilkGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.Item;

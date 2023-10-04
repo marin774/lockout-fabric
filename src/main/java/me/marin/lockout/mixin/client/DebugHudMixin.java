@@ -138,12 +138,6 @@ public abstract class DebugHudMixin {
             text.add(String.valueOf(Registries.ENTITY_TYPE.getId(entity.getType())));
         }
 
-        text.add("");
-        text.add(Formatting.UNDERLINE + "Debug charts:");
-        text.add("[F3+1] Pie Chart");
-        text.add("[F3+2] FPS + TPS");
-        text.add("[F3+3] Bandwidth + Ping");
-
         this.drawText(context, text, true);
         ci.cancel();
     }

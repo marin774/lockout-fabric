@@ -28,7 +28,7 @@ public class GoalGroup {
             OBTAIN_DIAMOND_TOOLS, WEAR_DIAMOND_ARMOR
     ), 1);
     public static final GoalGroup ARMOR = new GoalGroup(List.of(
-            WEAR_LEATHER_ARMOR,WEAR_IRON_ARMOR,WEAR_GOLDEN_ARMOR,WEAR_DIAMOND_ARMOR
+            WEAR_LEATHER_ARMOR, WEAR_IRON_ARMOR, WEAR_GOLDEN_ARMOR, WEAR_DIAMOND_ARMOR
     ), 1);
     public static final GoalGroup ARMOR_SPECIAL = new GoalGroup(List.of(
             WEAR_COLORED_LEATHER_ARMOR_PIECE, WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WEAR_CARVED_PUMPKIN_FOR_5_MINUTES, WEAR_CHAIN_ARMOR_PIECE
@@ -146,6 +146,10 @@ public class GoalGroup {
     public static final GoalGroup IRON_HEAVY = new GoalGroup(List.of(
             USE_ANVIL, DIE_BY_ANVIL, OBTAIN_ALL_MINECARTS, GET_HIRED_HELP_ADVANCEMENT
     ), 1);
+    public static final GoalGroup LEATHER_HEAVY = new GoalGroup(List.of(
+            WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR
+    ), 1);
+
 
     private final List<String> goals;
     private final int limit;

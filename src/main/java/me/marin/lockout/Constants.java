@@ -20,9 +20,9 @@ public class Constants {
 
     public static final Identifier GUI_CENTER_IDENTIFIER = new Identifier(NAMESPACE, "textures/guis/gui_center.png");
     public static final int GUI_CENTER_WIDTH = 104;
-    public static final int GUI_CENTER_HEIGHT = 114;
+    public static final int GUI_CENTER_HEIGHT = 105;
     public static final int GUI_CENTER_FIRST_ITEM_OFFSET_X = 8;
-    public static final int GUI_CENTER_FIRST_ITEM_OFFSET_Y = 18;
+    public static final int GUI_CENTER_FIRST_ITEM_OFFSET_Y = 9;
     public static final int GUI_CENTER_ITEM_SLOT_SIZE = 18; // both x and y
 
 

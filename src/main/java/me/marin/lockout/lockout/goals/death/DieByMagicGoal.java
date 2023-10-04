@@ -7,6 +7,8 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public class DieByMagicGoal extends DieToDamageTypeGoal {
 
     public DieByMagicGoal(String id, String data) {
@@ -19,8 +21,8 @@ public class DieByMagicGoal extends DieToDamageTypeGoal {
     }
 
     @Override
-    public RegistryKey<DamageType> getDamageRegistryKey() {
-        return DamageTypes.MAGIC;
+    public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
+        return List.of(DamageTypes.MAGIC, DamageTypes.INDIRECT_MAGIC);
     }
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_magic.png");

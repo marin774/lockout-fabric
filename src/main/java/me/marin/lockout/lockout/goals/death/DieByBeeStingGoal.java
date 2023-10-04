@@ -7,6 +7,8 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public class DieByBeeStingGoal extends DieToDamageTypeGoal {
 
     public DieByBeeStingGoal(String id, String data) {
@@ -19,8 +21,8 @@ public class DieByBeeStingGoal extends DieToDamageTypeGoal {
     }
 
     @Override
-    public RegistryKey<DamageType> getDamageRegistryKey() {
-        return DamageTypes.STING;
+    public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
+        return List.of(DamageTypes.STING);
     }
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_bee.png");

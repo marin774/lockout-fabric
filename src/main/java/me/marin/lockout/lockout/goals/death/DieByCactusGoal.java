@@ -7,6 +7,8 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public class DieByCactusGoal extends DieToDamageTypeGoal {
 
     public DieByCactusGoal(String id, String data) {
@@ -19,8 +21,8 @@ public class DieByCactusGoal extends DieToDamageTypeGoal {
     }
 
     @Override
-    public RegistryKey<DamageType> getDamageRegistryKey() {
-        return DamageTypes.CACTUS;
+    public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
+        return List.of(DamageTypes.CACTUS);
     }
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_cactus.png");

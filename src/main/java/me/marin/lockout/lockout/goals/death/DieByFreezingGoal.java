@@ -7,6 +7,8 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public class DieByFreezingGoal extends DieToDamageTypeGoal {
 
     public DieByFreezingGoal(String id, String data) {
@@ -19,8 +21,8 @@ public class DieByFreezingGoal extends DieToDamageTypeGoal {
     }
 
     @Override
-    public RegistryKey<DamageType> getDamageRegistryKey() {
-        return DamageTypes.FREEZE;
+    public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
+        return List.of(DamageTypes.FREEZE);
     }
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_freezing.png");

@@ -455,6 +455,23 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.PUT_BANNER_ON_SHIELD, ObtainShieldWithBannerGoal.class);
         INSTANCE.register(GoalType.HAVE_MORE_UNIQUE_CRAFTS, HaveMostUniqueCraftsGoal.class,
                 GoalRequirementsProvider.TEAMS_GOAL);
+        INSTANCE.register(GoalType.HAVE_YOUR_SHIELD_DISABLED, HaveShieldDisabledGoal.class);
+        INSTANCE.register(GoalType.ITEM_FRAME_IN_ITEM_FRAME, ItemFrameInItemFrameGoal.class);
+        INSTANCE.register(GoalType.FILL_CAMPFIRE, FillCampfireWithFoodGoal.class);
+        INSTANCE.register(GoalType.PUT_FLOWER_IN_POT, PutFlowerInPotGoal.class);
+        INSTANCE.register(GoalType.KILL_ALL_RAID_MOBS, KillAllRaidMobsGoal.class,
+                new GoalRequirementsProvider() {
+                    @Override
+                    public List<RegistryKey<Biome>> getRequiredBiomes() {
+                        return null;
+                    }
+
+                    @Override
+                    public List<RegistryKey<Structure>> getRequiredStructures() {
+                        return List.of(StructureKeys.PILLAGER_OUTPOST, StructureKeys.MANSION);
+                    }
+                });
+
     }
 
 }

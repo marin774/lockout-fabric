@@ -7,6 +7,8 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 
+import java.util.List;
+
 public class DieByFallingStalactiteGoal extends DieToDamageTypeGoal {
 
     public DieByFallingStalactiteGoal(String id, String data) {
@@ -19,8 +21,8 @@ public class DieByFallingStalactiteGoal extends DieToDamageTypeGoal {
     }
 
     @Override
-    public RegistryKey<DamageType> getDamageRegistryKey() {
-        return DamageTypes.FALLING_STALACTITE;
+    public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
+        return List.of(DamageTypes.FALLING_STALACTITE);
     }
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_falling_stalactite.png");

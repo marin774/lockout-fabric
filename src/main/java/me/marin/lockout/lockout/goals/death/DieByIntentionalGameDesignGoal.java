@@ -23,8 +23,8 @@ public class DieByIntentionalGameDesignGoal extends DieToDamageTypeGoal implemen
     }
 
     @Override
-    public RegistryKey<DamageType> getDamageRegistryKey() {
-        return DamageTypes.BAD_RESPAWN_POINT;
+    public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
+        return List.of(DamageTypes.BAD_RESPAWN_POINT);
     }
 
     @Override

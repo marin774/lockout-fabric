@@ -5,6 +5,7 @@ import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
 import me.marin.lockout.lockout.goals.opponent.*;
@@ -169,14 +170,6 @@ public abstract class PlayerMixin {
                     }
                 }
             }
-            if (goal instanceof RemoveStatusEffectUsingMilkGoal) {
-                if (itemStack.getItem().equals(Items.MILK_BUCKET)) {
-                    if (player.getStatusEffects().size() > 0) {
-                        lockout.completeGoal(goal, player);
-                    }
-                }
-            }
-
         }
 
     }
@@ -238,6 +231,24 @@ public abstract class PlayerMixin {
                 if (player.experienceLevel >= reachXPLevelGoal.getAmount()) {
                     lockout.completeGoal(goal, player);
                 }
+            }
+        }
+    }
+
+    @Inject(method = "disableShield", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getItemCooldownManager()Lnet/minecraft/entity/player/ItemCooldownManager;"))
+    public void onShieldDisabled(boolean sprinting, CallbackInfo ci) {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
+        if (!Lockout.isLockoutRunning()) return;
+
+        Lockout lockout = Lockout.getInstance();
+        PlayerEntity player = (PlayerEntity) (Object) this;
+
+        for (Goal goal : lockout.getBoard().getGoals()) {
+            if (goal == null) continue;
+            if (goal.isCompleted()) continue;
+
+            if (goal instanceof HaveShieldDisabledGoal) {
+                lockout.completeGoal(goal, player);
             }
         }
     }

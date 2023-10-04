@@ -171,7 +171,7 @@ public class LockoutClient implements ClientModInitializer {
             }
             if (wasPressed) {
 
-                if (!Lockout.isLockoutRunning() || MinecraftClient.getInstance().currentScreen != null) {
+                if (!Lockout.exists() || MinecraftClient.getInstance().currentScreen != null) {
                     return;
                 }
 

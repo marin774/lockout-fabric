@@ -24,13 +24,8 @@ public class InputMixin {
             input.movementForward = 0;
             input.movementSideways = 0;
             input.jumping = false;
-            input.sneaking = false;
+            // input.sneaking = false;
         }
-        /*KeyboardInput keyboardInput = (KeyboardInput)(Object)this;
-        if (keyboardInput.jumping && !lockout.sentJumpPacket) {
-            ClientPlayNetworking.send(Constants.PLAYER_JUMP_PACKET, PacketByteBufs.empty());
-            lockout.sentJumpPacket = true;
-        }*/
     }
 
 }

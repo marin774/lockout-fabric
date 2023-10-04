@@ -5,7 +5,7 @@ import me.marin.lockout.server.LockoutServer;
 public interface LockoutRunnable {
 
     default void runTaskAfter(int ticks) {
-        LockoutServer.runnables.put(this, ticks);
+        LockoutServer.gameStartRunnables.put(this, ticks);
     }
     void run();
 

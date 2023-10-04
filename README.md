@@ -1,6 +1,9 @@
 # Lockout
 Lockout Bingo with over 200 goals. Developed by Mar1n, heavily inspired by Smallant's Lockout Bingo mod.
 
+Vanilla modifications:
+- Piglin barter rates are same as in version 1.16.1
+
 ## Client side installation
 Make a  1.20.2 instance, add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to your mods folder.
 
@@ -26,7 +29,7 @@ Create your teams using the vanilla `/team` command (`/team add <team name>`, `/
 To start a lockout match, run:
 `/lockout teams <team name> <team name> ...` (there can be up to 16 teams)
 
-Or if you wanna do FFA:
+Or if you want to do FFA:
 `/lockout players <player name> <player name> ...` (there can be up to 16 players)
 
 If you want to chat with your team, run `/chat team` (currently, this will only send messages in your team chat after a lockout match begins).

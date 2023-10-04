@@ -12,7 +12,9 @@ import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
 import me.marin.lockout.lockout.interfaces.ReachXPLevelGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,10 +23,12 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,9 +36,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
-public class PlayerMixin {
+public abstract class PlayerMixin {
+
+
+    @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
+    public void onDropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
+        if (!Lockout.exists()) return;
+
+        PlayerEntity player = (PlayerEntity) (Object) this;
+
+        if (stack == null || stack.isEmpty()) return;
+        NbtCompound compound = stack.getOrCreateNbt();
+        if (compound.contains("TrackingCompass")) {
+            cir.setReturnValue(null);
+        }
+    }
 
     @Inject(method = "collideWithEntity", at = @At("HEAD"))
     public void onCollide(Entity entity, CallbackInfo ci) {

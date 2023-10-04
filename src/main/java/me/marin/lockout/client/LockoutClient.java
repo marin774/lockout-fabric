@@ -83,7 +83,8 @@ public class LockoutClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             client.execute(() -> {
                 Lockout.getInstance().setStarted(true);
-                Lockout.getInstance().setStartTime(buf.readLong());
+                Lockout.getInstance().setStartTime(System.currentTimeMillis());
+                buf.readLong();
                 if (MinecraftClient.getInstance().currentScreen != null) {
                     MinecraftClient.getInstance().currentScreen.close();
                 }
@@ -124,7 +125,8 @@ public class LockoutClient implements ClientModInitializer {
                 }
 
                 Lockout.getInstance().setRunning(false);
-                Lockout.getInstance().setEndTime(buf.readLong());
+                Lockout.getInstance().setEndTime(System.currentTimeMillis());
+                buf.readLong();
 
                 if (client.player != null) {
                     boolean didIWin = false;

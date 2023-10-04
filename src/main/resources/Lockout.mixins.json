@@ -4,18 +4,21 @@
   "package": "me.marin.lockout.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "client.ItemInHandRendererMixin",
     "server.AnvilScreenHandlerMixin",
     "server.ArmorStandMixin",
     "server.BlockMixin",
     "server.BredAnimalsCriterionMixin",
     "server.BrewedPotionCriterionMixin",
     "server.BrewingStandScreenHandlerPotionSlotMixin",
+    "server.CompassItemMixin",
     "server.ComposterBlockMixin",
     "server.CraftingResultSlotMixin",
     "server.EntityMixin",
     "server.GlowInkSacItemMixin",
     "server.GoatHornItemMixin",
     "server.GrindstoneScreenHandlerOutputSlotMixin",
+    "server.ItemMixin",
     "server.LivingEntityMixin",
     "server.PlayerAdvancementTrackerMixin",
     "server.PlayerInventoryAccessor",
@@ -32,7 +35,7 @@
     "client.DebugHudMixin",
     "client.InGameHudMixin",
     "client.InputMixin",
-    "client.KeyboardMixin",
+    "client.KeyboardMixin"
   ],
   "injectors": {
     "defaultRequire": 1

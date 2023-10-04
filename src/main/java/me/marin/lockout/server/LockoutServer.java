@@ -30,6 +30,7 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
@@ -129,6 +130,10 @@ public class LockoutServer implements DedicatedServerModInitializer {
                 return false;
             }
             return true;
+        });
+
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            newPlayer.giveItemStack(Items.COMPASS.getDefaultStack());
         });
 
         LootTableEvents.REPLACE.register(((resourceManager, lootManager, id, original, source) -> {
@@ -663,11 +668,11 @@ public class LockoutServer implements DedicatedServerModInitializer {
         runnables.clear();
 
         List<ServerPlayerEntity> allPlayers = new ArrayList<>();
-        teams.forEach((team) -> {
+        for (LockoutTeamServer team : teams) {
             for (UUID uuid : team.getPlayers()) {
                 allPlayers.add(playerManager.getPlayer(uuid));
             }
-        });
+        }
 
 
         for (ServerPlayerEntity serverPlayer : allPlayers) {
@@ -707,8 +712,11 @@ public class LockoutServer implements DedicatedServerModInitializer {
         Lockout lockout = new Lockout(new LockoutBoard(board), teams);
         PacketByteBuf buf = lockout.getTeamsGoalsPacket();
 
+        new CompassItemHandler(allPlayers);
+
         for (ServerPlayerEntity player : allPlayers) {
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, buf);
+            player.giveItemStack(Items.COMPASS.getDefaultStack());
         }
 
         int timeToStart = 60;

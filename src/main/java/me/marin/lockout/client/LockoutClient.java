@@ -28,13 +28,16 @@ import org.lwjgl.glfw.GLFW;
 import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LockoutClient implements ClientModInitializer {
 
     private static KeyBinding keyBinding;
     public static final ScreenHandlerType<BoardScreenHandler> BOARD_SCREEN_HANDLER;
     public static int CURRENT_TICK = 0;
+    public static Map<String, String> goalLoreMap = new HashMap<>();
 
     static {
         BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(Constants.NAMESPACE, "board"), BoardScreenHandler::new);
@@ -80,11 +83,15 @@ public class LockoutClient implements ClientModInitializer {
                 }
             });
         });
+        ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_LORE, (client, handler, buf, responseSender) -> {
+            client.execute(() -> {
+                goalLoreMap.put(buf.readString(), buf.readString());
+            });
+        });
         ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             client.execute(() -> {
                 Lockout.getInstance().setStarted(true);
-                Lockout.getInstance().setStartTime(System.currentTimeMillis());
-                buf.readLong();
+                Lockout.getInstance().setStartTime(buf.readLong() + (System.currentTimeMillis() - buf.readLong())); // clock sync
                 if (MinecraftClient.getInstance().currentScreen != null) {
                     MinecraftClient.getInstance().currentScreen.close();
                 }
@@ -97,9 +104,10 @@ public class LockoutClient implements ClientModInitializer {
 
                 Lockout lockout = Lockout.getInstance();
                 Goal goal = lockout.getBoard().getGoals().stream().filter(g -> g.getId().equals(goalId)).findFirst().get();
-                if (teamIndex == -1) {
-                    lockout.clearGoalCompletion(goal, null, false);
-                } else {
+                if (goal.isCompleted() || teamIndex == -1) {
+                    lockout.clearGoalCompletion(goal, false);
+                }
+                if (teamIndex != -1) {
                     LockoutTeam team = lockout.getTeams().get(teamIndex);
                     team.addPoint();
                     goal.setCompleted(true, Lockout.getInstance().getTeams().get(teamIndex));

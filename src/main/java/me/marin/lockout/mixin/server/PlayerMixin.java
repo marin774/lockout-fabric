@@ -1,6 +1,9 @@
 package me.marin.lockout.mixin.server;
 
+import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
+import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
@@ -10,9 +13,9 @@ import me.marin.lockout.lockout.interfaces.ConsumeItemGoal;
 import me.marin.lockout.lockout.interfaces.EatUniqueFoodsGoal;
 import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
 import me.marin.lockout.lockout.interfaces.ReachXPLevelGoal;
+import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -23,9 +26,10 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,12 +39,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerMixin {
-
 
     @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
     public void onDropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
@@ -49,10 +52,9 @@ public abstract class PlayerMixin {
 
         PlayerEntity player = (PlayerEntity) (Object) this;
 
-        if (stack == null || stack.isEmpty()) return;
-        NbtCompound compound = stack.getOrCreateNbt();
-        if (compound.contains("TrackingCompass")) {
+        if (CompassItemHandler.isCompass(stack)) {
             cir.setReturnValue(null);
+            player.getInventory().insertStack(stack);
         }
     }
 
@@ -104,17 +106,20 @@ public abstract class PlayerMixin {
 
         Lockout lockout = Lockout.getInstance();
         PlayerEntity player = (PlayerEntity) (Object) this;
+        if (!lockout.isLockoutPlayer(player.getUuid())) return;
+        LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
 
-        lockout.damageTaken.putIfAbsent(player.getUuid(), 0d);
-        lockout.damageTaken.merge(player.getUuid(), (double)amount, Double::sum);
+        lockout.damageTaken.putIfAbsent(team, 0d);
+        lockout.damageTaken.merge(team, (double)amount, Double::sum);
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
 
-            if (goal instanceof Take200DamageGoal) {
-                if (lockout.damageTaken.get(player.getUuid()) >= 200.0) {
-                    lockout.completeGoal(goal, player);
+            if (goal instanceof Take200DamageGoal take200DamageGoal) {
+                team.sendLoreUpdate(take200DamageGoal);
+                if (lockout.damageTaken.get(team) >= 200) {
+                    lockout.completeGoal(goal, team);
                 }
             }
             if (goal instanceof OpponentTakesFallDamageGoal) {
@@ -123,8 +128,8 @@ public abstract class PlayerMixin {
                 }
             }
             if (goal instanceof OpponentTakes100DamageGoal) {
-                if (lockout.damageTaken.get(player.getUuid()) >= 100) {
-                    lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " took 100 damage.");
+                if (lockout.damageTaken.get(team) >= 100) {
+                    lockout.opponentCompletedGoal(goal, team, team.getDisplayName() + " took 100 damage.");
                 }
             }
         }
@@ -138,6 +143,9 @@ public abstract class PlayerMixin {
         Lockout lockout = Lockout.getInstance();
         PlayerEntity player = (PlayerEntity) (Object) this;
 
+        if (!lockout.isLockoutPlayer(player.getUuid())) return;
+        LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
+
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
@@ -148,14 +156,16 @@ public abstract class PlayerMixin {
                 }
             }
             if (goal instanceof EatUniqueFoodsGoal eatUniqueFoodsGoal) {
-                eatUniqueFoodsGoal.getTrackerMap().putIfAbsent(player.getUuid(), new HashSet<>());
+                eatUniqueFoodsGoal.getTrackerMap().putIfAbsent(team, new LinkedHashSet<>());
                 FoodComponent foodComponent = itemStack.getItem().getFoodComponent();
                 if (foodComponent != null) {
-                    eatUniqueFoodsGoal.getTrackerMap().get(player.getUuid()).add(foodComponent);
+                    eatUniqueFoodsGoal.getTrackerMap().get(team).add(foodComponent);
 
-                    int size = eatUniqueFoodsGoal.getTrackerMap().get(player.getUuid()).size();
+                    int size = eatUniqueFoodsGoal.getTrackerMap().get(team).size();
+
+                    team.sendLoreUpdate(eatUniqueFoodsGoal);
                     if (size >= eatUniqueFoodsGoal.getAmount()) {
-                        lockout.completeGoal(goal, player);
+                        lockout.completeGoal(goal, team);
                     }
                 }
             }

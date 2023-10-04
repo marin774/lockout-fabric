@@ -112,7 +112,7 @@ public class Utility {
                 Goal goal = Lockout.getInstance().getBoard().getGoals().get(j + 5 * i);
                 if (goal != null) {
                     if (goal.isCompleted()) {
-                        context.fill(x, y, x + 16, y + 16, goal.getCompletedTeam().getColor().getColorValue());
+                        context.fill(x, y, x + 16, y + 16, (0xFF << 24) | goal.getCompletedTeam().getColor().getColorValue());
                     }
 
                     boolean success = false;

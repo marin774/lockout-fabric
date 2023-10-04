@@ -11,13 +11,13 @@ import me.marin.lockout.lockout.goals.consume.*;
 import me.marin.lockout.lockout.goals.consume.unique.*;
 import me.marin.lockout.lockout.goals.death.*;
 import me.marin.lockout.lockout.goals.experience.*;
-import me.marin.lockout.lockout.goals.have_more.HaveMoreUniqueCraftsGoal;
+import me.marin.lockout.lockout.goals.have_more.HaveMostUniqueCraftsGoal;
 import me.marin.lockout.lockout.goals.kill.*;
 import me.marin.lockout.lockout.goals.kill.unique.*;
 import me.marin.lockout.lockout.goals.mine.*;
 import me.marin.lockout.lockout.goals.dimension.*;
 import me.marin.lockout.lockout.goals.misc.*;
-import me.marin.lockout.lockout.goals.have_more.HaveMoreXPLevelsGoal;
+import me.marin.lockout.lockout.goals.have_more.HaveMostXPLevelsGoal;
 import me.marin.lockout.lockout.goals.obtain.*;
 import me.marin.lockout.lockout.goals.opponent.*;
 import me.marin.lockout.lockout.goals.ride.*;
@@ -416,33 +416,35 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.GET_30_ADVANCEMENTS, Get30UniqueAdvancementsGoal.class);
         INSTANCE.register(GoalType.WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WearUniqueColoredLeatherArmorGoal.class);
         INSTANCE.register(GoalType.KILL_OTHER_PLAYER, KillOtherTeamPlayer.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TEAMS_GOAL);
         INSTANCE.register(GoalType.OPPONENT_OBTAINS_CRAFTING_TABLE, OpponentObtainsCraftingTableGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY_NOT_IN_POOL);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_OBTAINS_OBSIDIAN, OpponentObtainsObsidianGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_OBTAINS_SEEDS, OpponentObtainsSeedsGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_CATCHES_ON_FIRE, OpponentCatchesOnFireGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
-        INSTANCE.register(GoalType.TAKE_200_DAMAGE, Take200DamageGoal.class);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_DIES_3_TIMES, OpponentDies3TimesGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_DIES, OpponentDiesGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_HIT_BY_EGG, OpponentHitByEggGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_HIT_BY_SNOWBALL, OpponentHitBySnowballGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         // INSTANCE.register(GoalType.OPPONENT_JUMPS, OpponentJumpsGoal.class);
         INSTANCE.register(GoalType.OPPONENT_TAKES_100_DAMAGE, OpponentTakes100DamageGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_TAKES_FALL_DAMAGE, OpponentTakesFallDamageGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_TOUCHES_WATER, OpponentTouchesWaterGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
+
+        INSTANCE.register(GoalType.TAKE_200_DAMAGE, Take200DamageGoal.class);
         INSTANCE.register(GoalType.REACH_NETHER_ROOF, ReachNetherRoofGoal.class);
-        INSTANCE.register(GoalType.HAVE_MORE_XP_LEVELS, HaveMoreXPLevelsGoal.class);
+        INSTANCE.register(GoalType.HAVE_MORE_XP_LEVELS, HaveMostXPLevelsGoal.class,
+                GoalRequirementsProvider.TEAMS_GOAL);
         INSTANCE.register(GoalType.FREEZE_TO_DEATH, DieByFreezingGoal.class); // same as powder snow?
         INSTANCE.register(GoalType.KILL_100_MOBS, Kill100MobsGoal.class);
         INSTANCE.register(GoalType.DEAL_400_DAMAGE, Deal400DamageGoal.class);
@@ -451,8 +453,8 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.GET_WAX_ON_ADVANCEMENT, GetWaxOnAdvancementGoal.class);
         INSTANCE.register(GoalType.GET_WAX_OFF_ADVANCEMENT, GetWaxOffAdvancementGoal.class);
         INSTANCE.register(GoalType.PUT_BANNER_ON_SHIELD, ObtainShieldWithBannerGoal.class);
-        INSTANCE.register(GoalType.HAVE_MORE_UNIQUE_CRAFTS, HaveMoreUniqueCraftsGoal.class,
-                GoalRequirementsProvider.TEAMS_ONLY);
+        INSTANCE.register(GoalType.HAVE_MORE_UNIQUE_CRAFTS, HaveMostUniqueCraftsGoal.class,
+                GoalRequirementsProvider.TEAMS_GOAL);
     }
 
 }

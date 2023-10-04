@@ -9,6 +9,7 @@ import net.minecraft.item.CompassItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -30,7 +31,11 @@ public class ItemMixin {
 
         if (stack == null || stack.isEmpty()) return;
         if (stack.getItem() != Items.COMPASS) return;
-        CompassItemHandler.INSTANCE.cycle(user);
+
+        NbtCompound nbt = stack.getOrCreateNbt();
+        if (nbt.contains("PlayerTracker")) {
+            CompassItemHandler.INSTANCE.cycle(user);
+        }
     }
 
 }

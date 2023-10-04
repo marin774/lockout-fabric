@@ -21,7 +21,7 @@ public class ObtainWoodenToolsGoal extends ObtainAllItemsGoal {
 
     @Override
     public String getGoalName() {
-        return "Obtain Wooden Tools";
+        return "Obtain all Wooden Tools";
     }
 
 }

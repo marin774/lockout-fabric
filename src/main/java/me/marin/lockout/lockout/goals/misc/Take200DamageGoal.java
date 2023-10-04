@@ -1,7 +1,11 @@
 package me.marin.lockout.lockout.goals.misc;
 
 import me.marin.lockout.Constants;
+import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.interfaces.EatUniqueFoodsGoal;
+import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.client.MinecraftClient;
@@ -10,7 +14,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
-public class Take200DamageGoal extends Goal implements TextureProvider, CustomTextureRenderer {
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+
+public class Take200DamageGoal extends Goal implements TextureProvider, CustomTextureRenderer, HasTooltipInfo {
 
     private final static ItemStack DISPLAY_ITEM_STACK = Items.RED_DYE.getDefaultStack();
     static {
@@ -43,4 +51,15 @@ public class Take200DamageGoal extends Goal implements TextureProvider, CustomTe
         return true;
     }
 
+    @Override
+    public List<String> getTooltip(LockoutTeam team) {
+        List<String> lore = new ArrayList<>();
+        double damage = Lockout.getInstance().damageTaken.getOrDefault(team, 0.0);
+
+        lore.add(" ");
+        lore.add("Damage: " + Math.min(200, (int) damage) + "/200");
+        lore.add(" ");
+
+        return lore;
+    }
 }

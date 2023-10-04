@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,8 +30,8 @@ public class CompassItemMixin {
 
         if (!(entity instanceof PlayerEntity player)) return;
 
-        if (stack == null || stack.isEmpty()) return;
-        if (stack.getItem() != Items.COMPASS) return;
+        if (!CompassItemHandler.isCompass(stack)) return;
+
         CompassItem item = (CompassItem) stack.getItem();
         int selectionNum = CompassItemHandler.INSTANCE.currentSelection.getOrDefault(player.getUuid(), -1);
         if (selectionNum < 0) return;
@@ -47,7 +48,7 @@ public class CompassItemMixin {
             compound.remove(CompassItem.LODESTONE_TRACKED_KEY);
         }
 
-        stack.setCustomName(Text.of("Tracking: " + CompassItemHandler.INSTANCE.playerNames.get(CompassItemHandler.INSTANCE.players.get(CompassItemHandler.INSTANCE.currentSelection.get(player.getUuid()))) ));
+        stack.setCustomName(Text.of(Formatting.RESET + "Tracking: " + CompassItemHandler.INSTANCE.playerNames.get(CompassItemHandler.INSTANCE.players.get(CompassItemHandler.INSTANCE.currentSelection.get(player.getUuid()))) ));
     }
 
 }

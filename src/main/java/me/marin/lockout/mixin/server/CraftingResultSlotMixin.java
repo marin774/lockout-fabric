@@ -2,14 +2,14 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.have_more.HaveMoreUniqueCraftsGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentCatchesOnFireGoal;
+import me.marin.lockout.lockout.goals.have_more.HaveMostUniqueCraftsGoal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -45,6 +45,8 @@ public class CraftingResultSlotMixin {
             return;
         }
 
+        if (!(player.currentScreenHandler instanceof CraftingScreenHandler || player.currentScreenHandler instanceof PlayerScreenHandler)) return;
+
         lockout.uniqueCrafts.putIfAbsent(player.getUuid(), new HashSet<>());
         Set<Item> crafts = lockout.uniqueCrafts.get(player.getUuid());
         boolean addedNew = crafts.add(stack.getItem());
@@ -54,7 +56,7 @@ public class CraftingResultSlotMixin {
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
 
-            if (goal instanceof HaveMoreUniqueCraftsGoal) {
+            if (goal instanceof HaveMostUniqueCraftsGoal) {
                 player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE.value(), 2, 2);
                 if (crafts.size() % 5 == 0) {
                     player.sendMessage(Text.of(Formatting.GRAY + "" + Formatting.ITALIC + "You have crafted " + crafts.size() + " unique items."));
@@ -63,7 +65,7 @@ public class CraftingResultSlotMixin {
 
                 if (crafts.size() > lockout.mostUniqueCrafts) {
                     if (!Objects.equals(lockout.mostUniqueCraftsPlayer, player.getUuid())) {
-                        lockout.updateGoalCompletion(goal, player);
+                        lockout.updateGoalCompletion(goal, player.getUuid());
                     }
 
                     lockout.mostUniqueCraftsPlayer = player.getUuid();

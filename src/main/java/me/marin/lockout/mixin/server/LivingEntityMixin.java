@@ -1,6 +1,8 @@
 package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
+import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.Deal400DamageGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentCatchesOnFireGoal;
@@ -25,16 +27,18 @@ public class LivingEntityMixin {
 
         Lockout lockout = Lockout.getInstance();
 
-        // damageDealt
-        lockout.damageDealt.putIfAbsent(player.getUuid(), 0d);
-        lockout.damageDealt.merge(player.getUuid(), (double)amount, Double::sum);
+        if (!lockout.isLockoutPlayer(player.getUuid())) return;
+        LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
+        lockout.damageDealt.putIfAbsent(team, 0d);
+        lockout.damageDealt.merge(team, (double)amount, Double::sum);
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
 
-            if (goal instanceof Deal400DamageGoal) {
-                if (lockout.damageDealt.get(player.getUuid()) >= 400) {
+            if (goal instanceof Deal400DamageGoal deal400DamageGoal) {
+                team.sendLoreUpdate(deal400DamageGoal);
+                if (lockout.damageDealt.get(team) >= 400) {
                     lockout.completeGoal(goal, player);
                 }
             }

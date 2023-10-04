@@ -21,7 +21,7 @@ public class ObtainDiamondToolsGoal extends ObtainAllItemsGoal {
 
     @Override
     public String getGoalName() {
-        return "Obtain Diamond Tools";
+        return "Obtain all Diamond Tools";
     }
 
 }

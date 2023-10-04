@@ -12,6 +12,7 @@ import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.death.DieByFallingOffVinesGoal;
 import me.marin.lockout.lockout.goals.death.DieByIronGolemGoal;
 import me.marin.lockout.lockout.goals.death.DieByTNTMinecartGoal;
+import me.marin.lockout.lockout.goals.kill.Kill100MobsGoal;
 import me.marin.lockout.lockout.goals.kill.KillColoredSheepGoal;
 import me.marin.lockout.lockout.goals.kill.KillOtherTeamPlayer;
 import me.marin.lockout.lockout.goals.kill.KillSnowGolemInNetherGoal;
@@ -19,13 +20,12 @@ import me.marin.lockout.lockout.goals.misc.EmptyHungerBarGoal;
 import me.marin.lockout.lockout.goals.misc.ReachBedrockGoal;
 import me.marin.lockout.lockout.goals.misc.ReachHeightLimitGoal;
 import me.marin.lockout.lockout.goals.misc.ReachNetherRoofGoal;
-import me.marin.lockout.lockout.goals.have_more.HaveMoreXPLevelsGoal;
+import me.marin.lockout.lockout.goals.have_more.HaveMostXPLevelsGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDies3TimesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentJumpsGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentTouchesWaterGoal;
-import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.interfaces.*;
+import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
@@ -35,6 +35,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
@@ -81,6 +82,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
@@ -96,6 +98,9 @@ import java.util.function.Function;
 public class LockoutServer implements DedicatedServerModInitializer {
 
     public static Map<LockoutRunnable, Integer> runnables = new HashMap<>();
+    public static MinecraftServer server;
+    private static int START_TIME = 10;
+    public static Map<UUID, Integer> onDeathCompassSlot = new HashMap<>();
 
     @Override
     public void onInitializeServer() {
@@ -124,7 +129,7 @@ public class LockoutServer implements DedicatedServerModInitializer {
 
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
             if (Lockout.isLockoutRunning() && ChatManager.getChat(sender) == ChatManager.Type.TEAM) {
-                LockoutTeamServer team = (LockoutTeamServer) Lockout.getInstance().getPlayerTeam(sender);
+                LockoutTeamServer team = (LockoutTeamServer) Lockout.getInstance().getPlayerTeam(sender.getUuid());
                 team.sendMessage(team.getColor() + "[Team Chat] " + Formatting.RESET + "<" + sender.getName().getString() + "> " + message.getContent().getString());
 
                 return false;
@@ -133,7 +138,16 @@ public class LockoutServer implements DedicatedServerModInitializer {
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            newPlayer.giveItemStack(Items.COMPASS.getDefaultStack());
+            if (!Lockout.exists()) return;
+            if (Lockout.getInstance().isLockoutPlayer(newPlayer.getUuid())) {
+                int slot = onDeathCompassSlot.getOrDefault(newPlayer.getUuid(), 0);
+                if (slot == 40) {
+                    newPlayer.getInventory().offHand.set(0, CompassItemHandler.newCompass());
+                }
+                if (slot >= 0 && slot <= 35) {
+                    newPlayer.getInventory().setStack(slot, CompassItemHandler.newCompass());
+                }
+            }
         });
 
         LootTableEvents.REPLACE.register(((resourceManager, lootManager, id, original, source) -> {
@@ -200,9 +214,24 @@ public class LockoutServer implements DedicatedServerModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (!Lockout.isLockoutRunning()) return;
 
-            ServerPlayNetworking.send(handler.getPlayer(), Constants.LOCKOUT_GOALS_TEAMS_PACKET, Lockout.getInstance().getTeamsGoalsPacket());
+            Lockout lockout = Lockout.getInstance();
+            ServerPlayerEntity player = handler.getPlayer();
+
+            if (lockout.isLockoutPlayer(player.getUuid())) {
+                LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
+                for (Goal goal : lockout.getBoard().getGoals()) {
+                    if (goal instanceof HasTooltipInfo hasTooltipInfo) {
+                        PacketByteBuf buf = PacketByteBufs.create();
+                        buf.writeString(goal.getId());
+                        buf.writeString(String.join("\n", hasTooltipInfo.getTooltip(team)));
+                        ServerPlayNetworking.send(player, Constants.UPDATE_LORE, buf);
+                    }
+                }
+            }
+
+            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
             if (Lockout.getInstance().hasStarted()) {
-                ServerPlayNetworking.send(handler.getPlayer(), Constants.START_LOCKOUT_PACKET, Lockout.getInstance().getStartTimePacket());
+                ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getStartTimePacket());
             }
         });
 
@@ -222,29 +251,11 @@ public class LockoutServer implements DedicatedServerModInitializer {
             for (Goal goal : lockout.getBoard().getGoals()) {
                 if (goal == null) continue;
 
-                if (goal instanceof HaveMoreXPLevelsGoal) {
-                    int mostLevels = 0;
-                    PlayerEntity mostLevelsPlayer = null;
-
+                if (goal instanceof HaveMostXPLevelsGoal) {
                     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                        if (player.isDead()) continue;
-                        if (player.experienceLevel > mostLevels) {
-                            mostLevelsPlayer = player;
-                            mostLevels = player.experienceLevel;
-                        }
+                        lockout.levels.put(player.getUuid(), player.isDead() ? 0 : player.experienceLevel);
                     }
-
-                    if (mostLevelsPlayer != null) {
-                        if (!Objects.equals(lockout.mostLevelsPlayer, mostLevelsPlayer.getUuid())) {
-                            lockout.mostLevelsPlayer = mostLevelsPlayer.getUuid();
-                            lockout.updateGoalCompletion(goal, mostLevelsPlayer);
-                        }
-                    } else {
-                        if (lockout.mostLevelsPlayer != null) {
-                            lockout.mostLevelsPlayer = null;
-                            lockout.clearGoalCompletion(goal, server, true);
-                        }
-                    }
+                    lockout.recalculateXPGoal(goal);
                 }
 
                 if (goal.isCompleted()) continue;
@@ -313,20 +324,6 @@ public class LockoutServer implements DedicatedServerModInitializer {
 
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(Constants.PLAYER_JUMP_PACKET, ((server, player, handler, buf, responseSender) -> {
-            if (!Lockout.isLockoutRunning()) return;
-
-            Lockout lockout = Lockout.getInstance();
-            for (Goal goal : lockout.getBoard().getGoals()) {
-                if (goal == null) continue;
-                if (goal.isCompleted()) continue;
-
-                if (goal instanceof OpponentJumpsGoal) {
-                    lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " jumped.");
-                }
-            }
-        }));
-
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (!Lockout.isLockoutRunning()) return;
 
@@ -337,8 +334,11 @@ public class LockoutServer implements DedicatedServerModInitializer {
                 lockout.deaths.merge(player.getUuid(), 1, Integer::sum);
             } else {
                 if (entity.getPrimeAdversary() instanceof PlayerEntity player) {
-                    lockout.mobsKilled.putIfAbsent(player.getUuid(), 0);
-                    lockout.mobsKilled.merge(player.getUuid(), 1, Integer::sum);
+                    if (lockout.isLockoutPlayer(player.getUuid())) {
+                        LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
+                        lockout.mobsKilled.putIfAbsent(team, 0);
+                        lockout.mobsKilled.merge(team, 1, Integer::sum);
+                    }
                 }
             }
 
@@ -364,28 +364,45 @@ public class LockoutServer implements DedicatedServerModInitializer {
                             lockout.completeGoal(goal, attackerPlayer);
                         }
                     }
-                    if (goal instanceof KillUniqueHostileMobsGoal killUniqueHostileMobsGoal) {
-                        if (entity instanceof Monster) {
-                            lockout.killedHostileTypes.computeIfAbsent(attackerPlayer.getUuid(), player_ -> new HashSet<>());
-                            lockout.killedHostileTypes.get(attackerPlayer.getUuid()).add(entity.getType());
-                            int size = lockout.killedHostileTypes.get(attackerPlayer.getUuid()).size();
+                    if (lockout.isLockoutPlayer(attackerPlayer.getUuid())) {
+                        LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(attackerPlayer.getUuid());
 
-                            if (size >= killUniqueHostileMobsGoal.getAmount()) {
-                                lockout.completeGoal(killUniqueHostileMobsGoal, attackerPlayer);
+                        if (goal instanceof KillUniqueHostileMobsGoal killUniqueHostileMobsGoal) {
+                            if (entity instanceof Monster) {
+                                lockout.killedHostileTypes.computeIfAbsent(team, t -> new LinkedHashSet<>());
+                                lockout.killedHostileTypes.get(team).add(entity.getType());
+
+                                int size = lockout.killedHostileTypes.get(team).size();
+
+                                team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                                if (size >= killUniqueHostileMobsGoal.getAmount()) {
+                                    lockout.completeGoal(killUniqueHostileMobsGoal, team);
+                                }
+                            }
+                        }
+                        if (goal instanceof Kill100MobsGoal kill100MobsGoal) {
+                            int size = lockout.mobsKilled.get(team);
+
+                            team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                            if (size >= kill100MobsGoal.getAmount()) {
+                                lockout.completeGoal(goal, team);
+                            }
+                        }
+                        if (goal instanceof KillSpecificMobsGoal killSpecificMobsGoal) {
+                            if (killSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
+                                killSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> 0);
+                                killSpecificMobsGoal.getTrackerMap().merge(team, 1, Integer::sum);
+
+                                int size = killSpecificMobsGoal.getTrackerMap().get(team);
+
+                                team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                                if (size >= killSpecificMobsGoal.getAmount()) {
+                                    lockout.completeGoal(killSpecificMobsGoal, attackerPlayer);
+                                }
                             }
                         }
                     }
-                    if (goal instanceof KillSpecificMobsGoal killSpecificMobsGoal) {
-                        if (killSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
-                            killSpecificMobsGoal.getTrackerMap().computeIfAbsent(attackerPlayer.getUuid(), player_ -> 0);
-                            killSpecificMobsGoal.getTrackerMap().merge(attackerPlayer.getUuid(), 1, Integer::sum);
 
-                            int size = killSpecificMobsGoal.getTrackerMap().get(attackerPlayer.getUuid());
-                            if (size >= killSpecificMobsGoal.getAmount()) {
-                                lockout.completeGoal(killSpecificMobsGoal, attackerPlayer);
-                            }
-                        }
-                    }
                 }
                 if (entity instanceof PlayerEntity player) {
                     if (goal instanceof OpponentDiesGoal) {
@@ -424,10 +441,8 @@ public class LockoutServer implements DedicatedServerModInitializer {
                 if (goal instanceof KillOtherTeamPlayer) {
                     if (entity instanceof PlayerEntity player) {
                         if (entity.getPrimeAdversary() instanceof PlayerEntity killer) {
-                            if (!Objects.equals(player, killer)) {
-                                if (!Objects.equals(lockout.getPlayerTeam(killer), lockout.getPlayerTeam((PlayerEntity) entity))) {
-                                    lockout.completeGoal(goal, killer);
-                                }
+                            if (!Objects.equals(player, killer) && !Objects.equals(lockout.getPlayerTeam(killer.getUuid()), lockout.getPlayerTeam(player.getUuid()))) {
+                                lockout.completeGoal(goal, killer);
                             }
                         }
                     }
@@ -438,6 +453,7 @@ public class LockoutServer implements DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             Lockout.log("Locating all required Structures and Biomes");
+            LockoutServer.server = server;
             long start = System.currentTimeMillis();
 
             boolean hasCactus = false;
@@ -674,7 +690,6 @@ public class LockoutServer implements DedicatedServerModInitializer {
             }
         }
 
-
         for (ServerPlayerEntity serverPlayer : allPlayers) {
             serverPlayer.getInventory().clear();
             serverPlayer.changeGameMode(GameMode.SURVIVAL);
@@ -710,22 +725,30 @@ public class LockoutServer implements DedicatedServerModInitializer {
         List<Pair<String,String>> board = boardGenerator.generateBoard();
         // Lockout.log("Generated board of size " + board.size());
         Lockout lockout = new Lockout(new LockoutBoard(board), teams);
-        PacketByteBuf buf = lockout.getTeamsGoalsPacket();
 
         new CompassItemHandler(allPlayers);
 
-        for (ServerPlayerEntity player : allPlayers) {
-            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, buf);
-            player.giveItemStack(Items.COMPASS.getDefaultStack());
+        for (Goal goal : lockout.getBoard().getGoals()) {
+            if (goal instanceof HasTooltipInfo) {
+                for (LockoutTeam team : lockout.getTeams()) {
+                    ((LockoutTeamServer) team).sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                }
+            }
         }
 
-        int timeToStart = 60;
+        PacketByteBuf buf = lockout.getTeamsGoalsPacket();
+        for (ServerPlayerEntity player : allPlayers) {
+            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, buf);
+            player.giveItemStack(CompassItemHandler.newCompass());
+        }
+
+
         for (int i = 3; i >= 0; i--) {
             if (i > 0) {
                 int secs = i;
                 ((LockoutRunnable) () -> {
                     playerManager.broadcast(Text.literal("Starting in " + secs + "..."), false);
-                }).runTaskAfter(20 * (timeToStart - i));
+                }).runTaskAfter(20 * (START_TIME - i));
             } else {
                 ((LockoutRunnable) () -> {
                     lockout.setStarted(true);
@@ -737,7 +760,7 @@ public class LockoutServer implements DedicatedServerModInitializer {
                         player.changeGameMode(GameMode.SURVIVAL);
                     }
                     context.getSource().getServer().getPlayerManager().broadcast(Text.literal("Lockout has begun."), false);
-                }).runTaskAfter(20 * timeToStart);
+                }).runTaskAfter(20 * START_TIME);
             }
         }
         return 1;

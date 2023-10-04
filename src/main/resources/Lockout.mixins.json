@@ -4,7 +4,6 @@
   "package": "me.marin.lockout.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "client.ItemInHandRendererMixin",
     "server.AnvilScreenHandlerMixin",
     "server.ArmorStandMixin",
     "server.BlockMixin",
@@ -24,6 +23,7 @@
     "server.PlayerInventoryAccessor",
     "server.PlayerInventoryMixin",
     "server.PlayerMixin",
+    "server.ServerPlayerEntityMixin",
     "server.SlotMixin",
     "server.SmithingScreenHandlerMixin",
     "server.StatusEffectMixin",
@@ -35,7 +35,8 @@
     "client.DebugHudMixin",
     "client.InGameHudMixin",
     "client.InputMixin",
-    "client.KeyboardMixin"
+    "client.KeyboardMixin",
+    "client.ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

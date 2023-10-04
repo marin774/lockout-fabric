@@ -1,5 +1,8 @@
 package me.marin.lockout.mixin.client;
 
+import me.marin.lockout.CompassItemHandler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,7 +23,7 @@ public class ItemInHandRendererMixin {
         PlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
         ItemStack stack = arm == player.getMainArm() ? player.getMainHandStack() : player.getOffHandStack();
-        if (stack.getItem() != Items.COMPASS) return;
+        if (!CompassItemHandler.isCompass(stack)) return;
 
         ci.cancel();
         int i = arm == Arm.RIGHT ? 1 : -1;

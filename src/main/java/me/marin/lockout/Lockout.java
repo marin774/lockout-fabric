@@ -2,6 +2,9 @@ package me.marin.lockout;
 
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.server.LockoutServer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -28,23 +31,21 @@ public class Lockout {
     public static final Random random = new Random();
     public final static int[] COLOR_ORDERS = new int[]{12, 9, 10, 14, 6, 13, 11, 5, 3, 2, 15, 4, 7, 1, 8, 0};
 
-    public boolean sentJumpPacket = false;
-
-    public Map<UUID, Set<EntityType<?>>> bredAnimalTypes = new HashMap<>();
-    public Map<UUID, Set<EntityType<?>>> killedHostileTypes = new HashMap<>();
-    public Map<UUID, Integer> killedUndeadMobs = new HashMap<>();
-    public Map<UUID, Integer> killedArthropods = new HashMap<>();
-    public Map<UUID, Set<FoodComponent>> foodTypesEaten = new HashMap<>();
-    public Map<UUID, Set<Identifier>> uniqueAdvancements = new HashMap<>();
+    public Map<LockoutTeam, LinkedHashSet<EntityType<?>>> bredAnimalTypes = new HashMap<>();
+    public Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedHostileTypes = new HashMap<>();
+    public Map<LockoutTeam, Integer> killedUndeadMobs = new HashMap<>();
+    public Map<LockoutTeam, Integer> killedArthropods = new HashMap<>();
+    public Map<LockoutTeam, LinkedHashSet<FoodComponent>> foodTypesEaten = new HashMap<>();
+    public Map<LockoutTeam, LinkedHashSet<Identifier>> uniqueAdvancements = new HashMap<>();
     public Map<UUID, Long> pumpkinWearStart = new HashMap<>();
-    public Map<UUID, Double> damageTaken = new HashMap<>();
-    public Map<UUID, Double> damageDealt = new HashMap<>();
+    public Map<LockoutTeam, Double> damageTaken = new HashMap<>();
+    public Map<LockoutTeam, Double> damageDealt = new HashMap<>();
     public Map<UUID, Integer> deaths = new HashMap<>();
-    public Map<UUID, Integer> mobsKilled = new HashMap<>();
-    public Map<UUID, Integer> most_x_Item = new HashMap<>();
+    public Map<LockoutTeam, Integer> mobsKilled = new HashMap<>();
+    // public Map<UUID, Integer> most_x_Item = new LinkedHashMap<>();
     public Map<UUID, Integer> distanceSprinted = new HashMap<>();
     public Map<UUID, Set<Item>> uniqueCrafts = new HashMap<>();
-    public UUID mostLevelsPlayer;
+
     public UUID mostUniqueCraftsPlayer;
     public int mostUniqueCrafts;
 
@@ -72,52 +73,70 @@ public class Lockout {
 
     public static Lockout getInstance() {
         return INSTANCE;
-    };
+    }
+
     public static void removeInstance(MinecraftClient client) {
         if (client == null) return;
         INSTANCE = null;
     }
+
     public static boolean exists() {
         return INSTANCE != null;
-    };
+    }
+
     public static boolean isLockoutRunning() {
         return exists() && INSTANCE.isRunning;
-    };
-
+    }
 
     public void opponentCompletedGoal(Goal goal, PlayerEntity player, String message) {
+        opponentCompletedGoal(goal, player.getUuid(), message);
+    }
+
+    public void opponentCompletedGoal(Goal goal, UUID playerId, String message) {
         if (goal.isCompleted()) return;
-        if (!isLockoutPlayer(player)) return;
+        if (!isLockoutPlayer(playerId)) return;
         if (!hasStarted()) return;
 
-        LockoutTeamServer team = (LockoutTeamServer) getOpponentTeam(player);
-        LockoutTeamServer thisTeam = (LockoutTeamServer) getPlayerTeam(player);
-        team.addPoint();
+        LockoutTeamServer team = (LockoutTeamServer) getPlayerTeam(playerId);
 
-        goal.setCompleted(true, team);
+        opponentCompletedGoal(goal, team, message);
+    }
+    public void opponentCompletedGoal(Goal goal, LockoutTeam team, String message) {
+        if (goal.isCompleted()) return;
+        if (!hasStarted()) return;
 
-        MinecraftServer server = player.getServer();
-        // PlayerManager playerManager = server.getPlayerManager();
-        // playerManager.broadcast(Text.literal(message), false);
-        team.sendMessage(Formatting.GREEN + message);
-        thisTeam.sendMessage(Formatting.RED + message);
+        LockoutTeamServer opponentTeam = (LockoutTeamServer) getOpponentTeam(team);
+        opponentTeam.addPoint();
 
-        sendGoalCompletedPacket(goal, team, server);
-        evaulateWinnerAndEndGame(team, server);
+        ((LockoutTeamServer) team).sendMessage(Formatting.RED + message);
+        opponentTeam.sendMessage(Formatting.GREEN + message);
+
+        sendGoalCompletedPacket(goal, team);
+        evaulateWinnerAndEndGame(team);
     }
 
     public void completeGoal(Goal goal, PlayerEntity player) {
+        completeGoal(goal, player.getUuid());
+    }
+    public void completeGoal(Goal goal, UUID playerId) {
         if (goal.isCompleted()) return;
-        if (!isLockoutPlayer(player)) return;
+        if (!isLockoutPlayer(playerId)) return;
         if (!hasStarted()) return;
 
-        LockoutTeam team = getPlayerTeam(player);
-        team.addPoint();
+        LockoutTeamServer team = (LockoutTeamServer) getPlayerTeam(playerId);
 
+        completeGoal(goal, team, team.getPlayerName(playerId) + " completed " + goal.getGoalName() + ".");
+    }
+    public void completeGoal(Goal goal, LockoutTeam team) {
+        completeGoal(goal, team, team.getDisplayName() + " completed " + goal.getGoalName() + ".");
+    }
+    public void completeGoal(Goal goal, LockoutTeam team, String message) {
+        if (goal.isCompleted()) return;
+        if (!hasStarted()) return;
+
+        team.addPoint();
         goal.setCompleted(true, team);
 
-        MinecraftServer server = player.getServer();
-        String message = player.getName().getString() + " completed " + goal.getGoalName() + ".";
         for (LockoutTeam lockoutTeam : teams) {
             if (!(lockoutTeam instanceof LockoutTeamServer lockoutTeamServer)) continue;
             if (Objects.equals(lockoutTeamServer, team)) {
@@ -127,45 +146,45 @@ public class Lockout {
             }
         }
 
-        sendGoalCompletedPacket(goal, team, server);
-        evaulateWinnerAndEndGame(team, server);
+        sendGoalCompletedPacket(goal, team);
+        evaulateWinnerAndEndGame(team);
     }
 
-    public void updateGoalCompletion(Goal goal, PlayerEntity player) {
+    public void updateGoalCompletion(Goal goal, UUID playerId) {
         if (goal.isCompleted()) {
-            clearGoalCompletion(goal, player.getServer(), false);
+            clearGoalCompletion(goal, false);
         }
-        completeGoal(goal, player);
+        completeGoal(goal, playerId);
     }
 
-    public void clearGoalCompletion(Goal goal, MinecraftServer server, boolean sendPacket) {
+    public void clearGoalCompletion(Goal goal, boolean sendPacket) {
         if (!goal.isCompleted()) return;
 
         goal.getCompletedTeam().takePoint();
         goal.setCompleted(false, null);
 
-        if (server != null && sendPacket) {
+        if (sendPacket) {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeString(goal.getId());
             buf.writeInt(-1);
-            for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
+            for (ServerPlayerEntity serverPlayer : LockoutServer.server.getPlayerManager().getPlayerList()) {
                 ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
             }
         }
     }
 
-    private void sendGoalCompletedPacket(Goal goal, LockoutTeam team, MinecraftServer server) {
+    private void sendGoalCompletedPacket(Goal goal, LockoutTeam team) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(goal.getId());
         buf.writeInt(teams.indexOf(team));
 
-        for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
+        for (ServerPlayerEntity serverPlayer : LockoutServer.server.getPlayerManager().getPlayerList()) {
             ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
         }
     }
 
-    private void evaulateWinnerAndEndGame(LockoutTeam team, MinecraftServer server) {
-        PlayerManager playerManager = server.getPlayerManager();
+    private void evaulateWinnerAndEndGame(LockoutTeam team) {
+        PlayerManager playerManager = LockoutServer.server.getPlayerManager();
 
         List<LockoutTeam> winners = new ArrayList<>();
         if (isWinner(team)) {
@@ -190,7 +209,7 @@ public class Lockout {
             }
             bufEnd.writeLong(System.currentTimeMillis());
 
-            for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
+            for (ServerPlayerEntity serverPlayer : LockoutServer.server.getPlayerManager().getPlayerList()) {
                 ServerPlayNetworking.send(serverPlayer, Constants.END_LOCKOUT_PACKET, bufEnd);
             }
         }
@@ -224,27 +243,35 @@ public class Lockout {
         this.startTime = startTime;
     }
 
-    public boolean isLockoutPlayer(PlayerEntity player) {
+    public boolean isLockoutPlayer(UUID playerId) {
         for (LockoutTeam team : teams) {
-            if (((LockoutTeamServer)team).getPlayers().contains(player.getUuid())) {
+            if (((LockoutTeamServer)team).getPlayers().contains(playerId)) {
                 return true;
             }
         }
         return false;
     }
 
-    public LockoutTeam getPlayerTeam(PlayerEntity player) {
+    public LockoutTeam getPlayerTeam(UUID playerId) {
         for (LockoutTeam team : teams) {
-            if (((LockoutTeamServer)team).getPlayers().contains(player.getUuid())) {
+            if (((LockoutTeamServer)team).getPlayers().contains(playerId)) {
                 return team;
             }
         }
         return null;
     }
 
-    public LockoutTeam getOpponentTeam(PlayerEntity player) {
+    public LockoutTeam getOpponentTeam(UUID playerId) {
         for (LockoutTeam team : teams) {
-            if (!((LockoutTeamServer)team).getPlayers().contains(player.getUuid())) {
+            if (!((LockoutTeamServer)team).getPlayers().contains(playerId)) {
+                return team;
+            }
+        }
+        return null;
+    }
+    public LockoutTeam getOpponentTeam(LockoutTeam team) {
+        for (LockoutTeam t : teams) {
+            if (!Objects.equals(t, team)) {
                 return team;
             }
         }
@@ -295,6 +322,7 @@ public class Lockout {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeLong(startTime);
+        buf.writeLong(System.currentTimeMillis());
 
         return buf;
     }
@@ -322,6 +350,40 @@ public class Lockout {
         buf.writeBoolean(this.isRunning);
 
         return buf;
+    }
+
+
+    public Map<UUID, Integer> levels = new LinkedHashMap<>();
+    private UUID mostLevelsPlayer;
+
+    public void recalculateXPGoal(Goal goal) {
+        List<UUID> largestLevelPlayers = new ArrayList<>();
+        int largestLevel = 0;
+
+        for (UUID uuid : levels.keySet()) {
+            if (levels.get(uuid) == largestLevel) {
+                largestLevelPlayers.add(uuid);
+                continue;
+            }
+            if (levels.get(uuid) > largestLevel) {
+                largestLevelPlayers.clear();
+                largestLevelPlayers.add(uuid);
+                largestLevel = levels.get(uuid);
+            }
+        }
+
+        if (largestLevel == 0) {
+            if (this.mostLevelsPlayer != null) {
+                this.mostLevelsPlayer = null;
+                clearGoalCompletion(goal, true);
+            }
+            return;
+        }
+
+        if (!largestLevelPlayers.contains(mostLevelsPlayer)) {
+            this.mostLevelsPlayer = largestLevelPlayers.get(0);
+            updateGoalCompletion(goal, largestLevelPlayers.get(0));
+        }
     }
 
 }

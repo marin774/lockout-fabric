@@ -1,6 +1,8 @@
 package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
+import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.BreedAnimalGoal;
 import me.marin.lockout.lockout.interfaces.BreedUniqueAnimalsGoal;
@@ -17,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 @Mixin(BredAnimalsCriterion.class)
 public class BredAnimalsCriterionMixin {
@@ -28,6 +31,8 @@ public class BredAnimalsCriterionMixin {
 
         Lockout lockout = Lockout.getInstance();
 
+        if (!lockout.isLockoutPlayer(player.getUuid())) return;
+
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
@@ -37,12 +42,14 @@ public class BredAnimalsCriterionMixin {
                     lockout.completeGoal(breedAnimalGoal, player);
                 }
             } else if (goal instanceof BreedUniqueAnimalsGoal breedUniqueAnimalsGoal) {
-                lockout.bredAnimalTypes.computeIfAbsent(player.getUuid(), player_ -> new HashSet<>());
-                lockout.bredAnimalTypes.get(player.getUuid()).add(parent.getType());
-                int size = lockout.bredAnimalTypes.get(player.getUuid()).size();
+                LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
+                lockout.bredAnimalTypes.computeIfAbsent(team, t -> new LinkedHashSet<>());
+                lockout.bredAnimalTypes.get(team).add(parent.getType());
+                int size = lockout.bredAnimalTypes.get(team).size();
 
+                team.sendLoreUpdate(breedUniqueAnimalsGoal);
                 if (size >= breedUniqueAnimalsGoal.getAmount()) {
-                    lockout.completeGoal(breedUniqueAnimalsGoal, player);
+                    lockout.completeGoal(breedUniqueAnimalsGoal, team);
                 }
             }
 

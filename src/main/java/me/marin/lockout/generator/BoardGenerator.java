@@ -52,7 +52,7 @@ public class BoardGenerator {
 
             GoalRequirementsProvider goalRequirements = GoalRegistry.INSTANCE.getGoalGenerator(goal);
             if (goalRequirements != null) {
-                if (goalRequirements.isTeamsOnly() && teams.size() != 2) {
+                if (!goalRequirements.isTeamsSizeOk(teams.size())) {
                     // Lockout.log("Can't add goal " + goal + " because it's only available with 2 or more teams.");
                     continue;
                 }

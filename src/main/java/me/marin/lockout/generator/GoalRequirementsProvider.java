@@ -58,7 +58,7 @@ public interface GoalRequirementsProvider {
             return null;
         }
     };
-    GoalRequirementsProvider TEAMS_ONLY = new GoalRequirementsProvider() {
+    GoalRequirementsProvider TEAMS_GOAL = new GoalRequirementsProvider() {
         @Override
         public List<RegistryKey<Biome>> getRequiredBiomes() {
             return null;
@@ -70,11 +70,11 @@ public interface GoalRequirementsProvider {
         }
 
         @Override
-        public boolean isTeamsOnly() {
-            return true;
+        public boolean isTeamsSizeOk(int size) {
+            return size >= 2;
         }
     };
-    GoalRequirementsProvider TEAMS_ONLY_NOT_IN_POOL = new GoalRequirementsProvider() {
+    GoalRequirementsProvider TO2_ONLY_GOAL = new GoalRequirementsProvider() {
         @Override
         public List<RegistryKey<Biome>> getRequiredBiomes() {
             return null;
@@ -86,8 +86,8 @@ public interface GoalRequirementsProvider {
         }
 
         @Override
-        public boolean isTeamsOnly() {
-            return true;
+        public boolean isTeamsSizeOk(int size) {
+            return size == 2;
         }
 
         @Override
@@ -145,8 +145,8 @@ public interface GoalRequirementsProvider {
     default boolean isPartOfRandomPool() {
         return true;
     }
-    default boolean isTeamsOnly() {
-        return false;
+    default boolean isTeamsSizeOk(int teamsSize) {
+        return true;
     }
 
 }

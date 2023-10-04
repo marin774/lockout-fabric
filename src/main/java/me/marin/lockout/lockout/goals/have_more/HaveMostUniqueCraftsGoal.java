@@ -8,16 +8,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
-public class HaveMoreUniqueCraftsGoal extends Goal implements CustomTextureRenderer {
+public class HaveMostUniqueCraftsGoal extends Goal implements CustomTextureRenderer {
 
     private static final ItemStack ITEM_STACK = Items.CRAFTING_TABLE.getDefaultStack();
-    public HaveMoreUniqueCraftsGoal(String id, String data) {
+    public HaveMostUniqueCraftsGoal(String id, String data) {
         super(id, data);
     }
 
     @Override
     public String getGoalName() {
-        return "Craft more unique Items than opponent";
+        return "Craft the most unique Items";
     }
 
     @Override

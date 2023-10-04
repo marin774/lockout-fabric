@@ -2,6 +2,7 @@ package me.marin.lockout.lockout.goals.kill;
 
 import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.interfaces.KillSpecificMobsGoal;
 import me.marin.lockout.lockout.texture.CycleTexturesProvider;
 import net.minecraft.client.MinecraftClient;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,7 +64,7 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
     }
 
     @Override
-    public Map<UUID, Integer> getTrackerMap() {
+    public Map<LockoutTeam, Integer> getTrackerMap() {
         return Lockout.getInstance().killedArthropods;
     }
 
@@ -78,4 +80,14 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
         return true;
     }
 
+    @Override
+    public List<String> getTooltip(LockoutTeam team) {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        lore.add("Arthropods killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+        lore.add(" ");
+
+        return lore;
+    }
 }

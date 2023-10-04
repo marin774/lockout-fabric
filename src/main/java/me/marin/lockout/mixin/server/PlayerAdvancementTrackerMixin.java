@@ -1,6 +1,8 @@
 package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
+import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.AdvancementGoal;
 import me.marin.lockout.lockout.interfaces.GetUniqueAdvancementsGoal;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 
 @Mixin(PlayerAdvancementTracker.class)
@@ -32,6 +35,8 @@ public abstract class PlayerAdvancementTrackerMixin {
         if (!Lockout.isLockoutRunning()) return;
 
         Lockout lockout = Lockout.getInstance();
+        if (!lockout.isLockoutPlayer(owner.getUuid())) return;
+        LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(owner.getUuid());
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
@@ -44,12 +49,14 @@ public abstract class PlayerAdvancementTrackerMixin {
             }
             if (goal instanceof GetUniqueAdvancementsGoal getUniqueAdvancementsGoal) {
                 advancement.value().display().ifPresent((advancementDisplay) -> {
-                    getUniqueAdvancementsGoal.getTrackerMap().putIfAbsent(owner.getUuid(), new HashSet<>());
-                    getUniqueAdvancementsGoal.getTrackerMap().get(owner.getUuid()).add(advancement.id());
+                    getUniqueAdvancementsGoal.getTrackerMap().putIfAbsent(team, new LinkedHashSet<>());
+                    getUniqueAdvancementsGoal.getTrackerMap().get(team).add(advancement.id());
 
-                    int size = getUniqueAdvancementsGoal.getTrackerMap().get(owner.getUuid()).size();
+                    int size = getUniqueAdvancementsGoal.getTrackerMap().get(team).size();
+
+                    team.sendLoreUpdate(getUniqueAdvancementsGoal);
                     if (size >= getUniqueAdvancementsGoal.getAmount()) {
-                        lockout.completeGoal(goal, owner);
+                        lockout.completeGoal(goal, team);
                     }
                 });
             }

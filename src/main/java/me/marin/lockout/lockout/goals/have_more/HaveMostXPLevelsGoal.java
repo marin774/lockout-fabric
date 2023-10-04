@@ -6,15 +6,15 @@ import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-public class HaveMoreXPLevelsGoal extends Goal implements TextureProvider {
+public class HaveMostXPLevelsGoal extends Goal implements TextureProvider {
 
-    public HaveMoreXPLevelsGoal(String id, String data) {
+    public HaveMostXPLevelsGoal(String id, String data) {
         super(id, data);
     }
 
     @Override
     public String getGoalName() {
-        return "Have more XP Levels than opponent";
+        return "Have the most XP Levels";
     }
 
     @Override

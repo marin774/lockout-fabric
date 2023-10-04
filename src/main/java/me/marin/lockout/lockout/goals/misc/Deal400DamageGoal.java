@@ -1,7 +1,10 @@
 package me.marin.lockout.lockout.goals.misc;
 
 import me.marin.lockout.Constants;
+import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.client.MinecraftClient;
@@ -10,7 +13,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
-public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTextureRenderer {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTextureRenderer, HasTooltipInfo {
 
     private final static ItemStack DISPLAY_ITEM_STACK = Items.RED_DYE.getDefaultStack();
     static {
@@ -22,7 +28,7 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
 
     @Override
     public String getGoalName() {
-        return "Take 400 damage";
+        return "Deal 400 damage";
     }
 
     @Override
@@ -41,6 +47,18 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
         context.drawTexture(TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
         context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, DISPLAY_ITEM_STACK, x, y, "400");
         return true;
+    }
+
+    @Override
+    public List<String> getTooltip(LockoutTeam team) {
+        List<String> lore = new ArrayList<>();
+        double damage = Lockout.getInstance().damageDealt.getOrDefault(team, 0.0);
+
+        lore.add(" ");
+        lore.add("Damage: " + Math.min(400, (int) damage) + "/400");
+        lore.add(" ");
+
+        return lore;
     }
 
 }

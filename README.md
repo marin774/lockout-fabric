@@ -3,6 +3,7 @@ Lockout Bingo with over 200 goals. Developed by Mar1n, heavily inspired by Small
 
 Vanilla modifications:
 - Piglin barter rates are same as in version 1.16.1
+- Raids replicate those on Medium difficulty
 
 ## Client side installation
 Make a  1.20.2 instance, add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to your mods folder.

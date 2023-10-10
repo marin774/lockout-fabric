@@ -7,18 +7,15 @@ import me.marin.lockout.client.gui.BoardScreen;
 import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.lockout.Goal;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -34,6 +31,7 @@ import java.util.Map;
 
 public class LockoutClient implements ClientModInitializer {
 
+    public static Lockout lockout;
     private static KeyBinding keyBinding;
     public static final ScreenHandlerType<BoardScreenHandler> BOARD_SCREEN_HANDLER;
     public static int CURRENT_TICK = 0;
@@ -47,6 +45,7 @@ public class LockoutClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(Constants.LOCKOUT_GOALS_TEAMS_PACKET, (client, handler, buf, responseSender) -> {
             client.execute(() -> {
+                System.out.println("RECEIVED PACKET WITH GOALS...");
                 int teamsSize = buf.readInt();
                 List<LockoutTeam> teams = new ArrayList<>();
                 for (int i = 0; i < teamsSize; i++) {
@@ -66,7 +65,7 @@ public class LockoutClient implements ClientModInitializer {
                     completedByTeam.add(buf.readInt()); // index of team that completed the goal, -1 otherwise
                 }
 
-                Lockout lockout = new Lockout(new LockoutBoard(goals), teams);
+                lockout = new Lockout(new LockoutBoard(goals), teams);
                 lockout.setRunning(buf.readBoolean());
 
                 List<Goal> goalList = lockout.getBoard().getGoals();
@@ -90,8 +89,8 @@ public class LockoutClient implements ClientModInitializer {
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             client.execute(() -> {
-                Lockout.getInstance().setStarted(true);
-                Lockout.getInstance().setStartTime(buf.readLong() + (System.currentTimeMillis() - buf.readLong())); // clock sync
+                lockout.setStarted(true);
+                lockout.setStartTime(buf.readLong() + (System.currentTimeMillis() - buf.readLong())); // clock sync
                 if (MinecraftClient.getInstance().currentScreen != null) {
                     MinecraftClient.getInstance().currentScreen.close();
                 }
@@ -102,7 +101,6 @@ public class LockoutClient implements ClientModInitializer {
                 String goalId = buf.readString();
                 int teamIndex = buf.readInt();
 
-                Lockout lockout = Lockout.getInstance();
                 Goal goal = lockout.getBoard().getGoals().stream().filter(g -> g.getId().equals(goalId)).findFirst().get();
                 if (goal.isCompleted() || teamIndex == -1) {
                     lockout.clearGoalCompletion(goal, false);
@@ -110,7 +108,7 @@ public class LockoutClient implements ClientModInitializer {
                 if (teamIndex != -1) {
                     LockoutTeam team = lockout.getTeams().get(teamIndex);
                     team.addPoint();
-                    goal.setCompleted(true, Lockout.getInstance().getTeams().get(teamIndex));
+                    goal.setCompleted(true, lockout.getTeams().get(teamIndex));
 
                     if (client.player != null) {
                         if (team.getPlayerNames().contains(client.player.getName().getString())) {
@@ -132,14 +130,14 @@ public class LockoutClient implements ClientModInitializer {
                     winners.add(buf.readInt());
                 }
 
-                Lockout.getInstance().setRunning(false);
-                Lockout.getInstance().setEndTime(System.currentTimeMillis());
+                lockout.setRunning(false);
+                lockout.setEndTime(System.currentTimeMillis());
                 buf.readLong();
 
                 if (client.player != null) {
                     boolean didIWin = false;
                     for (Integer winner : winners) {
-                        LockoutTeam team = Lockout.getInstance().getTeams().get(winner);
+                        LockoutTeam team = lockout.getTeams().get(winner);
 
                         if (team.getPlayerNames().contains(client.player.getName().getString())) {
                             didIWin = true;
@@ -171,7 +169,7 @@ public class LockoutClient implements ClientModInitializer {
             }
             if (wasPressed) {
 
-                if (!Lockout.exists() || MinecraftClient.getInstance().currentScreen != null) {
+                if (!Lockout.exists(lockout) || MinecraftClient.getInstance().currentScreen != null) {
                     return;
                 }
 
@@ -180,7 +178,7 @@ public class LockoutClient implements ClientModInitializer {
             }
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
-            Lockout.removeInstance(client);
+            lockout = null;
         }));
 
         HandledScreens.register(BOARD_SCREEN_HANDLER, BoardScreen::new);

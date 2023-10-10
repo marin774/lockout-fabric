@@ -29,7 +29,7 @@ public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
         DISPLAY_ITEM_STACK = ITEM.getDefaultStack();
         ((DyeableArmorItem) ITEM).setColor(DISPLAY_ITEM_STACK, COLOR);
 
-        GOAL_NAME = "Wear " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " Leather " + GoalDataConstants.getArmorPieceFormatted(parts[0]);
+        GOAL_NAME = "Wear " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " " + GoalDataConstants.getArmorPieceFormatted(parts[0]);
     }
 
     @Override

@@ -14,7 +14,7 @@
       "me.marin.lockout.client.LockoutClient"
     ],
     "server": [
-      "me.marin.lockout.server.LockoutServer"
+      "me.marin.lockout.server.LockoutDedicatedServer"
     ],
     "main": [
       "me.marin.lockout.LockoutInitializer"

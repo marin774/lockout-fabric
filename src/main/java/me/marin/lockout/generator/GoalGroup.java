@@ -1,8 +1,5 @@
 package me.marin.lockout.generator;
 
-import me.marin.lockout.Lockout;
-import oshi.util.tuples.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package me.marin.lockout.lockout.goals.kill;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.interfaces.KillSpecificMobsGoal;
 import me.marin.lockout.lockout.texture.CycleTexturesProvider;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EntityType;
@@ -15,7 +15,6 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleTexturesProvider {
 
@@ -74,7 +73,7 @@ public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleT
 
     @Override
     public Map<LockoutTeam, Integer> getTrackerMap() {
-        return Lockout.getInstance().killedUndeadMobs;
+        return LockoutServer.lockout.killedUndeadMobs;
     }
 
     @Override

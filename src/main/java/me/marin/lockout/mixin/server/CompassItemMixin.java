@@ -2,13 +2,12 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.client.LockoutClient;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -25,8 +24,9 @@ public class CompassItemMixin {
 
     @Inject(method = "inventoryTick", at = @At("HEAD"), cancellable = true)
     public void onInventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.exists()) return;
+        if (entity.getWorld().isClient) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         if (!(entity instanceof PlayerEntity player)) return;
 

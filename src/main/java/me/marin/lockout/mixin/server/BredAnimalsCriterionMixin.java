@@ -1,13 +1,11 @@
 package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
-import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.BreedAnimalGoal;
 import me.marin.lockout.lockout.interfaces.BreedUniqueAnimalsGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -18,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 @Mixin(BredAnimalsCriterion.class)
@@ -26,10 +23,8 @@ public class BredAnimalsCriterionMixin {
 
     @Inject(method = "trigger", at = @At("HEAD"))
     public void onBreedAnimal(ServerPlayerEntity player, AnimalEntity parent, AnimalEntity partner, @Nullable PassiveEntity child, CallbackInfo ci) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
-
-        Lockout lockout = Lockout.getInstance();
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         if (!lockout.isLockoutPlayer(player.getUuid())) return;
 

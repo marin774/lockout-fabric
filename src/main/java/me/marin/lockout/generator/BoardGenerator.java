@@ -1,8 +1,6 @@
 package me.marin.lockout.generator;
 
 import me.marin.lockout.LocateData;
-import me.marin.lockout.Lockout;
-import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
@@ -12,7 +10,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.Structure;
 import oshi.util.tuples.Pair;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class BoardGenerator {

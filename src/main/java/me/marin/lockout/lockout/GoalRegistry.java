@@ -2,9 +2,6 @@ package me.marin.lockout.lockout;
 
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.Structure;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.util.*;

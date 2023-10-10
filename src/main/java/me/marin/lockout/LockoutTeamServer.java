@@ -4,7 +4,6 @@ import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -32,6 +31,8 @@ public class LockoutTeamServer extends LockoutTeam {
             this.players.add(manager.getPlayer(playerName).getUuid());
             this.playerNameMap.put(manager.getPlayer(playerName).getUuid(), playerName);
         }
+
+        System.out.println("initialized lockout team " + getDisplayName());
     }
 
     public MinecraftServer getServer() {

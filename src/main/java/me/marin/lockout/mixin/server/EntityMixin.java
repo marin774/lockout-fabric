@@ -3,8 +3,7 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.opponent.OpponentCatchesOnFireGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,11 +16,10 @@ public class EntityMixin {
 
     @Inject(method = "setOnFire", at = @At("HEAD"))
     public void setOnFire(boolean onFire, CallbackInfo ci) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
         if (!((Entity) (Object) this instanceof PlayerEntity player) || !onFire) return;
-
-        Lockout lockout = Lockout.getInstance();
+        if (player.getWorld().isClient) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

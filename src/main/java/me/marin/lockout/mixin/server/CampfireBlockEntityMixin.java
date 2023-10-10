@@ -3,8 +3,7 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.FillCampfireWithFoodGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,13 +18,12 @@ public class CampfireBlockEntityMixin {
 
     @Inject(method = "addItem", at = @At("RETURN"))
     public void addItem(Entity user, ItemStack stack, int cookTime, CallbackInfoReturnable<Boolean> cir) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
+        if (user.getWorld().isClient) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
         if (!(user instanceof PlayerEntity player) || !cir.getReturnValueZ()) return;
 
         CampfireBlockEntity campfire = (CampfireBlockEntity) (Object) this;
-
-        Lockout lockout = Lockout.getInstance();
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

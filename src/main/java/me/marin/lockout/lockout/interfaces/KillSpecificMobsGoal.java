@@ -5,7 +5,6 @@ import me.marin.lockout.lockout.Goal;
 import net.minecraft.entity.EntityType;
 
 import java.util.List;
-import java.util.UUID;
 
 public abstract class KillSpecificMobsGoal extends Goal implements RequiresAmount, Trackable<LockoutTeam, Integer>, HasTooltipInfo {
 

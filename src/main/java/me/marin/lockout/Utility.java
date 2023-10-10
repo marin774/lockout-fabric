@@ -24,7 +24,7 @@ public class Utility {
         y += GUI_FIRST_ITEM_OFFSET;
         final int startX = x;
 
-        Lockout lockout = Lockout.getInstance();
+        Lockout lockout = LockoutClient.lockout;
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
@@ -109,7 +109,7 @@ public class Utility {
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                Goal goal = Lockout.getInstance().getBoard().getGoals().get(j + 5 * i);
+                Goal goal = LockoutClient.lockout.getBoard().getGoals().get(j + 5 * i);
                 if (goal != null) {
                     if (goal.isCompleted()) {
                         context.fill(x, y, x + 16, y + 16, (0xFF << 24) | goal.getCompletedTeam().getColor().getColorValue());
@@ -147,7 +147,7 @@ public class Utility {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (mouseX >= x-1 && mouseX < x+18 && mouseY >= y-1 && mouseY < y+18) {
-                    return Lockout.getInstance().getBoard().getGoals().get(j + i * 5);
+                    return LockoutClient.lockout.getBoard().getGoals().get(j + i * 5);
                 }
                 x += GUI_CENTER_ITEM_SLOT_SIZE;
             }

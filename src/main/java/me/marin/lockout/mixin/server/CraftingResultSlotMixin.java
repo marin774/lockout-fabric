@@ -3,8 +3,7 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.have_more.HaveMostUniqueCraftsGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,10 +35,9 @@ public class CraftingResultSlotMixin {
 
     @Inject(method = "onCrafted(Lnet/minecraft/item/ItemStack;)V", at = @At("HEAD"))
     public void onCraft(ItemStack stack, CallbackInfo ci) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
-
-        Lockout lockout = Lockout.getInstance();
+        if (player.getWorld().isClient) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         if (amount < 0 || stack.isEmpty()) {
             return;

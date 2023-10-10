@@ -2,6 +2,7 @@ package me.marin.lockout.mixin.client;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
+import me.marin.lockout.client.LockoutClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +20,7 @@ public abstract class InGameHudMixin {
             target="Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
     private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
         // Show lockout screen
-        if (!Lockout.exists()) {
+        if (!Lockout.exists(LockoutClient.lockout)) {
             return;
         }
 

@@ -1,13 +1,12 @@
 package me.marin.lockout.lockout.interfaces;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -27,7 +26,7 @@ public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmo
     @Override
     public List<String> getTooltip(LockoutTeam team) {
         List<String> lore = new ArrayList<>();
-        var animals = Lockout.getInstance().bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
+        var animals = LockoutServer.lockout.bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
 
         lore.add(" ");
         lore.add("Animals bred: " + animals.size() + "/" + getAmount());

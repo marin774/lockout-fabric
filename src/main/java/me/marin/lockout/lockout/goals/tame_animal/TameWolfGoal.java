@@ -5,7 +5,6 @@ import me.marin.lockout.lockout.interfaces.TameAnimalGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 public class TameWolfGoal extends TameAnimalGoal implements TextureProvider {

@@ -1,7 +1,7 @@
 package me.marin.lockout.lockout.goals.wear_armor;
 
-import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.interfaces.WearArmorPieceGoal;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -31,7 +31,7 @@ public class WearCarvedPumpkinFor5MinutesGoal extends WearArmorPieceGoal {
     @Override
     public boolean satisfiedBy(PlayerInventory playerInventory) {
         PlayerEntity player = playerInventory.player;
-        var map = Lockout.getInstance().pumpkinWearStart;
+        var map = LockoutServer.lockout.pumpkinWearStart;
 
         Long startTime = map.get(player.getUuid());
 

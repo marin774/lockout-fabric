@@ -1,13 +1,13 @@
 package me.marin.lockout.lockout.goals.kill;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.lockout.interfaces.RequiresAmount;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import me.marin.lockout.lockout.texture.TextureProvider;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
@@ -55,7 +55,7 @@ public class Kill100MobsGoal extends Goal implements TextureProvider, CustomText
         List<String> lore = new ArrayList<>();
 
         lore.add(" ");
-        lore.add("Mobs killed: " + Lockout.getInstance().mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
+        lore.add("Mobs killed: " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
         lore.add(" ");
 
         return lore;

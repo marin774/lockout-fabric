@@ -1,14 +1,13 @@
 package me.marin.lockout.lockout.interfaces;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.FoodComponents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -41,7 +40,7 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
 
     @Override
     public Map<LockoutTeam, LinkedHashSet<FoodComponent>> getTrackerMap() {
-        return Lockout.getInstance().foodTypesEaten;
+        return LockoutServer.lockout.foodTypesEaten;
     }
 
     @Override

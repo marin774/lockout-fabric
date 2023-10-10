@@ -1,9 +1,9 @@
 package me.marin.lockout.mixin.client;
 
 import me.marin.lockout.Lockout;
+import me.marin.lockout.client.LockoutClient;
 import net.minecraft.client.input.KeyboardInput;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -13,8 +13,9 @@ public class InputMixin {
 
     @Inject(method ="tick", at = @At("TAIL"))
     public void tick(boolean slowDown, float slowDownFactor, CallbackInfo ci) {
-        if (!Lockout.isLockoutRunning()) return;
-        Lockout lockout = Lockout.getInstance();
+        Lockout lockout = LockoutClient.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
+
         KeyboardInput input = (KeyboardInput) (Object) this;
         if (!lockout.hasStarted()) {
             input.pressingForward = false;

@@ -1,6 +1,7 @@
 package me.marin.lockout.mixin.client.toasts;
 
 import me.marin.lockout.Lockout;
+import me.marin.lockout.client.LockoutClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -15,7 +16,7 @@ public class TutorialToastMixin {
 
     @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
     public void onDraw(DrawContext context, ToastManager manager, long startTime, CallbackInfoReturnable<Toast.Visibility> cir) {
-        if (Lockout.exists()) {
+        if (Lockout.exists(LockoutClient.lockout)) {
             cir.setReturnValue(Toast.Visibility.HIDE);
         }
     }

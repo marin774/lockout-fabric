@@ -3,17 +3,13 @@ package me.marin.lockout;
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.server.LockoutServer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -50,7 +46,6 @@ public class Lockout {
     public UUID mostUniqueCraftsPlayer;
     public int mostUniqueCrafts;
 
-    private static Lockout INSTANCE;
     private final LockoutBoard board;
     private final List<? extends LockoutTeam> teams;
     private long startTime;
@@ -59,7 +54,6 @@ public class Lockout {
     private boolean isRunning = true;
 
     public Lockout(LockoutBoard board, List<? extends LockoutTeam> teams) {
-        INSTANCE = this;
         this.board = board;
         this.teams = teams;
     }
@@ -68,25 +62,24 @@ public class Lockout {
         return board;
     }
 
+    public String getModeName() {
+        return teams.size() > 1 ? "Lockout" : "Blackout";
+    }
+
+    public boolean isSoloBlackout() {
+        return teams.size() == 1 && teams.get(0).getPlayerNames().size() == 1;
+    }
+
     public static void log(String message) {
         logger.log(Level.INFO, message);
     }
 
-    public static Lockout getInstance() {
-        return INSTANCE;
+    public static boolean exists(Lockout lockout) {
+        return lockout != null;
     }
 
-    public static void removeInstance(MinecraftClient client) {
-        if (client == null) return;
-        INSTANCE = null;
-    }
-
-    public static boolean exists() {
-        return INSTANCE != null;
-    }
-
-    public static boolean isLockoutRunning() {
-        return exists() && INSTANCE.isRunning;
+    public static boolean isLockoutRunning(Lockout lockout) {
+        return exists(lockout) && lockout.isRunning;
     }
 
     public void opponentCompletedGoal(Goal goal, PlayerEntity player, String message) {
@@ -280,6 +273,9 @@ public class Lockout {
     }
 
     public boolean isWinner(LockoutTeam team) {
+        if (teams.size() == 1) {
+            return getRemainingGoals() == 0;
+        }
         for (LockoutTeam teamIt : teams) {
             if (team == teamIt) continue;
             if (teamIt.getPoints() + getRemainingGoals() >= team.getPoints()) {

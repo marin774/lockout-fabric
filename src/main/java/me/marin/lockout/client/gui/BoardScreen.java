@@ -1,6 +1,5 @@
 package me.marin.lockout.client.gui;
 
-import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
 import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.lockout.Goal;
@@ -9,16 +8,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.CharacterVisitor;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BoardScreen extends HandledScreen<BoardScreenHandler> {

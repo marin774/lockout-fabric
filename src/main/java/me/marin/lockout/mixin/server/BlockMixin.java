@@ -3,8 +3,7 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.MineBlockGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,10 +19,9 @@ public class BlockMixin {
 
     @Inject(method = "onBreak", at = @At("HEAD"))
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfo ci) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
-
-        Lockout lockout = Lockout.getInstance();
+        if (player.getWorld().isClient) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

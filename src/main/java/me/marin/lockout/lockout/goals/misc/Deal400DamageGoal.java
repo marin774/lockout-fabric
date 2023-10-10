@@ -1,12 +1,12 @@
 package me.marin.lockout.lockout.goals.misc;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import me.marin.lockout.lockout.texture.TextureProvider;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
@@ -52,7 +52,7 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
     @Override
     public List<String> getTooltip(LockoutTeam team) {
         List<String> lore = new ArrayList<>();
-        double damage = Lockout.getInstance().damageDealt.getOrDefault(team, 0.0);
+        double damage = LockoutServer.lockout.damageDealt.getOrDefault(team, 0.0);
 
         lore.add(" ");
         lore.add("Damage: " + Math.min(400, (int) damage) + "/400");

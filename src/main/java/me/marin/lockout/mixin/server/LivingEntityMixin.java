@@ -1,13 +1,10 @@
 package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
-import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.Deal400DamageGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentCatchesOnFireGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,11 +18,10 @@ public class LivingEntityMixin {
 
     @Inject(method = "damage", at = @At("RETURN"))
     public void onDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
         if (!(source.getAttacker() instanceof PlayerEntity player) || !cir.getReturnValue()) return;
-
-        Lockout lockout = Lockout.getInstance();
+        if (player.getWorld().isClient) return;
 
         if (!lockout.isLockoutPlayer(player.getUuid())) return;
         LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());

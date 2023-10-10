@@ -1,13 +1,9 @@
 package me.marin.lockout.lockout.interfaces;
 
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import me.marin.lockout.server.LockoutServer;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -30,7 +26,7 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
 
     @Override
     public Map<LockoutTeam, LinkedHashSet<Identifier>> getTrackerMap() {
-        return Lockout.getInstance().uniqueAdvancements;
+        return LockoutServer.lockout.uniqueAdvancements;
     }
 
     @Override

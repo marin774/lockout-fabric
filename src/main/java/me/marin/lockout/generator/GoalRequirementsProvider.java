@@ -2,7 +2,6 @@ package me.marin.lockout.generator;
 
 import me.marin.lockout.LocateData;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.DyeColor;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.structure.Structure;

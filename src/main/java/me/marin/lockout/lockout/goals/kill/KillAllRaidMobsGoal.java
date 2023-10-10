@@ -1,11 +1,11 @@
 package me.marin.lockout.lockout.goals.kill;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.lockout.interfaces.KillAllSpecificMobsGoal;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EntityType;
@@ -49,7 +49,7 @@ public class KillAllRaidMobsGoal extends KillAllSpecificMobsGoal implements Cust
 
     @Override
     public Map<LockoutTeam, LinkedHashSet<EntityType<?>>> getTrackerMap() {
-        return Lockout.getInstance().killedRaidMobs;
+        return LockoutServer.lockout.killedRaidMobs;
     }
 
     @Override

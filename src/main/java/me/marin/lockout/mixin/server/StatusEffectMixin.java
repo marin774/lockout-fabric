@@ -4,8 +4,7 @@ import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.status_effect.GetXStatusEffectsGoal;
 import me.marin.lockout.lockout.interfaces.StatusEffectGoal;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,11 +18,10 @@ public class StatusEffectMixin {
 
     @Inject(method = "onApplied(Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"))
     public void onApplied(LivingEntity entity, int amplifier, CallbackInfo ci) {
-        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.SERVER) return;
-        if (!Lockout.isLockoutRunning()) return;
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
         if (!(entity instanceof PlayerEntity player)) return;
-
-        Lockout lockout = Lockout.getInstance();
+        if (player.getWorld().isClient) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

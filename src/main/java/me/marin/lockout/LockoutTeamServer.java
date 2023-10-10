@@ -31,8 +31,6 @@ public class LockoutTeamServer extends LockoutTeam {
             this.players.add(manager.getPlayer(playerName).getUuid());
             this.playerNameMap.put(manager.getPlayer(playerName).getUuid(), playerName);
         }
-
-        System.out.println("initialized lockout team " + getDisplayName());
     }
 
     public MinecraftServer getServer() {

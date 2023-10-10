@@ -45,7 +45,6 @@ public class LockoutClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(Constants.LOCKOUT_GOALS_TEAMS_PACKET, (client, handler, buf, responseSender) -> {
             client.execute(() -> {
-                System.out.println("RECEIVED PACKET WITH GOALS...");
                 int teamsSize = buf.readInt();
                 List<LockoutTeam> teams = new ArrayList<>();
                 for (int i = 0; i < teamsSize; i++) {

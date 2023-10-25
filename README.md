@@ -1,5 +1,5 @@
 # Lockout
-Lockout Bingo with over 200 goals. Developed by Mar1n, heavily inspired by Smallant's Lockout Bingo mod.
+Lockout Bingo with over 200 goals, inspired by Smallant's Lockout Bingo mod.
 
 Vanilla modifications:
 - Piglin barter rates are same as in version 1.16.1

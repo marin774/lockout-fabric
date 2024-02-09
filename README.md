@@ -1,9 +1,7 @@
 # Lockout
 Lockout Bingo with over 200 goals, inspired by Smallant's Lockout Bingo mod.
 
-Vanilla modifications:
-- Piglin barter rates are same as in version 1.16.1
-- Raids replicate those on Medium difficulty
+![image](https://github.com/marin774/lockout-fabric/assets/87690741/fd1a3617-f6a0-499b-90c3-247dc4b4282e)
 
 ## Client side installation
 Make a  1.20.1 instance, add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to your mods folder.
@@ -34,3 +32,7 @@ Or if you want to do FFA:
 `/lockout players <player name> <player name> ...` (there can be up to 16 players)
 
 If you want to chat with your team, run `/chat team`.
+
+# Vanilla modifications:
+- Piglin barter rates are same as in version 1.16.1 (more pearls, string etc.)
+- Raids replicate those on Medium difficulty (guarantees all illagers)

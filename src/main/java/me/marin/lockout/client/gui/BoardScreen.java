@@ -29,7 +29,7 @@ public class BoardScreen extends HandledScreen<BoardScreenHandler> {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        this.renderBackground(context);
         Utility.drawCenterBingoBoard(context, mouseX, mouseY);
         Goal goal = Utility.getCenterHoveredGoal(context, mouseX, mouseY);
         if (goal != null) {

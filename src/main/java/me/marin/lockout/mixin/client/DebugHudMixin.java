@@ -19,6 +19,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -50,7 +51,8 @@ public abstract class DebugHudMixin {
         throw new AbstractMethodError("Shadow");
     }
 
-    private final DebugHud thiz = (DebugHud) (Object) this;
+    @Unique
+    private final DebugHud INSTANCE = (DebugHud) (Object) this;
 
     @Inject(method = "drawLeftText", at = @At("HEAD"), cancellable = true)
     public void drawLeftText(DrawContext context, CallbackInfo ci) {
@@ -105,8 +107,8 @@ public abstract class DebugHudMixin {
         }
 
         Map.Entry<Property<?>, Comparable<?>> entry;
-        if (thiz.blockHit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
-            blockPos = ((BlockHitResult)thiz.blockHit).getBlockPos();
+        if (INSTANCE.blockHit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+            blockPos = ((BlockHitResult) INSTANCE.blockHit).getBlockPos();
             BlockState blockState = this.client.world.getBlockState(blockPos);
             text.add("");
             text.add(Formatting.UNDERLINE + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
@@ -114,12 +116,12 @@ public abstract class DebugHudMixin {
 
             for (Map.Entry<Property<?>, Comparable<?>> propertyComparableEntry : blockState.getEntries().entrySet()) {
                 entry = propertyComparableEntry;
-                text.add(thiz.propertyToString(entry));
+                text.add(INSTANCE.propertyToString(entry));
             }
         }
 
-        if (thiz.fluidHit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
-            blockPos = ((BlockHitResult)thiz.fluidHit).getBlockPos();
+        if (INSTANCE.fluidHit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+            blockPos = ((BlockHitResult) INSTANCE.fluidHit).getBlockPos();
             FluidState fluidState = this.client.world.getFluidState(blockPos);
             text.add("");
             text.add(Formatting.UNDERLINE + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
@@ -127,7 +129,7 @@ public abstract class DebugHudMixin {
 
             for (Map.Entry<net.minecraft.state.property.Property<?>, Comparable<?>> propertyComparableEntry : fluidState.getEntries().entrySet()) {
                 entry = propertyComparableEntry;
-                text.add(thiz.propertyToString(entry));
+                text.add(INSTANCE.propertyToString(entry));
             }
         }
 

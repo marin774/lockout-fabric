@@ -16,8 +16,8 @@ import static me.marin.lockout.Constants.*;
 public abstract class InGameHudMixin {
 
     @Inject(method="render", at=@At(
-            value="INVOKE",
-            target="Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z"))
+            value="FIELD",
+            target="Lnet/minecraft/client/option/GameOptions;debugEnabled:Z"))
     private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
         // Show lockout screen
         if (!Lockout.exists(LockoutClient.lockout)) {

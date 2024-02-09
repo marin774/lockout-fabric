@@ -58,7 +58,6 @@ import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
-import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -122,11 +121,26 @@ public class LockoutServer {
         isInitialized = true;
 
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
-            if (Lockout.isLockoutRunning(lockout) && ChatManager.getChat(sender) == ChatManager.Type.TEAM) {
-                LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(sender.getUuid());
-                team.sendMessage(team.getColor() + "[Team Chat] " + Formatting.RESET + "<" + sender.getName().getString() + "> " + message.getContent().getString());
+            if (ChatManager.getChat(sender) == ChatManager.Type.TEAM) {
+                String m = "[Team Chat] " + Formatting.RESET + "<" + sender.getName().getString() + "> " + message.getContent().getString();
+                if (Lockout.isLockoutRunning(lockout)) {
+                    LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(sender.getUuid());
+                    team.sendMessage(team.getColor() + m);
 
-                return false;
+                    return false;
+                } else {
+                    Team team = (Team) sender.getScoreboardTeam();
+                    if (team == null) {
+                        return true;
+                    }
+                    MinecraftServer server = sender.getServer();
+                    PlayerManager pm = server.getPlayerManager();
+
+                    team.getPlayerList().stream().filter(p -> pm.getPlayer(p) != null).map(pm::getPlayer).forEach(p ->{
+                        p.sendMessage(Text.literal(team.getColor() + m));
+                    });
+                    return false;
+                }
             }
             return true;
         });
@@ -149,18 +163,18 @@ public class LockoutServer {
                 NbtCompound fireRes = new NbtCompound();
                 fireRes.putString("Potion", "minecraft:fire_resistance");
 
-                UniformLootNumberProvider ironNuggetsCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(9.0F), ConstantLootNumberProvider.create(36.0F));
-                UniformLootNumberProvider quartzCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(8.0F), ConstantLootNumberProvider.create(16.0F));
-                UniformLootNumberProvider glowstoneDustCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(5.0F), ConstantLootNumberProvider.create(12.0F));
-                UniformLootNumberProvider magmaCreamCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(2.0F), ConstantLootNumberProvider.create(6.0F));
-                UniformLootNumberProvider enderPearlCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(8.0F));
-                UniformLootNumberProvider stringCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(8.0F), ConstantLootNumberProvider.create(24.0F));
-                UniformLootNumberProvider fireChargeCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(1.0F), ConstantLootNumberProvider.create(5.0F));
-                UniformLootNumberProvider gravelCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(8.0F), ConstantLootNumberProvider.create(16.0F));
-                UniformLootNumberProvider leatherCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(10.0F));
-                UniformLootNumberProvider netherBrickCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(16.0F));
-                UniformLootNumberProvider cryingObsidianCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(1.0F), ConstantLootNumberProvider.create(3.0F));
-                UniformLootNumberProvider soulSandCount = new UniformLootNumberProvider(ConstantLootNumberProvider.create(4.0F), ConstantLootNumberProvider.create(16.0F));
+                UniformLootNumberProvider ironNuggetsCount = UniformLootNumberProvider.create(9.0F, 36.0F);
+                UniformLootNumberProvider quartzCount = UniformLootNumberProvider.create(8.0F, 16.0F);
+                UniformLootNumberProvider glowstoneDustCount = UniformLootNumberProvider.create(5.0F, 12.0F);
+                UniformLootNumberProvider magmaCreamCount = UniformLootNumberProvider.create(2.0F, 6.0F);
+                UniformLootNumberProvider enderPearlCount = UniformLootNumberProvider.create(4.0F, 8.0F);
+                UniformLootNumberProvider stringCount = UniformLootNumberProvider.create(8.0F, 24.0F);
+                UniformLootNumberProvider fireChargeCount = UniformLootNumberProvider.create(1.0F, 5.0F);
+                UniformLootNumberProvider gravelCount = UniformLootNumberProvider.create(8.0F, 16.0F);
+                UniformLootNumberProvider leatherCount = UniformLootNumberProvider.create(4.0F, 10.0F);
+                UniformLootNumberProvider netherBrickCount = UniformLootNumberProvider.create(4.0F, 16.0F);
+                UniformLootNumberProvider cryingObsidianCount = UniformLootNumberProvider.create(1.0F, 3.0F);
+                UniformLootNumberProvider soulSandCount = UniformLootNumberProvider.create(4.0F, 16.0F);
 
                 @SuppressWarnings("deprecation")
                 LootPool pool = LootPool.builder()
@@ -266,7 +280,7 @@ public class LockoutServer {
                         if (Objects.equals(vehicle, rideEntityGoal.getEntityType())) {
                             boolean allow = true;
                             if (player.getVehicle() instanceof Saddleable saddleable) {
-                                allow &= saddleable.isSaddled();
+                                allow = saddleable.isSaddled();
                             }
                             if (Objects.equals(vehicle, EntityType.PIG)) {
                                 boolean hasCarrotOnAStick = false;
@@ -458,8 +472,7 @@ public class LockoutServer {
             LockoutServer.server = server;
             long start = System.currentTimeMillis();
 
-            boolean hasCactus = false;
-            hasCactus |= locateBiome(server, BiomeKeys.DESERT).isInRequiredDistance();
+            boolean hasCactus = locateBiome(server, BiomeKeys.DESERT).isInRequiredDistance();
             hasCactus |= locateBiome(server, BiomeKeys.BADLANDS).isInRequiredDistance();
             hasCactus |= locateBiome(server, BiomeKeys.ERODED_BADLANDS).isInRequiredDistance();
             hasCactus |= locateBiome(server, BiomeKeys.WOODED_BADLANDS).isInRequiredDistance();
@@ -487,8 +500,8 @@ public class LockoutServer {
                 }
             }
 
-            boolean hasCocoaBeans = false;
-            hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
+            boolean hasCocoaBeans;
+            hasCocoaBeans = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
             hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).isInRequiredDistance();
             hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
 
@@ -504,14 +517,14 @@ public class LockoutServer {
 
                 if (goalRequirementsProvider.getRequiredBiomes() != null) {
                     for (RegistryKey<Biome> biome : goalRequirementsProvider.getRequiredBiomes()) {
-                        LocateData data = locateBiome(server, biome);
+                        locateBiome(server, biome);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
                 }
 
                 if (goalRequirementsProvider.getRequiredStructures() != null) {
                     for (RegistryKey<Structure> structure : goalRequirementsProvider.getRequiredStructures()) {
-                        LocateData data = locateStructure(server, structure);
+                        locateStructure(server, structure);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
                 }
@@ -736,19 +749,21 @@ public class LockoutServer {
                 }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) {}
 
         if (argument == null) {
             try {
                 ServerScoreboard scoreboard = server.getScoreboard();
 
-                argument = context.getArgument("team names", String.class);
+                argument = context.getArgument(isBlackout ? "team name" : "team names", String.class);
                 String[] teamNames = argument.split("\s+");
                 if (isBlackout) {
                     if (teamNames.length == 0) {
                         context.getSource().sendError(Text.literal("Not enough teams listed."));
+                        return 0;
+                    }
+                    if (teamNames.length > 1) {
+                        context.getSource().sendError(Text.literal("Only one team can play Blackout."));
                         return 0;
                     }
                 } else {
@@ -804,9 +819,7 @@ public class LockoutServer {
                     }
                     teams.add(new LockoutTeamServer(new ArrayList<>(actualPlayerNames), team.getColor(), server));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            } catch (Exception ignored) {}
         }
 
         if (argument == null) {
@@ -836,7 +849,7 @@ public class LockoutServer {
         if (curr == type) {
             player.sendMessage(Text.of("You are already chatting in " + type.name() + "."));
         } else {
-            player.sendMessage(Text.of("You are now chatting in " + type.name() + "." + ((!Lockout.exists(lockout) && type == ChatManager.Type.TEAM) ? " " + Formatting.GRAY + "This chat only works once Lockout begins." : "")));
+            player.sendMessage(Text.of("You are now chatting in " + type.name() + "."));
             ChatManager.setChat(player, type);
         }
         return 1;

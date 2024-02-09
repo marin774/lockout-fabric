@@ -16,13 +16,12 @@ public class LockoutInitializer implements ModInitializer {
         DefaultGoalRegister.registerGoals();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-
             {
-                var teamsNode = CommandManager.literal("teams").build();
-                var playersNode = CommandManager.literal("players").build();
                 {
                     // Lockout command
                     var commandNode = CommandManager.literal("lockout").build();
+                    var teamsNode = CommandManager.literal("teams").build();
+                    var playersNode = CommandManager.literal("players").build();
                     var teamListNode = CommandManager.argument("team names", StringArgumentType.greedyString()).executes(LockoutServer::lockoutCommandLogic).build();
                     var playerListNode = CommandManager.argument("player names", StringArgumentType.greedyString()).executes(LockoutServer::lockoutCommandLogic).build();
 
@@ -37,13 +36,15 @@ public class LockoutInitializer implements ModInitializer {
                 {
                     // Blackout command
                     var commandNode = CommandManager.literal("blackout").build();
-                    var teamListNode = CommandManager.argument("team name", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
+                    var teamNode = CommandManager.literal("team").build();
+                    var playersNode = CommandManager.literal("players").build();
+                    var teamNameNode = CommandManager.argument("team name", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
                     var playerListNode = CommandManager.argument("player names", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
 
                     dispatcher.getRoot().addChild(commandNode);
-                    commandNode.addChild(teamsNode);
+                    commandNode.addChild(teamNode);
                     commandNode.addChild(playersNode);
-                    teamsNode.addChild(teamListNode);
+                    teamNode.addChild(teamNameNode);
                     playersNode.addChild(playerListNode);
                 }
             }

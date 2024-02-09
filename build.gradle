@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'fabric-loom' version '1.4-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -84,20 +84,14 @@ loom {
     accessWidenerPath = file("src/main/resources/lockout.accesswidener")
 }
 
-task copyJarToServer(type: Copy) {
-    from remapJar
-    into "C:\\Users\\Marin\\Desktop\\lockout fabric\\mods"
-}
-build.dependsOn copyJarToServer
-
 task copyJarToClient1(type: Copy) {
     from remapJar
-    into "C:\\Games\\MultiMC\\instances\\1.20.2\\.minecraft\\mods"
+    into "C:\\Games\\MultiMC\\instances\\1.20.1\\.minecraft\\mods"
 }
 build.dependsOn copyJarToClient1
 
 task copyJarToClient2(type: Copy) {
     from remapJar
-    into "C:\\Games\\MultiMC\\instances\\1.20.2 2\\.minecraft\\mods"
+    into "C:\\Games\\MultiMC\\instances\\1.20.1 lockout 2\\.minecraft\\mods"
 }
 build.dependsOn copyJarToClient2

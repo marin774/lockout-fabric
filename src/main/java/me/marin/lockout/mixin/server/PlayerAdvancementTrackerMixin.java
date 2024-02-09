@@ -7,7 +7,8 @@ import me.marin.lockout.lockout.interfaces.AdvancementGoal;
 import me.marin.lockout.lockout.interfaces.GetUniqueAdvancementsGoal;
 import me.marin.lockout.lockout.interfaces.VisitBiomeGoal;
 import me.marin.lockout.server.LockoutServer;
-import net.minecraft.advancement.AdvancementEntry;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -26,8 +27,8 @@ public abstract class PlayerAdvancementTrackerMixin {
     @Shadow
     private ServerPlayerEntity owner;
 
-    @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/AdvancementEntry;value()Lnet/minecraft/advancement/Advancement;", ordinal = 1, shift = At.Shift.AFTER) )
-    public void onGrantCriterion(AdvancementEntry advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/Advancement;getRewards()Lnet/minecraft/advancement/AdvancementRewards;") )
+    public void onGrantCriterion(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
         if (!lockout.isLockoutPlayer(owner.getUuid())) return;
@@ -38,14 +39,15 @@ public abstract class PlayerAdvancementTrackerMixin {
             if (goal.isCompleted()) continue;
 
             if (goal instanceof AdvancementGoal advancementGoal) {
-                if (advancementGoal.getAdvancements().contains(advancement.id())) {
+                if (advancementGoal.getAdvancements().contains(advancement.getId())) {
                     lockout.completeGoal(goal, owner);
                 }
             }
             if (goal instanceof GetUniqueAdvancementsGoal getUniqueAdvancementsGoal) {
-                advancement.value().display().ifPresent((advancementDisplay) -> {
+                AdvancementDisplay advancementDisplay = advancement.getDisplay();
+                if (advancementDisplay != null) {
                     getUniqueAdvancementsGoal.getTrackerMap().putIfAbsent(team, new LinkedHashSet<>());
-                    getUniqueAdvancementsGoal.getTrackerMap().get(team).add(advancement.id());
+                    getUniqueAdvancementsGoal.getTrackerMap().get(team).add(advancement.getId());
 
                     int size = getUniqueAdvancementsGoal.getTrackerMap().get(team).size();
 
@@ -53,18 +55,18 @@ public abstract class PlayerAdvancementTrackerMixin {
                     if (size >= getUniqueAdvancementsGoal.getAmount()) {
                         lockout.completeGoal(goal, team);
                     }
-                });
+                }
             }
         }
     }
 
     private static final Identifier ADVENTURING_TIME = new Identifier("minecraft", "adventure/adventuring_time");
     @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/AdvancementProgress;isDone()Z", ordinal = 1, shift = At.Shift.BEFORE) )
-    public void onAdvancementProgress(AdvancementEntry advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
+    public void onAdvancementProgress(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
 
-        if (!advancement.id().equals(ADVENTURING_TIME)) return;
+        if (!advancement.getId().equals(ADVENTURING_TIME)) return;
         Identifier biomeId = new Identifier(criterionName);
 
         for (Goal goal : lockout.getBoard().getGoals()) {

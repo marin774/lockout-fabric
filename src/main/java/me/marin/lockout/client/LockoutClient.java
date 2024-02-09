@@ -44,62 +44,60 @@ public class LockoutClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(Constants.LOCKOUT_GOALS_TEAMS_PACKET, (client, handler, buf, responseSender) -> {
+            int teamsSize = buf.readInt();
+            List<LockoutTeam> teams = new ArrayList<>();
+            for (int i = 0; i < teamsSize; i++) {
+                int teamSize = buf.readInt();
+                Formatting color = Formatting.byName(buf.readString());
+                List<String> playerNames = new ArrayList<>();
+                for (int j = 0; j < teamSize; j++) {
+                    playerNames.add(buf.readString());
+                }
+                teams.add(new LockoutTeam(playerNames, color));
+            }
+
+            List<Pair<String, String>> goals = new ArrayList<>();
+            List<Integer> completedByTeam = new ArrayList<>();
+            for (int i = 0; i < 25; i++) {
+                goals.add(new Pair<>(buf.readString(), buf.readString()));
+                completedByTeam.add(buf.readInt()); // index of team that completed the goal, -1 otherwise
+            }
+
+            lockout = new Lockout(new LockoutBoard(goals), teams);
+            lockout.setRunning(buf.readBoolean());
+
+            List<Goal> goalList = lockout.getBoard().getGoals();
+            for (int i = 0; i < goalList.size(); i++) {
+                if (completedByTeam.get(i) != -1) {
+                    LockoutTeam team = lockout.getTeams().get(completedByTeam.get(i));
+                    goalList.get(i).setCompleted(true, team);
+                    team.addPoint();
+                }
+            }
+
             client.execute(() -> {
-                int teamsSize = buf.readInt();
-                List<LockoutTeam> teams = new ArrayList<>();
-                for (int i = 0; i < teamsSize; i++) {
-                    int teamSize = buf.readInt();
-                    Formatting color = Formatting.byName(buf.readString());
-                    List<String> playerNames = new ArrayList<>();
-                    for (int j = 0; j < teamSize; j++) {
-                        playerNames.add(buf.readString());
-                    }
-                    teams.add(new LockoutTeam(playerNames, color));
-                }
-
-                List<Pair<String, String>> goals = new ArrayList<>();
-                List<Integer> completedByTeam = new ArrayList<>();
-                for (int i = 0; i < 25; i++) {
-                    goals.add(new Pair<>(buf.readString(), buf.readString()));
-                    completedByTeam.add(buf.readInt()); // index of team that completed the goal, -1 otherwise
-                }
-
-                lockout = new Lockout(new LockoutBoard(goals), teams);
-                lockout.setRunning(buf.readBoolean());
-
-                List<Goal> goalList = lockout.getBoard().getGoals();
-                for (int i = 0; i < goalList.size(); i++) {
-                    if (completedByTeam.get(i) != -1) {
-                        LockoutTeam team = lockout.getTeams().get(completedByTeam.get(i));
-                        goalList.get(i).setCompleted(true, team);
-                        team.addPoint();
-                    }
-                }
-
                 if (client.player != null) {
                     MinecraftClient.getInstance().setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
                 }
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_LORE, (client, handler, buf, responseSender) -> {
-            client.execute(() -> {
-                goalLoreMap.put(buf.readString(), buf.readString());
-            });
+            goalLoreMap.put(buf.readString(), buf.readString());
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
+            lockout.setStarted(true);
+            lockout.setStartTime(buf.readLong() + (System.currentTimeMillis() - buf.readLong())); // clock sync
             client.execute(() -> {
-                lockout.setStarted(true);
-                lockout.setStartTime(buf.readLong() + (System.currentTimeMillis() - buf.readLong())); // clock sync
                 if (MinecraftClient.getInstance().currentScreen != null) {
                     MinecraftClient.getInstance().currentScreen.close();
                 }
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.COMPLETE_TASK_PACKET, (client, handler, buf, responseSender) -> {
-            client.execute(() -> {
-                String goalId = buf.readString();
-                int teamIndex = buf.readInt();
+            String goalId = buf.readString();
+            int teamIndex = buf.readInt();
 
+            client.execute(() -> {
                 Goal goal = lockout.getBoard().getGoals().stream().filter(g -> g.getId().equals(goalId)).findFirst().get();
                 if (goal.isCompleted() || teamIndex == -1) {
                     lockout.clearGoalCompletion(goal, false);
@@ -122,17 +120,16 @@ public class LockoutClient implements ClientModInitializer {
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.END_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
+            int winnerTeamsSize = buf.readInt();
+            List<Integer> winners = new ArrayList<>();
+            for (int i = 0; i < winnerTeamsSize; i++) {
+                winners.add(buf.readInt());
+            }
+
+            lockout.setRunning(false);
+            lockout.setEndTime(System.currentTimeMillis());
+            buf.readLong();
             client.execute(() -> {
-                int winnerTeamsSize = buf.readInt();
-                List<Integer> winners = new ArrayList<>();
-                for (int i = 0; i < winnerTeamsSize; i++) {
-                    winners.add(buf.readInt());
-                }
-
-                lockout.setRunning(false);
-                lockout.setEndTime(System.currentTimeMillis());
-                buf.readLong();
-
                 if (client.player != null) {
                     boolean didIWin = false;
                     for (Integer winner : winners) {

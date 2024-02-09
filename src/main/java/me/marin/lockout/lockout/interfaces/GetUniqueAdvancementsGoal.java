@@ -36,7 +36,7 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
 
         lore.add(" ");
         lore.add("Advancements: " + foods.size() + "/" + getAmount());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).value().display().get().getTitle().getString()).toList()));
+        lore.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).getDisplay().getTitle().getString()).toList()));
         lore.add(" ");
 
         return lore;

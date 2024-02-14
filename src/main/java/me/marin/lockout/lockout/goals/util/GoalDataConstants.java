@@ -17,6 +17,7 @@ public class GoalDataConstants {
     public static final String DATA_LEATHER_HELMET = "leather_helmet";
     public static final String DATA_LEATHER_LEGGINGS = "leather_leggings";
     public static final String DATA_LEATHER_BOOTS = "leather_boots";
+    public static final List<String> DATA_LEATHER_ARMOR = List.of(DATA_LEATHER_HELMET, DATA_LEATHER_CHESTPLATE, DATA_LEATHER_LEGGINGS, DATA_LEATHER_BOOTS);
 
     public static final String DATA_COLOR_BLACK = "black";
     public static final String DATA_COLOR_WHITE = "white";
@@ -43,10 +44,6 @@ public class GoalDataConstants {
             case DATA_LEATHER_LEGGINGS -> Items.LEATHER_LEGGINGS;
             case DATA_LEATHER_BOOTS -> Items.LEATHER_BOOTS;
         };
-    }
-
-    public static List<String> getLeatherArmor() {
-        return List.of(DATA_LEATHER_HELMET, DATA_LEATHER_CHESTPLATE, DATA_LEATHER_LEGGINGS, DATA_LEATHER_BOOTS);
     }
 
     public static DyeColor getDyeColor(String dyeColorString) {

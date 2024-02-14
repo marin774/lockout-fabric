@@ -2,16 +2,20 @@ package me.marin.lockout;
 
 import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.texture.CustomTextureRenderer;
+import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static me.marin.lockout.Constants.*;
+import static me.marin.lockout.client.gui.BoardBuilderScreen.CENTER_OFFSET;
 
 public class Utility {
 
@@ -34,15 +38,7 @@ public class Utility {
                         context.fill(x, y, x + 16, y + 16, (0xFF << 24) | goal.getCompletedTeam().getColor().getColorValue());
                     }
 
-                    boolean success = false;
-                    if (goal instanceof CustomTextureRenderer customTextureRenderer) {
-                        success = customTextureRenderer.renderTexture(context, x, y, LockoutClient.CURRENT_TICK);
-                    }
-
-                    if (!success) {
-                        context.drawItem(goal.getTextureItemStack(), x, y);
-                        context.drawItemInSlot(textRenderer, goal.getTextureItemStack(), x, y);
-                    }
+                    goal.render(context, textRenderer, x, y);
 
                 }
                 x += GUI_ITEM_SLOT_SIZE;
@@ -92,20 +88,20 @@ public class Utility {
         }
     }
 
-    public static void drawCenterBingoBoard(DrawContext context, int mouseX, int mouseY) {
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-
+    public static void drawCenterBingoBoard(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY) {
         int width = context.getScaledWindowWidth();
         int height = context.getScaledWindowHeight();
 
-        int x = width / 2 - Constants.GUI_WIDTH / 2;
-        int y = height / 2 - Constants.GUI_HEIGHT / 2;
+        int x = width / 2 - Constants.GUI_CENTER_WIDTH / 2;
+        int y = height / 2 - Constants.GUI_CENTER_HEIGHT / 2;
 
         context.drawTexture(GUI_CENTER_IDENTIFIER, x, y, 0, 0, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT);
 
         x += GUI_CENTER_FIRST_ITEM_OFFSET_X;
         y += GUI_CENTER_FIRST_ITEM_OFFSET_Y;
         final int startX = x;
+
+        Goal hoveredGoal = getBoardHoveredGoal(context, mouseX, mouseY);
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
@@ -115,17 +111,9 @@ public class Utility {
                         context.fill(x, y, x + 16, y + 16, (0xFF << 24) | goal.getCompletedTeam().getColor().getColorValue());
                     }
 
-                    boolean success = false;
-                    if (goal instanceof CustomTextureRenderer customTextureRenderer) {
-                        success = customTextureRenderer.renderTexture(context, x, y, LockoutClient.CURRENT_TICK);
-                    }
+                    goal.render(context, textRenderer, mouseX, mouseY);
 
-                    if (!success) {
-                        context.drawItem(goal.getTextureItemStack(), x, y);
-                        context.drawItemInSlot(textRenderer, goal.getTextureItemStack(), x, y);
-                    }
-
-                    if (goal == getCenterHoveredGoal(context, mouseX, mouseY)) {
+                    if (goal == hoveredGoal) {
                         context.fill(x, y, x + 16, y + 16, 400, -2130706433);
                     }
                 }
@@ -136,18 +124,15 @@ public class Utility {
         }
     }
 
-    public static Goal getCenterHoveredGoal(DrawContext context, int mouseX, int mouseY) {
-        int width = context.getScaledWindowWidth();
-        int height = context.getScaledWindowHeight();
-
-        int x = width / 2 - Constants.GUI_WIDTH / 2 + GUI_CENTER_FIRST_ITEM_OFFSET_X;
-        int y = height / 2 - Constants.GUI_HEIGHT / 2 + GUI_CENTER_FIRST_ITEM_OFFSET_Y;
+    public static Optional<Integer> getBoardHoveredIndex(int width, int height, int mouseX, int mouseY) {
+        int x = width / 2 - Constants.GUI_CENTER_WIDTH / 2 + GUI_CENTER_FIRST_ITEM_OFFSET_X - CENTER_OFFSET;
+        int y = height / 2 - Constants.GUI_CENTER_HEIGHT / 2 + GUI_CENTER_FIRST_ITEM_OFFSET_Y;
         final int startX = x;
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (mouseX >= x-1 && mouseX < x+18 && mouseY >= y-1 && mouseY < y+18) {
-                    return LockoutClient.lockout.getBoard().getGoals().get(j + i * 5);
+                    return Optional.of(j + i * 5);
                 }
                 x += GUI_CENTER_ITEM_SLOT_SIZE;
             }
@@ -155,7 +140,30 @@ public class Utility {
             x = startX;
         }
 
-        return null;
+        return Optional.empty();
     }
+
+    public static Goal getBoardHoveredGoal(DrawContext context, int mouseX, int mouseY) {
+        Optional<Integer> hoveredIdx = getBoardHoveredIndex(context.getScaledWindowWidth(), context.getScaledWindowHeight(), mouseX, mouseY);
+        return hoveredIdx.map(integer -> LockoutClient.lockout.getBoard().getGoals().get(integer)).orElse(null);
+    }
+
+    public static void drawGoalInformation(DrawContext context, TextRenderer textRenderer, Goal goal, int mouseX, int mouseY) {
+        List<OrderedText> lore = new ArrayList<>();
+        lore.add(Text.of(((goal instanceof HasTooltipInfo) ? Formatting.UNDERLINE : "") + goal.getGoalName()).asOrderedText());
+        if (goal instanceof HasTooltipInfo) {
+            String s = LockoutClient.goalLoreMap.get(goal.getId());
+            if (s != null) {
+                for (String t : s.split("\n")) {
+                    lore.add(Text.of(t).asOrderedText());
+                }
+            }
+        }
+        context.drawOrderedTooltip(textRenderer, lore, mouseX, mouseY);
+    }
+
+
+
+
 
 }

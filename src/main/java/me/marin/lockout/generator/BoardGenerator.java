@@ -66,7 +66,7 @@ public class BoardGenerator {
             // Lockout.log("Goal requirements passed for " + goal + "!");
 
             GoalDataGenerator dataGenerator = GoalRegistry.INSTANCE.getDataGenerator(goal);
-            String data = dataGenerator == null ? GoalDataConstants.DATA_NONE : dataGenerator.generateData(new ArrayList<>(attainableDyes));
+            String data = dataGenerator == null ? GoalDataConstants.DATA_NONE : dataGenerator.generateData(attainableDyes);
 
             // Lockout.log("Added goal " + goal + " (" + data + "). [" + goals.size() + "/25]");
 

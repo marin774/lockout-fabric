@@ -7,6 +7,8 @@ import me.marin.lockout.client.gui.BoardScreen;
 import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.lockout.Goal;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -20,7 +22,6 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import oshi.util.tuples.Pair;
 
@@ -37,8 +38,10 @@ public class LockoutClient implements ClientModInitializer {
     public static int CURRENT_TICK = 0;
     public static Map<String, String> goalLoreMap = new HashMap<>();
 
+    public static boolean shouldOpenBoardBuilder = false;
+
     static {
-        BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(Constants.NAMESPACE, "board"), BoardScreenHandler::new);
+        BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(Constants.BOARD_SCREEN_ID, BoardScreenHandler::new);
     }
 
     @Override
@@ -119,6 +122,7 @@ public class LockoutClient implements ClientModInitializer {
 
             });
         });
+
         ClientPlayNetworking.registerGlobalReceiver(Constants.END_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             int winnerTeamsSize = buf.readInt();
             List<Integer> winners = new ArrayList<>();
@@ -149,6 +153,16 @@ public class LockoutClient implements ClientModInitializer {
             });
         });
 
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            var commandNode = ClientCommandManager.literal("BoardBuilder").executes((context) -> {
+                shouldOpenBoardBuilder = true;
+                return 1;
+            }).build();
+
+            dispatcher.getRoot().addChild(commandNode);
+        });
+
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.lockout.open_board", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -165,12 +179,12 @@ public class LockoutClient implements ClientModInitializer {
             }
             if (wasPressed) {
 
-                if (!Lockout.exists(lockout) || MinecraftClient.getInstance().currentScreen != null) {
+                if (!Lockout.exists(lockout) || client.currentScreen != null || client.player == null) {
                     return;
                 }
 
                 // Open GUI
-                MinecraftClient.getInstance().setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.literal("Test")));
+                MinecraftClient.getInstance().setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
             }
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {

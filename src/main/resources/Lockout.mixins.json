@@ -34,6 +34,7 @@
     "server.ZombifiedPiglinEntityMixin"
   ],
   "client": [
+    "client.ChatScreenMixin",
     "client.DebugHudMixin",
     "client.InGameHudMixin",
     "client.InputMixin",

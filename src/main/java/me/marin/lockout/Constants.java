@@ -10,6 +10,8 @@ public class Constants {
     public static final Identifier UPDATE_LORE = new Identifier(NAMESPACE, "update_lore");
     public static final Identifier COMPLETE_TASK_PACKET = new Identifier(NAMESPACE, "complete_task");
     public static final Identifier END_LOCKOUT_PACKET = new Identifier(NAMESPACE, "end_lockout");
+    public static final Identifier BOARD_SCREEN_ID = new Identifier(NAMESPACE, "board");
+    public static final Identifier BOARD_BUILDER_SCREEN_ID = new Identifier(NAMESPACE, "board_builder");
 
     public static final Identifier GUI_IDENTIFIER = new Identifier(NAMESPACE, "textures/guis/gui.png");
 

@@ -1,18 +1,26 @@
 package me.marin.lockout.lockout;
 
+import me.marin.lockout.client.gui.BoardBuilderGoalsWidget;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class GoalRegistry {
 
     public static final GoalRegistry INSTANCE = new GoalRegistry();
 
-    private final Map<String, Class<? extends Goal>> registry = new HashMap<>();
+    private final Map<String, Class<? extends Goal>> registry = new LinkedHashMap<>();
     private final Map<String, GoalDataGenerator> goalDataGenerators = new HashMap<>();
     private final Map<String, GoalRequirementsProvider> goalGeneratorProviders = new HashMap<>();
+    private final Map<String, BoardBuilderGoalsWidget.GoalEntry> goalEntryMap = new LinkedHashMap<>();
 
     private GoalRegistry() {}
 
@@ -26,6 +34,7 @@ public class GoalRegistry {
         registry.put(id, goalClass);
         goalGeneratorProviders.put(id, goalRequirementsProvider);
         goalDataGenerators.put(id, goalDataGenerator);
+        goalEntryMap.put(id, new BoardBuilderGoalsWidget.GoalEntry(id));
     }
 
     public Goal newGoal(String id, String data) {
@@ -43,6 +52,14 @@ public class GoalRegistry {
 
     public GoalRequirementsProvider getGoalGenerator(String id) {
         return goalGeneratorProviders.get(id);
+    }
+
+    public Map<String, BoardBuilderGoalsWidget.GoalEntry> getGoalEntryMap() {
+        return goalEntryMap;
+    }
+
+    public BoardBuilderGoalsWidget.GoalEntry getGoalEntry(String id) {
+        return goalEntryMap.get(id);
     }
 
     public List<String> getRegisteredGoals() {

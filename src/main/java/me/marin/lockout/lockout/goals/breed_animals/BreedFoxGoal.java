@@ -15,7 +15,7 @@ public class BreedFoxGoal extends BreedAnimalGoal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Breed Fox";
+        return "Breed Foxes";
     }
 
     @Override

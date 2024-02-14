@@ -1,6 +1,7 @@
 package me.marin.lockout.lockout;
 
 import me.marin.lockout.Lockout;
+import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
 import me.marin.lockout.lockout.goals.advancement.*;
 import me.marin.lockout.lockout.goals.advancement.unique.*;
@@ -83,17 +84,17 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.WEAR_IRON_ARMOR, WearIronArmorGoal.class);
         INSTANCE.register(GoalType.WEAR_CHAIN_ARMOR_PIECE, WearChainArmorPieceGoal.class,
                 GoalRequirementsProvider.VILLAGE);
-        INSTANCE.register(GoalType.WEAR_COLORED_LEATHER_ARMOR_PIECE, WearColoredLeatherPieceGoal.class, null, attainableDyes -> {
-            attainableDyes.remove(DyeColor.WHITE);
-            attainableDyes.remove(DyeColor.GRAY);
-            attainableDyes.remove(DyeColor.BLACK);
-            attainableDyes.remove(DyeColor.PINK);
-            attainableDyes.remove(DyeColor.LIGHT_GRAY);
-            List<String> leatherArmor = GoalDataConstants.getLeatherArmor();
-            return leatherArmor.get(Lockout.random.nextInt(0, leatherArmor.size())) +
-                    GoalDataConstants.DATA_SEPARATOR +
-                    GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size())));
-        });
+        INSTANCE.register(GoalType.WEAR_COLORED_LEATHER_ARMOR_PIECE, WearColoredLeatherPieceGoal.class, null,
+                GoalDataGenerator.builder().withLeatherArmorPiece((leatherArmor) -> leatherArmor.get(Lockout.random.nextInt(0, leatherArmor.size())))
+                        .withDye(attainableDyes -> {
+                            attainableDyes.remove(DyeColor.WHITE);
+                            attainableDyes.remove(DyeColor.GRAY);
+                            attainableDyes.remove(DyeColor.BLACK);
+                            attainableDyes.remove(DyeColor.PINK);
+                            attainableDyes.remove(DyeColor.LIGHT_GRAY);
+                            return GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size())));
+                        })
+        );
         INSTANCE.register(GoalType.TAME_CAT, TameCatGoal.class,
                 GoalRequirementsProvider.VILLAGE);
         INSTANCE.register(GoalType.TAME_PARROT, TameParrotGoal.class,
@@ -166,14 +167,17 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.KILL_SNOW_GOLEM_IN_NETHER, KillSnowGolemInNetherGoal.class);
         INSTANCE.register(GoalType.KILL_ELDER_GUARDIAN, KillElderGuardianGoal.class,
                 GoalRequirementsProvider.MONUMENT);
-        INSTANCE.register(GoalType.KILL_COLORED_SHEEP, KillColoredSheepGoal.class, null, attainableDyes -> {
-            attainableDyes.remove(DyeColor.WHITE);
-            attainableDyes.remove(DyeColor.GRAY);
-            attainableDyes.remove(DyeColor.BLACK);
-            attainableDyes.remove(DyeColor.LIGHT_GRAY);
-            attainableDyes.remove(DyeColor.BROWN);
-            return GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size())));
-        });
+        INSTANCE.register(GoalType.KILL_COLORED_SHEEP, KillColoredSheepGoal.class, null,
+                GoalDataGenerator.builder().withDye(attainableDyes -> {
+                    attainableDyes.remove(DyeColor.WHITE);
+                    attainableDyes.remove(DyeColor.GRAY);
+                    attainableDyes.remove(DyeColor.BLACK);
+                    attainableDyes.remove(DyeColor.LIGHT_GRAY);
+                    attainableDyes.remove(DyeColor.PINK);
+                    attainableDyes.remove(DyeColor.BROWN);
+                    return GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size())));
+                })
+        );
         INSTANCE.register(GoalType.KILL_7_UNIQUE_HOSTILE_MOBS, Kill7UniqueHostileMobsGoal.class);
         INSTANCE.register(GoalType.KILL_10_UNIQUE_HOSTILE_MOBS, Kill10UniqueHostileMobsGoal.class);
         INSTANCE.register(GoalType.KILL_13_UNIQUE_HOSTILE_MOBS, Kill13UniqueHostileMobsGoal.class);
@@ -228,13 +232,16 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.OBTAIN_6_UNIQUE_FLOWERS, Obtain6UniqueFlowersGoal.class);
         INSTANCE.register(GoalType.OBTAIN_COLORED_GLAZED_TERRACOTTA, ObtainColoredGlazedTerracottaGoal.class,
                 null,
-                attainableDyes -> GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size()))));
+                GoalDataGenerator.builder().withDye(attainableDyes -> GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size()))))
+        );
         INSTANCE.register(GoalType.OBTAIN_64_COLORED_WOOL, Obtain64ColoredWoolGoal.class,
                 null,
-                attainableDyes -> GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size()))));
+                GoalDataGenerator.builder().withDye(attainableDyes -> GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size()))))
+        );
         INSTANCE.register(GoalType.OBTAIN_64_COLORED_CONCRETE, Obtain64ColoredConcreteGoal.class,
                 null,
-                attainableDyes -> GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size()))));
+                GoalDataGenerator.builder().withDye(attainableDyes -> GoalDataConstants.getDyeColorDataString(attainableDyes.get(Lockout.random.nextInt(0, attainableDyes.size()))))
+        );
         INSTANCE.register(GoalType.OBTAIN_WRITTEN_BOOK, ObtainWrittenBookGoal.class);
         INSTANCE.register(GoalType.FILL_INVENTORY_UNIQUE_ITEMS, FillInventoryWithUniqueItemsGoal.class);
         INSTANCE.register(GoalType.GET_THIS_BOAT_HAS_LEGS_ADVANCEMENT, GetThisBoatHasLegsAdvancementGoal.class);

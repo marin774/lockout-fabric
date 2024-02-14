@@ -16,3 +16,5 @@ accessible method net/minecraft/server/command/LocateCommand getStructureListFor
 accessible method net/minecraft/item/CompassItem writeNbt (Lnet/minecraft/registry/RegistryKey;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/nbt/NbtCompound;)V
 accessible field net/minecraft/server/world/ServerWorld worldProperties Lnet/minecraft/world/level/ServerWorldProperties;
 accessible class net/minecraft/village/raid/Raid$Member
+accessible field net/minecraft/client/gui/widget/ScrollableWidget scrollbarDragged Z
+accessible method net/minecraft/client/gui/widget/ScrollableWidget getScrollbarThumbHeight ()I

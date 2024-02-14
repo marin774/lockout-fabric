@@ -22,4 +22,5 @@ public class BoardScreenHandler extends ScreenHandler {
     public boolean canUse(PlayerEntity player) {
         return true;
     }
+
 }

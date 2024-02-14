@@ -50,6 +50,8 @@ To set a custom board (which will be applied when you start a /lockout or /black
 To unset/remove a custom board from the server, run:
 `/RemoveCustomBoard`
 
+![image](https://github.com/marin774/lockout-fabric/assets/87690741/c333cf9c-d184-4263-853c-1f7c91b80110)
+
 # Vanilla modifications:
 - Piglin barter rates are same as in version 1.16.1 (more pearls, string etc.)
 - Raids replicate those on Medium difficulty (guarantees all Illagers)

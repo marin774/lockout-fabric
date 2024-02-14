@@ -7,7 +7,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 
-public abstract class Goal implements Cloneable {
+import java.util.Objects;
+
+public abstract class Goal {
 
     private final String id;
     private final String data;
@@ -56,6 +58,19 @@ public abstract class Goal implements Cloneable {
             context.drawItem(this.getTextureItemStack(), x, y);
             context.drawItemInSlot(textRenderer, this.getTextureItemStack(), x, y);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Goal goal = (Goal) o;
+        return id.equals(goal.id) && Objects.equals(data, goal.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, data);
     }
 
 }

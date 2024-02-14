@@ -12,15 +12,18 @@ public class BoardBuilderData {
     }
 
     private final List<Goal> goals = new ArrayList<>();
-    private final List<String> goalData = new ArrayList<>();
     private String title = "";
     private Integer editingIdx = null;
 
     private BoardBuilderData() {
         for (int i = 0; i < 25; i++) {
             goals.add(null);
-            goalData.add(null);
         }
+    }
+
+    public void clear() {
+        goals.clear();
+        editingIdx = null;
     }
 
     public String getTitle() {
@@ -49,9 +52,6 @@ public class BoardBuilderData {
 
     public void setGoal(Goal goal) {
         goals.set(editingIdx, goal);
-    }
-    public void setGoalData(String data) {
-        goalData.set(editingIdx, data);
     }
 
 

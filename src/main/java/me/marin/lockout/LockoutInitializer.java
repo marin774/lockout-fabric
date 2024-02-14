@@ -5,8 +5,11 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import me.marin.lockout.lockout.DefaultGoalRegister;
 import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.command.argument.GameProfileArgumentType;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 
 public class LockoutInitializer implements ModInitializer {
@@ -71,6 +74,17 @@ public class LockoutInitializer implements ModInitializer {
                 dispatcher.getRoot().addChild(giveGoalRoot);
                 giveGoalRoot.addChild(playerName);
                 playerName.addChild(goalIndex);
+            }
+
+            {
+                // RemoveCustomBoard command (SetCustomBoard is registered LockoutClient, and server listens for a packet)
+
+                dispatcher.getRoot().addChild(CommandManager.literal("RemoveCustomBoard").requires(ssc -> ssc.hasPermissionLevel(2)).executes((context) -> {
+                    PacketByteBuf buf = PacketByteBufs.create();
+                    buf.writeBoolean(true); // whether board should be cleared
+                    ClientPlayNetworking.send(Constants.CUSTOM_BOARD_PACKET, buf);
+                    return 1;
+                }).build());
             }
 
         });

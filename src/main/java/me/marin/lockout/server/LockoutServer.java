@@ -105,6 +105,8 @@ public class LockoutServer {
     public static final Map<RegistryKey<Structure>, LocateData> STRUCTURE_LOCATE_DATA = new HashMap<>();
     public static final List<DyeColor> availableDyeColors = new ArrayList<>();
 
+    private static LockoutBoard CUSTOM_BOARD = null;
+
     private static boolean isInitialized = false;
 
     public static void initializeServer() {
@@ -532,6 +534,31 @@ public class LockoutServer {
             long end = System.currentTimeMillis();
             Lockout.log("Located " + BIOME_LOCATE_DATA.size() + " biomes and " + STRUCTURE_LOCATE_DATA.size() + " structures in " + String.format("%.2f", ((end-start)/1000.0)) + "s!");
         });
+
+        ServerPlayNetworking.registerGlobalReceiver(Constants.CUSTOM_BOARD_PACKET, (server, player, handler, buf, responseSender) -> {
+            if (!player.hasPermissionLevel(2)) {
+                player.sendMessage(Text.literal("You do not have the permission for this command!").formatted(Formatting.RED));
+                return;
+            }
+            try {
+                boolean clearBoard = buf.readBoolean();
+                if (clearBoard) {
+                    CUSTOM_BOARD = null;
+                    player.sendMessage(Text.literal("Removed custom board."));
+                } else {
+                    List<Pair<String, String>> goals = new ArrayList<>();
+                    for (int i = 0; i < 25; i++) {
+                        goals.add(new Pair<>(buf.readString(), buf.readString()));
+                    }
+                    CUSTOM_BOARD = new LockoutBoard(goals);
+                    player.sendMessage(Text.literal("Set custom board."));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                player.sendMessage(Text.of("There was an error trying to set custom board. Check server logs."));
+            }
+
+        });
     }
 
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
@@ -657,11 +684,17 @@ public class LockoutServer {
             serverPlayerEntity = it.next();
         }
 
+        LockoutBoard lockoutBoard = null;
+        if (CUSTOM_BOARD == null) {
+            BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, availableDyeColors, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
+            // Create lockout instance & generate board
+            List<Pair<String,String>> board = boardGenerator.generateBoard();
+            lockoutBoard = new LockoutBoard(board);
+        } else {
+            lockoutBoard = CUSTOM_BOARD;
+        }
 
-        BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, availableDyeColors, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
-        // Create lockout instance & generate board
-        List<Pair<String,String>> board = boardGenerator.generateBoard();
-        lockout = new Lockout(new LockoutBoard(board), teams);
+        lockout = new Lockout(lockoutBoard, teams);
 
         new CompassItemHandler(allPlayers);
 
@@ -673,9 +706,8 @@ public class LockoutServer {
             }
         }
 
-        PacketByteBuf buf = lockout.getTeamsGoalsPacket();
         for (ServerPlayerEntity player : allPlayers) {
-            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, buf);
+            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
 
             if (!lockout.isSoloBlackout()) {
                 player.giveItemStack(CompassItemHandler.newCompass());

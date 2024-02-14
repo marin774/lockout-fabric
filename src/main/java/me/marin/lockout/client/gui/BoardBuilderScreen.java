@@ -17,7 +17,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -25,6 +24,7 @@ import net.minecraft.util.Formatting;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +39,7 @@ public class BoardBuilderScreen extends Screen {
     private TextFieldWidget titleTextField;
     private ButtonWidget saveButton;
     private TextWidget saveErrorTextWidget;
+    private ButtonWidget clearBoardButton;
     private ButtonWidget closeButton;
     private ButtonWidget closeSearchButton;
     private TextFieldWidget searchTextField;
@@ -64,6 +65,7 @@ public class BoardBuilderScreen extends Screen {
         titleTextField.setChangedListener(s -> {
             BoardBuilderData.INSTANCE.setTitle(s);
         });
+        titleTextField.setText(BoardBuilderData.INSTANCE.getTitle());
         this.addDrawableChild(titleTextField);
 
         saveButton = ButtonWidget.builder(Text.of("Save Board"), (b) -> {
@@ -73,16 +75,23 @@ public class BoardBuilderScreen extends Screen {
 
         closeButton = ButtonWidget.builder(Text.of("Close"), (b) -> {
             close();
-        }).width(50).position(saveButton.getX() + saveButton.getWidth() + 10, saveButton.getY()).build();
+        }).width(50).position(width - 50 - 10, saveButton.getY()).build();
         this.addDrawableChild(closeButton);
+
+        clearBoardButton = ButtonWidget.builder(Text.of("Clear Board"), (b) -> {
+            BoardBuilderData.INSTANCE.clear();
+            closeEditData();
+            closeSearch();
+        }).width(85).position(closeButton.getX() - 85 - 10, saveButton.getY()).build();
+        this.addDrawableChild(clearBoardButton);
 
         if (displaySearch) {
             double scrollY = boardBuilderGoalsWidget == null ? 0 : boardBuilderGoalsWidget.getScrollY();
             boardBuilderGoalsWidget = new BoardBuilderGoalsWidget(
                     centerX + 90 - CENTER_OFFSET,
-                    30,
+                    40,
                     width / 2 - 125 + CENTER_OFFSET,
-                    height - 30 * 2, Text.empty());
+                    height - 40 * 2, Text.empty());
             boardBuilderGoalsWidget.setScrollY(scrollY);
             this.addDrawableChild(boardBuilderGoalsWidget);
 
@@ -164,8 +173,9 @@ public class BoardBuilderScreen extends Screen {
     }
 
     private void saveGoals(int errorX, int errorY) {
+        List<Goal> goals = BoardBuilderData.INSTANCE.getGoals();
         StringBuilder sb = new StringBuilder();
-        for (Goal goal : BoardBuilderData.INSTANCE.getGoals()) {
+        for (Goal goal : goals) {
             if (goal == null) {
                 showError("The board is not full.", errorX, errorY);
                 return;
@@ -175,9 +185,16 @@ public class BoardBuilderScreen extends Screen {
             }
 
             String data = goal.getData();
-            if (data == null) data = GoalDataConstants.DATA_NONE;
 
-            sb.append(goal.getId()).append(" ").append(data);
+            sb.append(goal.getId());
+            if (data != null && !data.isBlank()) {
+                sb.append(" ").append(data);
+            }
+        }
+
+        if (new HashSet<>(goals).size() < goals.size()) {
+            showError("Some goals are duplicated, fix and try again.", errorX, errorY);
+            return;
         }
 
         String boardName = BoardBuilderData.INSTANCE.getTitle().trim();
@@ -185,10 +202,9 @@ public class BoardBuilderScreen extends Screen {
             boardName = "Custom Board";
         }
 
-        BoardBuilderIO boardBuilderIO = new BoardBuilderIO();
         try {
-            boardName = boardBuilderIO.getSuitableName(boardName);
-            boardBuilderIO.saveBoard(boardName, sb.toString());
+            boardName = BoardBuilderIO.INSTANCE.getSuitableName(boardName);
+            BoardBuilderIO.INSTANCE.saveBoard(boardName, sb.toString());
         } catch (IOException e) {
             showError("Error while saving board. Check logs.", errorX, errorY);
             e.printStackTrace();
@@ -196,8 +212,8 @@ public class BoardBuilderScreen extends Screen {
         }
 
         String finalBoardName = boardName;
-        Text openBoardFile = Text.literal("[View board]").styled(style ->
-                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, boardBuilderIO.getBoardPath(finalBoardName).toFile().getAbsolutePath()))
+        Text openBoardFile = Text.literal("[Open file]").styled(style ->
+                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, BoardBuilderIO.INSTANCE.getBoardPath(finalBoardName).toFile().getAbsolutePath()))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
                         .withFormatting(Formatting.WHITE)
         );
@@ -206,23 +222,15 @@ public class BoardBuilderScreen extends Screen {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
                         .withFormatting(Formatting.WHITE)
         );
-        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved board as " + boardName + ".txt! ").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved board as " + boardName + ".txt!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
         close();
     }
 
     private void showError(String message, int x, int y) {
-        editDataErrorTextWidget = new TextWidget(Text.of(message), textRenderer);
-        editDataErrorTextWidget.setTextColor(Color.RED.getRGB());
-        editDataErrorTextWidget.setPosition(x, y);
-        this.addDrawableChild(editDataErrorTextWidget);
-    }
-
-    @Override
-    public void resize(MinecraftClient client, int width, int height) {
-        boolean isTitleFocused = this.titleTextField.isFocused();
-        super.resize(client, width, height);
-        titleTextField.setText(BoardBuilderData.INSTANCE.getTitle());
-        titleTextField.setFocused(isTitleFocused);
+        saveErrorTextWidget = new TextWidget(Text.of(message), textRenderer);
+        saveErrorTextWidget.setTextColor(Color.RED.getRGB());
+        saveErrorTextWidget.setPosition(x, y);
+        this.addDrawableChild(saveErrorTextWidget);
     }
 
     @Override

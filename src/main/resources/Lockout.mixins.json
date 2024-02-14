@@ -31,6 +31,7 @@
     "server.SmithingScreenHandlerMixin",
     "server.StatusEffectMixin",
     "server.TameAnimalCriterionMixin",
+    "server.ZombieEntityMixin",
     "server.ZombifiedPiglinEntityMixin"
   ],
   "client": [

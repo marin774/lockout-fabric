@@ -111,7 +111,7 @@ public class Utility {
                         context.fill(x, y, x + 16, y + 16, (0xFF << 24) | goal.getCompletedTeam().getColor().getColorValue());
                     }
 
-                    goal.render(context, textRenderer, mouseX, mouseY);
+                    goal.render(context, textRenderer, x, y);
 
                     if (goal == hoveredGoal) {
                         context.fill(x, y, x + 16, y + 16, 400, -2130706433);
@@ -161,9 +161,5 @@ public class Utility {
         }
         context.drawOrderedTooltip(textRenderer, lore, mouseX, mouseY);
     }
-
-
-
-
 
 }

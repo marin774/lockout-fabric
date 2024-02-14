@@ -13,8 +13,9 @@ public class BoardBuilderIO {
 
     public static final Path DIRECTORY = MinecraftClient.getInstance().runDirectory.toPath().resolve("lockout-boards");
     private static final String FILE_EXTENSION = ".txt";
+    public static final BoardBuilderIO INSTANCE = new BoardBuilderIO();
 
-    public BoardBuilderIO() {
+    private BoardBuilderIO() {
         if (!Files.exists(DIRECTORY)) {
             try {
                 Files.createDirectories(DIRECTORY);
@@ -36,6 +37,10 @@ public class BoardBuilderIO {
 
     public Path getBoardPath(String name) {
         return DIRECTORY.resolve(name + FILE_EXTENSION);
+    }
+
+    public String readBoard(String name) throws IOException {
+        return Files.readString(getBoardPath(name));
     }
 
     /**

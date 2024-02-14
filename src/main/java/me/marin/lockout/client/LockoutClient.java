@@ -3,9 +3,12 @@ package me.marin.lockout.client;
 import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
+import me.marin.lockout.client.gui.BoardBuilderIO;
 import me.marin.lockout.client.gui.BoardScreen;
 import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.GoalRegistry;
+import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -13,11 +16,15 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -25,6 +32,7 @@ import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 import oshi.util.tuples.Pair;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +130,6 @@ public class LockoutClient implements ClientModInitializer {
 
             });
         });
-
         ClientPlayNetworking.registerGlobalReceiver(Constants.END_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             int winnerTeamsSize = buf.readInt();
             List<Integer> winners = new ArrayList<>();
@@ -153,14 +160,64 @@ public class LockoutClient implements ClientModInitializer {
             });
         });
 
+        ArgumentTypeRegistry.registerArgumentType(Constants.BOARD_FILE_ARGUMENT_TYPE, CustomBoardFileArgumentType.class, ConstantArgumentSerializer.of(CustomBoardFileArgumentType::newInstance));
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            var commandNode = ClientCommandManager.literal("BoardBuilder").executes((context) -> {
-                shouldOpenBoardBuilder = true;
-                return 1;
-            }).build();
+            {
+                var commandNode = ClientCommandManager.literal("BoardBuilder").executes((context) -> {
+                    shouldOpenBoardBuilder = true;
+                    return 1;
+                }).build();
 
-            dispatcher.getRoot().addChild(commandNode);
+                dispatcher.getRoot().addChild(commandNode);
+            }
+            {
+                var commandNode = ClientCommandManager.literal("SetCustomBoard").requires(ccs -> ccs.getPlayer().hasPermissionLevel(2)).build();
+
+                var boardNameNode = ClientCommandManager.argument("board name", CustomBoardFileArgumentType.newInstance()).executes((context) -> {
+                    String boardName = context.getArgument("board name", String.class);
+
+                    String boardString;
+                    try {
+                        boardString = BoardBuilderIO.INSTANCE.readBoard(boardName).trim();
+                    } catch (IOException e) {
+                        context.getSource().sendError(Text.literal("Error while trying to read board."));
+                        return 0;
+                    }
+
+                    // parse board
+                    List<String> goalStrings = List.of(boardString.split("\n"));
+                    if (goalStrings.size() != 25) {
+                        context.getSource().sendError(Text.literal("Board doesn't have 25 goals!"));
+                        return 0;
+                    }
+                    List<Goal> goals = new ArrayList<>();
+                    for (String goalString : goalStrings) {
+                        String id;
+                        String data = null;
+                        if (goalString.contains(" ")) {
+                            id = goalString.split(" ")[0];
+                            data = goalString.substring(id.length() + 1);
+                        } else {
+                            id = goalString;
+                        }
+                        goals.add(GoalRegistry.INSTANCE.newGoal(id, data));
+                    }
+
+                    PacketByteBuf buf = PacketByteBufs.create();
+                    buf.writeBoolean(false); // whether board should be cleared
+                    for (Goal goal : goals) {
+                        buf.writeString(goal.getId());
+                        buf.writeString(goal.getData() == null ? GoalDataConstants.DATA_NONE : goal.getData());
+                    }
+
+                    ClientPlayNetworking.send(Constants.CUSTOM_BOARD_PACKET, buf);
+                    return 1;
+                }).build();
+
+                commandNode.addChild(boardNameNode);
+                dispatcher.getRoot().addChild(commandNode);
+            }
         });
 
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(

@@ -33,6 +33,24 @@ Or if you want to do FFA:
 
 If you want to chat with your team, run `/chat team`.
 
+# Board Builder
+
+You can build and play custom boards in-game.
+There's some extra goals that aren't part of "random goal pool" which you can use in Board Builder.
+Boards are saved locally (client-side), in `.minecraft\lockout-boards`
+
+To open the Board Builder, run:
+`/BoardBuilder`
+
+To set a custom board (which will be applied when you start a /lockout or /blackout game):
+`/SetCustomBoard <custom board name>`
+
+> Custom Boards are set on servers and are kept temporarily, so you will need to use this command on the server you will play on.
+
+To unset/remove a custom board from the server, run:
+`/RemoveCustomBoard`
+
 # Vanilla modifications:
 - Piglin barter rates are same as in version 1.16.1 (more pearls, string etc.)
-- Raids replicate those on Medium difficulty (guarantees all illagers)
+- Raids replicate those on Medium difficulty (guarantees all Illagers)
+- Zombies always convert Villagers into Zombie Villagers

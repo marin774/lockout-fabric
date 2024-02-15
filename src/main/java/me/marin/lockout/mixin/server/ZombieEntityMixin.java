@@ -1,18 +1,29 @@
 package me.marin.lockout.mixin.server;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ZombieEntity.class)
 public class ZombieEntityMixin {
 
-    @Redirect(method = "onKilledOther", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/world/ServerWorld;getDifficulty()Lnet/minecraft/world/Difficulty;"))
-    public Difficulty setDifficulty(ServerWorld instance) {
-        return Difficulty.HARD;
+    private Difficulty before;
+
+    @Inject(method = "onKilledOther", at = @At("HEAD"))
+    public void setDifficulty(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir) {
+        before = world.getDifficulty();
+        ((LevelProperties) world.getLevelProperties()).setDifficulty(Difficulty.HARD);
+    }
+
+    @Inject(method = "onKilledOther", at = @At("RETURN"))
+    public void restoreDifficulty(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir) {
+        ((LevelProperties) world.getLevelProperties()).setDifficulty(before);
     }
 
 }

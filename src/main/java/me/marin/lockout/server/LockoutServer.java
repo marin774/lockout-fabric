@@ -92,6 +92,7 @@ import oshi.util.tuples.Pair;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class LockoutServer {
 
@@ -234,6 +235,10 @@ public class LockoutServer {
                         ServerPlayNetworking.send(player, Constants.UPDATE_LORE, buf);
                     }
                 }
+                player.changeGameMode(GameMode.SURVIVAL);
+            } else {
+                player.changeGameMode(GameMode.SPECTATOR);
+                player.sendMessage(Text.literal("You are spectating this match.").formatted(Formatting.GRAY, Formatting.ITALIC));
             }
 
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
@@ -246,7 +251,7 @@ public class LockoutServer {
             if (!Lockout.isLockoutRunning(lockout)) return;
 
             for (LockoutRunnable runnable : new HashSet<>(gameStartRunnables.keySet())) {
-                if (gameStartRunnables.get(runnable) == 0) {
+                if (gameStartRunnables.get(runnable) <= 0) {
                     runnable.run();
                     gameStartRunnables.remove(runnable);
                 }
@@ -653,6 +658,7 @@ public class LockoutServer {
                 allPlayers.add(playerManager.getPlayer(uuid));
             }
         }
+        List<UUID> lockoutPlayers = teams.stream().flatMap(t -> Stream.of(t.getPlayers().toArray(new UUID[0]))).toList();
 
         for (ServerPlayerEntity serverPlayer : allPlayers) {
             serverPlayer.getInventory().clear();
@@ -673,10 +679,14 @@ public class LockoutServer {
                 }
             }
             serverPlayer.getStatHandler().sendStats(serverPlayer);
-            serverPlayer.changeGameMode(GameMode.ADVENTURE);
+
+            if (lockoutPlayers.contains(serverPlayer.getUuid())) {
+                serverPlayer.changeGameMode(GameMode.ADVENTURE);
+            } else {
+                serverPlayer.changeGameMode(GameMode.SPECTATOR);
+                serverPlayer.sendMessage(Text.literal("You are spectating this match.").formatted(Formatting.GRAY, Formatting.ITALIC));
+            }
         }
-        ServerWorld world = server.getCommandSource().getWorld();
-        world.setTimeOfDay(0);
 
         // Clear all advancements
         ServerPlayerEntity serverPlayerEntity;
@@ -694,9 +704,12 @@ public class LockoutServer {
             lockoutBoard = CUSTOM_BOARD;
         }
 
+        ServerWorld world = server.getCommandSource().getWorld();
+        world.setTimeOfDay(0);
+
         lockout = new Lockout(lockoutBoard, teams);
 
-        new CompassItemHandler(allPlayers);
+        CompassItemHandler.INSTANCE = new CompassItemHandler(allPlayers);
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal instanceof HasTooltipInfo) {
@@ -729,7 +742,9 @@ public class LockoutServer {
                     for (ServerPlayerEntity player : allPlayers) {
                         if (player == null) continue;
                         ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getStartTimePacket());
-                        player.changeGameMode(GameMode.SURVIVAL);
+                        if (lockoutPlayers.contains(player.getUuid())) {
+                            player.changeGameMode(GameMode.SURVIVAL);
+                        }
                     }
                     server.getPlayerManager().broadcast(Text.literal(lockout.getModeName() + " has begun."), false);
                 }).runTaskAfter(20 * START_TIME);

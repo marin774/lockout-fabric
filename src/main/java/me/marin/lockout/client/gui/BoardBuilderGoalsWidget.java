@@ -3,6 +3,8 @@ package me.marin.lockout.client.gui;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -19,22 +21,26 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Environment(EnvType.CLIENT)
 public class BoardBuilderGoalsWidget extends ScrollableWidget {
 
-    private final static int MARGIN_X = 3;
-    private final static int MARGIN_Y = 3;
-    private final static int ITEM_HEIGHT = 18;
+    private static final int MARGIN_X = 3;
+    private static final int MARGIN_Y = 3;
+    private static final int ITEM_HEIGHT = 18;
+    private static final Map<String, GoalEntry> registeredGoals = new HashMap<>();
+
     private int rowWidth;
     private int left;
     private int right;
     private int top;
     private static GoalEntry hovered;
-    private final Map<String, GoalEntry> registeredGoals;
     private List<GoalEntry> visibleGoals;
 
     public BoardBuilderGoalsWidget(int x, int y, int width, int height, Text text) {
         super(x, y, width, height, text);
-        registeredGoals = GoalRegistry.INSTANCE.getGoalEntryMap();
+        for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
+            registeredGoals.putIfAbsent(id, new BoardBuilderGoalsWidget.GoalEntry(id));
+        }
         visibleGoals = new ArrayList<>(registeredGoals.values());
     }
 
@@ -53,7 +59,7 @@ public class BoardBuilderGoalsWidget extends ScrollableWidget {
 
     @Override
     protected double getDeltaYPerScroll() {
-        return 5;
+        return ITEM_HEIGHT / 2.0;
     }
 
     @Override

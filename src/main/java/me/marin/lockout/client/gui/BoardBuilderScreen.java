@@ -4,6 +4,7 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.Utility;
 import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.generator.GoalDataGenerator;
+import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
@@ -174,23 +175,22 @@ public class BoardBuilderScreen extends Screen {
 
     private void saveGoals(int errorX, int errorY) {
         List<Goal> goals = BoardBuilderData.INSTANCE.getGoals();
-        StringBuilder sb = new StringBuilder();
+        JSONBoard jsonBoard = new JSONBoard();
+        List<JSONBoard.JSONGoal> goalList = new ArrayList<>();
         for (Goal goal : goals) {
             if (goal == null) {
                 showError("The board is not full.", errorX, errorY);
                 return;
             }
-            if (!sb.isEmpty()) {
-                sb.append("\n");
-            }
 
-            String data = goal.getData();
-
-            sb.append(goal.getId());
-            if (data != null && !data.isBlank()) {
-                sb.append(" ").append(data);
+            JSONBoard.JSONGoal jsonGoal = new JSONBoard.JSONGoal();
+            jsonGoal.id = goal.getId();
+            if (goal.getData() != null && !goal.getData().isBlank()) {
+                jsonGoal.data = goal.getData();
             }
+            goalList.add(jsonGoal);
         }
+        jsonBoard.goals = goalList;
 
         if (new HashSet<>(goals).size() < goals.size()) {
             showError("Some goals are duplicated, fix and try again.", errorX, errorY);
@@ -204,7 +204,7 @@ public class BoardBuilderScreen extends Screen {
 
         try {
             boardName = BoardBuilderIO.INSTANCE.getSuitableName(boardName);
-            BoardBuilderIO.INSTANCE.saveBoard(boardName, sb.toString());
+            BoardBuilderIO.INSTANCE.saveBoard(boardName, jsonBoard);
         } catch (IOException e) {
             showError("Error while saving board. Check logs.", errorX, errorY);
             e.printStackTrace();

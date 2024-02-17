@@ -22,7 +22,9 @@ public class BoardBuilderData {
     }
 
     public void clear() {
-        goals.clear();
+        for (int i = 0; i < 25; i++) {
+            goals.set(i, null);
+        }
         editingIdx = null;
     }
 

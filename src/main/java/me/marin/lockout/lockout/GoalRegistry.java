@@ -20,7 +20,6 @@ public class GoalRegistry {
     private final Map<String, Class<? extends Goal>> registry = new LinkedHashMap<>();
     private final Map<String, GoalDataGenerator> goalDataGenerators = new HashMap<>();
     private final Map<String, GoalRequirementsProvider> goalGeneratorProviders = new HashMap<>();
-    private final Map<String, BoardBuilderGoalsWidget.GoalEntry> goalEntryMap = new LinkedHashMap<>();
 
     private GoalRegistry() {}
 
@@ -34,7 +33,6 @@ public class GoalRegistry {
         registry.put(id, goalClass);
         goalGeneratorProviders.put(id, goalRequirementsProvider);
         goalDataGenerators.put(id, goalDataGenerator);
-        goalEntryMap.put(id, new BoardBuilderGoalsWidget.GoalEntry(id));
     }
 
     public Goal newGoal(String id, String data) {
@@ -52,14 +50,6 @@ public class GoalRegistry {
 
     public GoalRequirementsProvider getGoalGenerator(String id) {
         return goalGeneratorProviders.get(id);
-    }
-
-    public Map<String, BoardBuilderGoalsWidget.GoalEntry> getGoalEntryMap() {
-        return goalEntryMap;
-    }
-
-    public BoardBuilderGoalsWidget.GoalEntry getGoalEntry(String id) {
-        return goalEntryMap.get(id);
     }
 
     public List<String> getRegisteredGoals() {

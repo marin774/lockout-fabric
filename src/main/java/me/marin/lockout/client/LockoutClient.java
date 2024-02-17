@@ -6,8 +6,8 @@ import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.client.gui.BoardBuilderIO;
 import me.marin.lockout.client.gui.BoardScreen;
 import me.marin.lockout.client.gui.BoardScreenHandler;
+import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -50,6 +50,12 @@ public class LockoutClient implements ClientModInitializer {
 
     static {
         BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(Constants.BOARD_SCREEN_ID, BoardScreenHandler::new);
+        try {
+            BoardBuilderIO.INSTANCE.convertLegacyBoards();
+        } catch (IOException e) {
+            System.err.println("Error while converting legacy boards.");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -177,38 +183,24 @@ public class LockoutClient implements ClientModInitializer {
                 var boardNameNode = ClientCommandManager.argument("board name", CustomBoardFileArgumentType.newInstance()).executes((context) -> {
                     String boardName = context.getArgument("board name", String.class);
 
-                    String boardString;
+                    JSONBoard jsonBoard;
                     try {
-                        boardString = BoardBuilderIO.INSTANCE.readBoard(boardName).trim();
+                        jsonBoard = BoardBuilderIO.INSTANCE.readBoard(boardName);
                     } catch (IOException e) {
                         context.getSource().sendError(Text.literal("Error while trying to read board."));
                         return 0;
                     }
 
-                    // parse board
-                    List<String> goalStrings = List.of(boardString.split("\n"));
-                    if (goalStrings.size() != 25) {
+                    if (jsonBoard.goals.size() != 25) {
                         context.getSource().sendError(Text.literal("Board doesn't have 25 goals!"));
                         return 0;
-                    }
-                    List<Goal> goals = new ArrayList<>();
-                    for (String goalString : goalStrings) {
-                        String id;
-                        String data = null;
-                        if (goalString.contains(" ")) {
-                            id = goalString.split(" ")[0];
-                            data = goalString.substring(id.length() + 1);
-                        } else {
-                            id = goalString;
-                        }
-                        goals.add(GoalRegistry.INSTANCE.newGoal(id, data));
                     }
 
                     PacketByteBuf buf = PacketByteBufs.create();
                     buf.writeBoolean(false); // whether board should be cleared
-                    for (Goal goal : goals) {
-                        buf.writeString(goal.getId());
-                        buf.writeString(goal.getData() == null ? GoalDataConstants.DATA_NONE : goal.getData());
+                    for (JSONBoard.JSONGoal goal : jsonBoard.goals) {
+                        buf.writeString(goal.id);
+                        buf.writeString(goal.data == null ? GoalDataConstants.DATA_NONE : goal.data);
                     }
 
                     ClientPlayNetworking.send(Constants.CUSTOM_BOARD_PACKET, buf);

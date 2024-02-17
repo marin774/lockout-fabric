@@ -45,7 +45,7 @@ public class CustomBoardFileArgumentType implements ArgumentType<String> {
             List<String> boardNames = BoardBuilderIO.INSTANCE.getSavedBoards();
             return CommandSource.suggestMatching(boardNames, builder);
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
             return Suggestions.empty();
         }
     }

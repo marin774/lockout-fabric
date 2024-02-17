@@ -27,7 +27,6 @@ public class CompassItemHandler {
     public Map<UUID, Integer> currentSelection = new HashMap<>();
 
     public CompassItemHandler(List<ServerPlayerEntity> players) {
-        INSTANCE = this;
         int i = 0;
         for (ServerPlayerEntity player : players) {
             this.players.add(player.getUuid());

@@ -33,11 +33,11 @@ Or if you want to do FFA:
 
 If you want to chat with your team, run `/chat team`.
 
-# Board Builder
+# Board Builder (not in a release yet)
 
-You can build and play custom boards in-game.
-There's some extra goals that aren't part of "random goal pool" which you can use in Board Builder.
-Boards are saved locally (client-side), in `.minecraft\lockout-boards`
+You can create and play custom boards in-game.
+There's some extra goals that aren't part of the "random goal pool" which you can find in Board Builder.
+Boards are saved locally (client-side), in `...\.minecraft\lockout-boards`
 
 To open the Board Builder, run:
 `/BoardBuilder`
@@ -45,7 +45,7 @@ To open the Board Builder, run:
 To set a custom board (which will be applied when you start a /lockout or /blackout game):
 `/SetCustomBoard <custom board name>`
 
-> Custom Boards are set on servers and are kept temporarily, so you will need to use this command on the server you will play on.
+> Custom Boards set on servers and are only in memory while the server is running, so you will need to use this command just before you play (server restart will "unset" custom boards).
 
 To unset/remove a custom board from the server, run:
 `/RemoveCustomBoard`

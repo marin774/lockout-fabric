@@ -19,7 +19,7 @@ public class BoardBuilderIO {
     private static final String FILE_EXTENSION = ".json";
     private static final String LEGACY_FILE_EXTENSION = ".txt";
 
-    public static BoardBuilderIO INSTANCE = new BoardBuilderIO();
+    public static final BoardBuilderIO INSTANCE = new BoardBuilderIO();
 
 
     public BoardBuilderIO() {
@@ -54,7 +54,7 @@ public class BoardBuilderIO {
     }
 
     public void convertLegacyBoards() throws IOException {
-        List<Path> paths = Files.list(DIRECTORY).filter(p -> p.getFileName().toString().endsWith(LEGACY_FILE_EXTENSION)).toList();;
+        List<Path> paths = Files.list(DIRECTORY).filter(p -> p.getFileName().toString().endsWith(LEGACY_FILE_EXTENSION)).toList();
         for (Path path : paths) {
             String legacy = Files.readString(path, Charset.defaultCharset());
 

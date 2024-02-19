@@ -6,9 +6,13 @@ import me.marin.lockout.lockout.texture.TextureProvider;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 public abstract class GetUniqueAdvancementsGoal extends Goal implements RequiresAmount, Trackable<LockoutTeam, LinkedHashSet<Identifier>>, TextureProvider, HasTooltipInfo {
 
@@ -32,11 +36,25 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
     @Override
     public List<String> getTooltip(LockoutTeam team) {
         List<String> lore = new ArrayList<>();
-        var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
+        var advancements = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 
         lore.add(" ");
-        lore.add("Advancements: " + foods.size() + "/" + getAmount());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).getDisplay().getTitle().getString()).toList()));
+        lore.add("Advancements: " + advancements.size() + "/" + getAmount());
+        lore.addAll(HasTooltipInfo.commaSeparatedList(advancements.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).getDisplay().getTitle().getString()).toList()));
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            var advancements = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + advancements.size() + "/" + getAmount());
+        }
         lore.add(" ");
 
         return lore;

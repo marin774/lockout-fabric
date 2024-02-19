@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -56,6 +57,20 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
 
         lore.add(" ");
         lore.add("Damage: " + Math.min(400, (int) damage) + "/400");
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            double damage = LockoutServer.lockout.damageDealt.getOrDefault(team, 0.0);
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + Math.min(400, (int) damage) + "/400");
+        }
         lore.add(" ");
 
         return lore;

@@ -9,9 +9,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmount, CustomTextureRenderer, HasTooltipInfo {
 
@@ -31,6 +34,20 @@ public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmo
         lore.add(" ");
         lore.add("Animals bred: " + animals.size() + "/" + getAmount());
         lore.addAll(HasTooltipInfo.commaSeparatedList(animals.stream().map(type -> type.getName().getString()).toList()));
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            var animals = LockoutServer.lockout.bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + animals.size() + "/" + getAmount());
+        }
         lore.add(" ");
 
         return lore;

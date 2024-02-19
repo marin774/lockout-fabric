@@ -14,15 +14,13 @@ public class KillColoredSheepGoal extends Goal implements TextureProvider {
 
     private static final Item ITEM = Items.SHEEP_SPAWN_EGG;
 
-    private final String color;
     private final Identifier texture;
     private final String GOAL_NAME;
     private final DyeColor DYE_COLOR;
 
     public KillColoredSheepGoal(String id, String data) {
         super(id, data);
-        color = data;
-        texture = new Identifier(Constants.NAMESPACE, "textures/custom/sheep/kill_" + color + "_sheep.png");
+        texture = new Identifier(Constants.NAMESPACE, "textures/custom/sheep/kill_" + data + "_sheep.png");
         DYE_COLOR = GoalDataConstants.getDyeColor(data);
         GOAL_NAME = "Kill " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " Sheep";
     }

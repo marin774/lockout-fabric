@@ -2,6 +2,7 @@ package me.marin.lockout;
 
 import me.marin.lockout.server.LockoutServer;
 
+@FunctionalInterface
 public interface LockoutRunnable {
 
     default void runTaskAfter(int ticks) {

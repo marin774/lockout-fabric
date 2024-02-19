@@ -15,7 +15,7 @@ public class ReachBedrockGoal extends Goal {
         return "Reach Bedrock";
     }
 
-    private static ItemStack ITEM_STACK = Items.BEDROCK.getDefaultStack();
+    private static final ItemStack ITEM_STACK = Items.BEDROCK.getDefaultStack();
     @Override
     public ItemStack getTextureItemStack() {
         return ITEM_STACK;

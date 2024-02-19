@@ -5,13 +5,15 @@ import net.minecraft.util.Identifier;
 public class Constants {
 
     public static final String NAMESPACE = "lockout";
+
     public static final Identifier LOCKOUT_GOALS_TEAMS_PACKET = new Identifier(NAMESPACE, "lockout_goals_teams");
     public static final Identifier START_LOCKOUT_PACKET = new Identifier(NAMESPACE, "start_lockout");
     public static final Identifier UPDATE_LORE = new Identifier(NAMESPACE, "update_lore");
     public static final Identifier COMPLETE_TASK_PACKET = new Identifier(NAMESPACE, "complete_task");
     public static final Identifier END_LOCKOUT_PACKET = new Identifier(NAMESPACE, "end_lockout");
+
     public static final Identifier CUSTOM_BOARD_PACKET = new Identifier(NAMESPACE, "set_custom_board");
-    public static final Identifier BOARD_SCREEN_ID = new Identifier(NAMESPACE, "board");
+
     public static final Identifier BOARD_FILE_ARGUMENT_TYPE = new Identifier(NAMESPACE, "board_file");
 
     public static final Identifier GUI_IDENTIFIER = new Identifier(NAMESPACE, "textures/guis/gui.png");

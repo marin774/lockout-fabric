@@ -3,6 +3,7 @@ package me.marin.lockout.lockout.interfaces;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -26,4 +27,19 @@ public abstract class KillUniqueHostileMobsGoal extends Goal implements Requires
 
         return lore;
     }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            var hostiles = LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>());
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + hostiles.size() + "/" + getAmount());
+        }
+        lore.add(" ");
+
+        return lore;
+    }
+
 }

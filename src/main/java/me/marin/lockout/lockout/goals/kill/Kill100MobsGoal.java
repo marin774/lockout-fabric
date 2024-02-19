@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -56,6 +57,19 @@ public class Kill100MobsGoal extends Goal implements TextureProvider, CustomText
 
         lore.add(" ");
         lore.add("Mobs killed: " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
+        }
         lore.add(" ");
 
         return lore;

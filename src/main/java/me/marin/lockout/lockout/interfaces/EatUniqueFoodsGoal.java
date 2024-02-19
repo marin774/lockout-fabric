@@ -10,9 +10,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 import static net.minecraft.item.FoodComponents.*;
 
@@ -52,6 +56,20 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
         lore.add(" ");
         lore.add("Unique Food types: " + foods.size() + "/" + getAmount());
         lore.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(EatUniqueFoodsGoal::foodComponentToString).toList()));
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + foods.size() + "/" + getAmount());
+        }
         lore.add(" ");
 
         return lore;

@@ -2,7 +2,6 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
-import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,9 +32,9 @@ public class CompassItemMixin {
         if (!CompassItemHandler.isCompass(stack)) return;
 
         CompassItem item = (CompassItem) stack.getItem();
-        int selectionNum = CompassItemHandler.INSTANCE.currentSelection.getOrDefault(player.getUuid(), -1);
+        int selectionNum = LockoutServer.compassHandler.currentSelection.getOrDefault(player.getUuid(), -1);
         if (selectionNum < 0) return;
-        UUID selectedId = CompassItemHandler.INSTANCE.players.get(selectionNum);
+        UUID selectedId = LockoutServer.compassHandler.players.get(selectionNum);
         PlayerEntity selectedPlayer = world.getServer().getPlayerManager().getPlayer(selectedId);
         if (selectedPlayer != null) {
             if (selectedPlayer.getWorld().equals(player.getWorld())) {
@@ -48,7 +47,10 @@ public class CompassItemMixin {
             compound.remove(CompassItem.LODESTONE_TRACKED_KEY);
         }
 
-        stack.setCustomName(Text.of(Formatting.RESET + "Tracking: " + CompassItemHandler.INSTANCE.playerNames.get(CompassItemHandler.INSTANCE.players.get(CompassItemHandler.INSTANCE.currentSelection.get(player.getUuid()))) ));
+        CompassItemHandler cih = LockoutServer.compassHandler;
+        String trackingPlayerName = cih.playerNames.get(cih.players.get(cih.currentSelection.get(player.getUuid())));
+
+        stack.setCustomName(Text.of(Formatting.RESET + "Tracking: " +  trackingPlayerName));
     }
 
 }

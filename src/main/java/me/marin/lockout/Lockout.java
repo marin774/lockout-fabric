@@ -27,21 +27,21 @@ public class Lockout {
     public static final Random random = new Random();
     public final static int[] COLOR_ORDERS = new int[]{12, 9, 10, 14, 6, 13, 11, 5, 3, 2, 15, 4, 7, 1, 8, 0};
 
-    public Map<LockoutTeam, LinkedHashSet<EntityType<?>>> bredAnimalTypes = new HashMap<>();
-    public Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedHostileTypes = new HashMap<>();
-    public Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedRaidMobs = new HashMap<>();
-    public Map<LockoutTeam, Integer> killedUndeadMobs = new HashMap<>();
-    public Map<LockoutTeam, Integer> killedArthropods = new HashMap<>();
-    public Map<LockoutTeam, LinkedHashSet<FoodComponent>> foodTypesEaten = new HashMap<>();
-    public Map<LockoutTeam, LinkedHashSet<Identifier>> uniqueAdvancements = new HashMap<>();
-    public Map<UUID, Long> pumpkinWearStart = new HashMap<>();
-    public Map<LockoutTeam, Double> damageTaken = new HashMap<>();
-    public Map<LockoutTeam, Double> damageDealt = new HashMap<>();
-    public Map<UUID, Integer> deaths = new HashMap<>();
-    public Map<LockoutTeam, Integer> mobsKilled = new HashMap<>();
+    public final Map<LockoutTeam, LinkedHashSet<EntityType<?>>> bredAnimalTypes = new HashMap<>();
+    public final Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedHostileTypes = new HashMap<>();
+    public final Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedRaidMobs = new HashMap<>();
+    public final Map<LockoutTeam, Integer> killedUndeadMobs = new HashMap<>();
+    public final Map<LockoutTeam, Integer> killedArthropods = new HashMap<>();
+    public final Map<LockoutTeam, LinkedHashSet<FoodComponent>> foodTypesEaten = new HashMap<>();
+    public final Map<LockoutTeam, LinkedHashSet<Identifier>> uniqueAdvancements = new HashMap<>();
+    public final Map<UUID, Long> pumpkinWearStart = new HashMap<>();
+    public final Map<LockoutTeam, Double> damageTaken = new HashMap<>();
+    public final Map<LockoutTeam, Double> damageDealt = new HashMap<>();
+    public final Map<UUID, Integer> deaths = new HashMap<>();
+    public final Map<LockoutTeam, Integer> mobsKilled = new HashMap<>();
     // public Map<UUID, Integer> most_x_Item = new LinkedHashMap<>();
-    public Map<UUID, Integer> distanceSprinted = new HashMap<>();
-    public Map<UUID, Set<Item>> uniqueCrafts = new HashMap<>();
+    public final Map<UUID, Integer> distanceSprinted = new HashMap<>();
+    public final Map<UUID, Set<Item>> uniqueCrafts = new HashMap<>();
 
     public UUID mostUniqueCraftsPlayer;
     public int mostUniqueCrafts;
@@ -350,7 +350,7 @@ public class Lockout {
     }
 
 
-    public Map<UUID, Integer> levels = new LinkedHashMap<>();
+    public final Map<UUID, Integer> levels = new LinkedHashMap<>();
     private UUID mostLevelsPlayer;
 
     public void recalculateXPGoal(Goal goal) {

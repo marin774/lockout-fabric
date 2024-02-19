@@ -33,7 +33,7 @@ public class ServerPlayerEntityMixin {
         if (CompassItemHandler.isCompass(player.getInventory().offHand.get(0))) {
             i = 40;
         }
-        LockoutServer.onDeathCompassSlot.put(player.getUuid(), i);
+        LockoutServer.compassHandler.compassSlots.put(player.getUuid(), i);
     }
 
 }

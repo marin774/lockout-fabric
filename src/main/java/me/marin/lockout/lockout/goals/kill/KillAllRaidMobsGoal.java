@@ -11,6 +11,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class KillAllRaidMobsGoal extends KillAllSpecificMobsGoal implements Cust
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/bad_omen.png");
 
     static {
-        DISPLAY_ITEM_STACK.setCount(6);
+        DISPLAY_ITEM_STACK.setCount(MOBS.size());
     }
 
     public KillAllRaidMobsGoal(String id, String data) {
@@ -58,8 +59,22 @@ public class KillAllRaidMobsGoal extends KillAllSpecificMobsGoal implements Cust
         var raidMobs = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 
         lore.add(" ");
-        lore.add("Raid mobs killed: " + raidMobs.size() + "/" + 6);
+        lore.add("Raid mobs killed: " + raidMobs.size() + "/" + MOBS.size());
         lore.addAll(HasTooltipInfo.commaSeparatedList(raidMobs.stream().map(type -> type.getName().getString()).toList()));
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            var raidMobs = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + raidMobs.size() + "/" + MOBS.size());
+        }
         lore.add(" ");
 
         return lore;

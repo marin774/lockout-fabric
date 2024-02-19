@@ -9,6 +9,7 @@ public class GoalGroup {
 
     private final static List<GoalGroup> GOAL_GROUPS = new ArrayList<>();
 
+    //TODO: init list with all of these values.
     public static final GoalGroup END = new GoalGroup(List.of(
             ENTER_END, KILL_ENDER_DRAGON, EAT_CHORUS_FRUIT, OBTAIN_DRAGON_EGG, OBTAIN_END_ROD, GET_LEVITATION_STATUS_EFFECT, GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT, BREW_LINGERING_POTION
     ), 2);
@@ -147,6 +148,14 @@ public class GoalGroup {
             WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR
     ), 1);
 
+    static {
+        KILL_UNIQUE_HOSTILES.requirePredecessor.add(KILL_13_UNIQUE_HOSTILE_MOBS);
+        KILL_UNIQUE_HOSTILES.requirePredecessor.add(KILL_15_UNIQUE_HOSTILE_MOBS);
+        BREED_X_UNIQUE.requirePredecessor.add(BREED_8_UNIQUE_ANIMALS);
+        EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_20_UNIQUE_FOOD);
+        EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_25_UNIQUE_FOOD);
+    }
+
 
     private final List<String> goals;
     private final int limit;
@@ -185,14 +194,6 @@ public class GoalGroup {
         }
 
         return found;
-    }
-
-    static {
-        KILL_UNIQUE_HOSTILES.requirePredecessor.add(KILL_13_UNIQUE_HOSTILE_MOBS);
-        KILL_UNIQUE_HOSTILES.requirePredecessor.add(KILL_15_UNIQUE_HOSTILE_MOBS);
-        BREED_X_UNIQUE.requirePredecessor.add(BREED_8_UNIQUE_ANIMALS);
-        EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_20_UNIQUE_FOOD);
-        EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_25_UNIQUE_FOOD);
     }
 
     public static boolean canAdd(String goalType, List<String> board) {

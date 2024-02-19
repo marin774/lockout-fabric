@@ -1,17 +1,10 @@
 package me.marin.lockout.lockout;
 
-import me.marin.lockout.client.gui.BoardBuilderGoalsWidget;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class GoalRegistry {
 

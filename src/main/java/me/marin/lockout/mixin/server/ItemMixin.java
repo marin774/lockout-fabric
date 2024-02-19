@@ -1,6 +1,5 @@
 package me.marin.lockout.mixin.server;
 
-import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +31,7 @@ public class ItemMixin {
 
         NbtCompound nbt = stack.getOrCreateNbt();
         if (nbt.contains("PlayerTracker")) {
-            CompassItemHandler.INSTANCE.cycle(player);
+            LockoutServer.compassHandler.cycle(player);
         }
     }
 

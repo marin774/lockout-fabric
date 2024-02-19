@@ -14,7 +14,7 @@ public class ObtainColoredGlazedTerracottaGoal extends ObtainAllItemsGoal {
 
     private final String GOAL_NAME;
 
-    public ObtainColoredGlazedTerracottaGoal(String id, String data) throws NoSuchFieldException, IllegalAccessException {
+    public ObtainColoredGlazedTerracottaGoal(String id, String data) {
         super(id, data);
         DyeColor DYE_COLOR = GoalDataConstants.getDyeColor(data);
 

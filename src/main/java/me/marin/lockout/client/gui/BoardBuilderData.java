@@ -2,11 +2,13 @@ package me.marin.lockout.client.gui;
 
 import me.marin.lockout.lockout.Goal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BoardBuilderData {
 
-    public static BoardBuilderData INSTANCE;
+    public static final BoardBuilderData INSTANCE;
     static {
         INSTANCE = new BoardBuilderData();
     }

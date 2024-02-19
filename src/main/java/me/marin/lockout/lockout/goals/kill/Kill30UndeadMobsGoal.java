@@ -10,6 +10,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -94,6 +95,19 @@ public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleT
 
         lore.add(" ");
         lore.add("Undead Mobs killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+        lore.add(" ");
+
+        return lore;
+    }
+
+    @Override
+    public List<String> getSpectatorTooltip() {
+        List<String> lore = new ArrayList<>();
+
+        lore.add(" ");
+        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
+            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+        }
         lore.add(" ");
 
         return lore;

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class GoalDataGenerator {
 
-    public static List<DyeColor> ALL_DYES = List.of(
+    public static final List<DyeColor> ALL_DYES = List.of(
             DyeColor.BLACK, DyeColor.WHITE, DyeColor.GRAY, DyeColor.LIGHT_GRAY,
             DyeColor.BLUE, DyeColor.LIGHT_BLUE, DyeColor.ORANGE, DyeColor.RED,
             DyeColor.YELLOW, DyeColor.MAGENTA, DyeColor.PINK, DyeColor.PURPLE,

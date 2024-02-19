@@ -9,6 +9,7 @@ import java.util.List;
 public interface HasTooltipInfo {
 
     List<String> getTooltip(LockoutTeam team);
+    List<String> getSpectatorTooltip();
 
     int maxLineSize = 40;
     static List<String> commaSeparatedList(List<String> values) {

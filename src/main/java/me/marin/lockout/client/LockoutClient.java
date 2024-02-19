@@ -4,8 +4,7 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.client.gui.BoardBuilderIO;
-import me.marin.lockout.client.gui.BoardScreen;
-import me.marin.lockout.client.gui.BoardScreenHandler;
+import me.marin.lockout.client.gui.BoardBuilderScreen;
 import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
@@ -18,14 +17,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -42,14 +38,12 @@ public class LockoutClient implements ClientModInitializer {
 
     public static Lockout lockout;
     private static KeyBinding keyBinding;
-    public static final ScreenHandlerType<BoardScreenHandler> BOARD_SCREEN_HANDLER;
     public static int CURRENT_TICK = 0;
-    public static Map<String, String> goalLoreMap = new HashMap<>();
+    public static final Map<String, String> goalLoreMap = new HashMap<>();
 
     public static boolean shouldOpenBoardBuilder = false;
 
     static {
-        BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(Constants.BOARD_SCREEN_ID, BoardScreenHandler::new);
         try {
             BoardBuilderIO.INSTANCE.convertLegacyBoards();
         } catch (IOException e) {
@@ -94,7 +88,7 @@ public class LockoutClient implements ClientModInitializer {
 
             client.execute(() -> {
                 if (client.player != null) {
-                    MinecraftClient.getInstance().setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
+                    client.setScreen(new BoardBuilderScreen(Text.empty()));
                 }
             });
         });
@@ -233,14 +227,12 @@ public class LockoutClient implements ClientModInitializer {
                 }
 
                 // Open GUI
-                MinecraftClient.getInstance().setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
+                client.setScreen(new BoardBuilderScreen(Text.empty()));
             }
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
             lockout = null;
         }));
-
-        HandledScreens.register(BOARD_SCREEN_HANDLER, BoardScreen::new);
 
     }
 

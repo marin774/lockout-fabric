@@ -33,7 +33,7 @@ Or if you want to do FFA:
 
 If you want to chat with your team, run `/chat team`.
 
-# Board Builder (not in a release yet)
+# Board Builder
 
 You can create and play custom boards in-game.
 There's some extra goals that aren't part of the "random goal pool" which you can find in Board Builder.

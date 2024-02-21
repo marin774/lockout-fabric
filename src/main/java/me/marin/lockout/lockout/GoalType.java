@@ -45,6 +45,7 @@ public class GoalType {
     public static final String KILL_SILVERFISH = "KILL_SILVERFISH";
     public static final String KILL_GUARDIAN = "KILL_GUARDIAN";
     public static final String KILL_GHAST = "KILL_GHAST";
+    public static final String KILL_BAT = "KILL_BAT";
     public static final String KILL_SNOW_GOLEM = "KILL_SNOW_GOLEM";
     public static final String KILL_SNOW_GOLEM_IN_NETHER = "KILL_SNOW_GOLEM_IN_NETHER";
     public static final String KILL_ELDER_GUARDIAN = "KILL_ELDER_GUARDIAN";
@@ -220,5 +221,6 @@ public class GoalType {
     public static final String FILL_CAMPFIRE = "FILL_CAMPFIRE";
     public static final String PUT_FLOWER_IN_POT = "PUT_FLOWER_IN_POT";
     public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
+    public static final String FILL_CHISELED_BOOKSHELF = "FILL_CHISELED_BOOKSHELF";
 
 }

@@ -11,6 +11,7 @@
     "server.BrewedPotionCriterionMixin",
     "server.BrewingStandScreenHandlerPotionSlotMixin",
     "server.CampfireBlockEntityMixin",
+    "server.ChiseledBookshelfBlockMixin",
     "server.CompassItemMixin",
     "server.ComposterBlockMixin",
     "server.ConsumeItemCriterionMixin",

@@ -16,7 +16,7 @@ import java.util.List;
 public class BoardBuilderIO {
 
     public static final Path DIRECTORY = MinecraftClient.getInstance().runDirectory.toPath().resolve("lockout-boards");
-    private static final String FILE_EXTENSION = ".json";
+    public static final String FILE_EXTENSION = ".json";
     @Deprecated
     private static final String LEGACY_FILE_EXTENSION = ".txt";
 

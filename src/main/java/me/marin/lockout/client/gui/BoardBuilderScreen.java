@@ -66,9 +66,7 @@ public class BoardBuilderScreen extends Screen {
         int centerY = height / 2;
 
         titleTextField = new TextFieldWidget(textRenderer, centerX - 60 - CENTER_OFFSET, centerY - 80, 120, 18, Text.empty());
-        titleTextField.setChangedListener(s -> {
-            BoardBuilderData.INSTANCE.setTitle(s);
-        });
+        titleTextField.setChangedListener(BoardBuilderData.INSTANCE::setTitle);
         titleTextField.setText(BoardBuilderData.INSTANCE.getTitle());
         this.addDrawableChild(titleTextField);
 
@@ -217,7 +215,7 @@ public class BoardBuilderScreen extends Screen {
         String finalBoardName = boardName;
         Text openBoardFile = Text.literal("[Open file]").styled(style ->
                 style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, BoardBuilderIO.INSTANCE.getBoardPath(finalBoardName).toFile().getAbsolutePath()))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open board file.")))
                         .withFormatting(Formatting.WHITE)
         );
         Text openBoardsDirectory = Text.literal("[View all boards]").styled(style ->
@@ -225,7 +223,7 @@ public class BoardBuilderScreen extends Screen {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
                         .withFormatting(Formatting.WHITE)
         );
-        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved board as " + boardName + ".txt!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved custom board as " + boardName + BoardBuilderIO.FILE_EXTENSION + "!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
         close();
     }
 

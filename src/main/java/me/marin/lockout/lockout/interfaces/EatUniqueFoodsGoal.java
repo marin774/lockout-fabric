@@ -52,7 +52,6 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
         List<String> lore = new ArrayList<>();
         var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 
-
         lore.add(" ");
         lore.add("Unique Food types: " + foods.size() + "/" + getAmount());
         lore.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(EatUniqueFoodsGoal::foodComponentToString).toList()));
@@ -68,7 +67,7 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + foods.size() + "/" + getAmount());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + foods.size() + "/" + getAmount());
         }
         lore.add(" ");
 

@@ -17,7 +17,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class CustomBoardFileArgumentType implements ArgumentType<String> {
 
-
     public CustomBoardFileArgumentType() {}
 
     public static CustomBoardFileArgumentType newInstance() {

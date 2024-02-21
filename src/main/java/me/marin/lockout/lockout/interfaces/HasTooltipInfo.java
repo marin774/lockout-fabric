@@ -11,7 +11,7 @@ public interface HasTooltipInfo {
     List<String> getTooltip(LockoutTeam team);
     List<String> getSpectatorTooltip();
 
-    int maxLineSize = 40;
+    int MAX_LINE_SIZE = 40;
     static List<String> commaSeparatedList(List<String> values) {
         List<String> lines = new ArrayList<>();
 
@@ -25,7 +25,7 @@ public interface HasTooltipInfo {
                 sb.append(", ");
             }
 
-            if (sb.length() + part.length() + (isLast ? 0 : 2) > maxLineSize) {
+            if (sb.length() + part.length() + (isLast ? 0 : 2) > MAX_LINE_SIZE) {
                 lines.add(Formatting.GRAY + " " + Formatting.ITALIC + sb);
                 sb = new StringBuilder();
             }

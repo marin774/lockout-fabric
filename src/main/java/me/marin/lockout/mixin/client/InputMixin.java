@@ -15,6 +15,7 @@ public class InputMixin {
     public void tick(boolean slowDown, float slowDownFactor, CallbackInfo ci) {
         Lockout lockout = LockoutClient.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
+        if (!LockoutClient.amIPlayingLockout) return;
 
         KeyboardInput input = (KeyboardInput) (Object) this;
         if (!lockout.hasStarted()) {

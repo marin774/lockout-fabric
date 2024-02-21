@@ -19,7 +19,10 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.*;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.awt.*;
@@ -50,8 +53,8 @@ public class BoardBuilderScreen extends Screen {
     private TextWidget editDataErrorTextWidget;
 
 
-    public BoardBuilderScreen(Text title) {
-        super(title);
+    public BoardBuilderScreen() {
+        super(Text.empty());
     }
 
     @Override

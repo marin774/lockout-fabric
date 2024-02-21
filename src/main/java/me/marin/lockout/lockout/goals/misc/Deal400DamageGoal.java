@@ -69,7 +69,7 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             double damage = LockoutServer.lockout.damageDealt.getOrDefault(team, 0.0);
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + Math.min(400, (int) damage) + "/400");
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + Math.min(400, (int) damage) + "/400");
         }
         lore.add(" ");
 

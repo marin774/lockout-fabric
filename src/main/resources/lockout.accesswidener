@@ -5,7 +5,6 @@ accessible class net/minecraft/screen/BrewingStandScreenHandler$PotionSlot
 accessible field net/minecraft/client/gui/hud/DebugHud blockHit Lnet/minecraft/util/hit/HitResult;
 accessible field net/minecraft/client/gui/hud/DebugHud fluidHit Lnet/minecraft/util/hit/HitResult;
 accessible method net/minecraft/client/gui/hud/DebugHud propertyToString (Ljava/util/Map$Entry;)Ljava/lang/String;
-# accessible field net/minecraft/client/gui/hud/DebugHud renderingAndTickChartsVisible Z
 accessible field net/minecraft/client/Keyboard debugCrashStartTime J
 accessible field net/minecraft/client/Keyboard client Lnet/minecraft/client/MinecraftClient;
 accessible field net/minecraft/screen/StonecutterScreenHandler outputSlot Lnet/minecraft/screen/slot/Slot;

@@ -22,7 +22,7 @@ public class LockoutInitializer implements ModInitializer {
             {
                 {
                     // Lockout command
-                    var commandNode = CommandManager.literal("lockout").build();
+                    var commandNode = CommandManager.literal("lockout").requires(ssc -> ssc.hasPermissionLevel(2)).build();
                     var teamsNode = CommandManager.literal("teams").build();
                     var playersNode = CommandManager.literal("players").build();
                     var teamListNode = CommandManager.argument("team names", StringArgumentType.greedyString()).executes(LockoutServer::lockoutCommandLogic).build();
@@ -38,7 +38,7 @@ public class LockoutInitializer implements ModInitializer {
 
                 {
                     // Blackout command
-                    var commandNode = CommandManager.literal("blackout").build();
+                    var commandNode = CommandManager.literal("blackout").requires(ssc -> ssc.hasPermissionLevel(2)).build();
                     var teamNode = CommandManager.literal("team").build();
                     var playersNode = CommandManager.literal("players").build();
                     var teamNameNode = CommandManager.argument("team name", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
@@ -67,7 +67,7 @@ public class LockoutInitializer implements ModInitializer {
 
             {
                 // GiveGoal command
-                var giveGoalRoot = CommandManager.literal("GiveGoal").build();
+                var giveGoalRoot = CommandManager.literal("GiveGoal").requires(ssc -> ssc.hasPermissionLevel(2)).build();
                 var playerName = CommandManager.argument("player name", GameProfileArgumentType.gameProfile()).build();
                 var goalIndex = CommandManager.argument("goal number", IntegerArgumentType.integer(1, 25)).executes(LockoutServer::giveGoal).build();
 

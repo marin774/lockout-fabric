@@ -106,7 +106,7 @@ public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleT
 
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
         }
         lore.add(" ");
 

@@ -7,7 +7,10 @@ import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
-import me.marin.lockout.lockout.goals.opponent.*;
+import me.marin.lockout.lockout.goals.opponent.OpponentHitByEggGoal;
+import me.marin.lockout.lockout.goals.opponent.OpponentHitBySnowballGoal;
+import me.marin.lockout.lockout.goals.opponent.OpponentTakes100DamageGoal;
+import me.marin.lockout.lockout.goals.opponent.OpponentTakesFallDamageGoal;
 import me.marin.lockout.lockout.interfaces.ConsumeItemGoal;
 import me.marin.lockout.lockout.interfaces.EatUniqueFoodsGoal;
 import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
@@ -66,14 +69,14 @@ public abstract class PlayerMixin {
             if (goal instanceof OpponentHitBySnowballGoal) {
                 if (entity instanceof SnowballEntity snowballEntity) {
                     if (snowballEntity.getOwner() instanceof PlayerEntity shooter && !Objects.equals(player, shooter)) {
-                        lockout.opponentCompletedGoal(goal, player, shooter.getName().getString() + " hit " + player.getName().getString() + " with a Snowball.");
+                        lockout.completed1v1Goal(goal, shooter, true, shooter.getName().getString() + " hit " + player.getName().getString() + " with a Snowball.");
                     }
                 }
             }
             if (goal instanceof OpponentHitByEggGoal) {
                 if (entity instanceof EggEntity snowballEntity) {
                     if (snowballEntity.getOwner() instanceof PlayerEntity shooter && !Objects.equals(player, shooter)) {
-                        lockout.opponentCompletedGoal(goal, player, shooter.getName().getString() + " hit " + player.getName().getString() + " with an Egg.");
+                        lockout.completed1v1Goal(goal, shooter, true, shooter.getName().getString() + " hit " + player.getName().getString() + " with an Egg.");
                     }
                 }
             }
@@ -118,12 +121,12 @@ public abstract class PlayerMixin {
             }
             if (goal instanceof OpponentTakesFallDamageGoal) {
                 if (source.isOf(DamageTypes.FALL)) {
-                    lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " took fall damage.");
+                    lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " took fall damage.");
                 }
             }
             if (goal instanceof OpponentTakes100DamageGoal) {
                 if (lockout.damageTaken.get(team) >= 100) {
-                    lockout.opponentCompletedGoal(goal, team, team.getDisplayName() + " took 100 damage.");
+                    lockout.completed1v1Goal(goal, team, false, team.getDisplayName() + " took 100 damage.");
                 }
             }
         }

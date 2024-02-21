@@ -97,7 +97,7 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
 
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
         }
         lore.add(" ");
 

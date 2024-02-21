@@ -35,7 +35,7 @@ public abstract class KillUniqueHostileMobsGoal extends Goal implements Requires
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var hostiles = LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + hostiles.size() + "/" + getAmount());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + hostiles.size() + "/" + getAmount());
         }
         lore.add(" ");
 

@@ -1,7 +1,5 @@
 package me.marin.lockout;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -10,7 +8,6 @@ import net.minecraft.server.PlayerManager;
 
 import java.util.*;
 
-@Environment(EnvType.SERVER)
 public class CompassItemHandler {
 
     public static boolean isCompass(ItemStack item) {

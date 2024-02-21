@@ -2,6 +2,7 @@ package me.marin.lockout;
 
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
+import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
@@ -59,6 +60,8 @@ public class LockoutTeamServer extends LockoutTeam {
         buf.writeString(goal.getId());
         buf.writeString(String.join("\n", goal.getTooltip(this)));
         this.sendPacket(Constants.UPDATE_LORE, buf);
+
+        this.sendTooltipPacketSpectators(goal);
     }
     public void sendPacket(Identifier packetId, PacketByteBuf packet) {
         for (UUID playerId : players) {
@@ -66,6 +69,14 @@ public class LockoutTeamServer extends LockoutTeam {
             if (player != null) {
                 ServerPlayNetworking.send(player, packetId, packet);
             }
+        }
+    }
+    private <T extends Goal & HasTooltipInfo> void sendTooltipPacketSpectators(T goal) {
+        PacketByteBuf specBuf = PacketByteBufs.create();
+        specBuf.writeString(goal.getId());
+        specBuf.writeString(String.join("\n", goal.getSpectatorTooltip()));
+        for (ServerPlayerEntity spectator : Utility.getSpectators(LockoutServer.lockout, server)) {
+            ServerPlayNetworking.send(spectator, Constants.UPDATE_LORE, specBuf);
         }
     }
 

@@ -46,7 +46,7 @@ public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmo
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var animals = LockoutServer.lockout.bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + animals.size() + "/" + getAmount());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + animals.size() + "/" + getAmount());
         }
         lore.add(" ");
 

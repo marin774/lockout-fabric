@@ -6,6 +6,8 @@ import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -160,6 +162,13 @@ public class Utility {
             }
         }
         context.drawOrderedTooltip(textRenderer, lore, mouseX, mouseY);
+    }
+
+    public static List<ServerPlayerEntity> getSpectators(Lockout lockout, MinecraftServer server) {
+        return server.getPlayerManager().getPlayerList()
+                .stream()
+                .filter(p -> !lockout.isLockoutPlayer(p.getUuid()))
+                .toList();
     }
 
 }

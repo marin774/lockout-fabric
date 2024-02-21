@@ -14,6 +14,8 @@ public class Constants {
 
     public static final Identifier CUSTOM_BOARD_PACKET = new Identifier(NAMESPACE, "set_custom_board");
 
+    public static final Identifier BOARD_SCREEN_ID = new Identifier(NAMESPACE, "board");
+
     public static final Identifier BOARD_FILE_ARGUMENT_TYPE = new Identifier(NAMESPACE, "board_file");
 
     public static final Identifier GUI_IDENTIFIER = new Identifier(NAMESPACE, "textures/guis/gui.png");

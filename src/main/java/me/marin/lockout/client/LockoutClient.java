@@ -4,7 +4,8 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.client.gui.BoardBuilderIO;
-import me.marin.lockout.client.gui.BoardBuilderScreen;
+import me.marin.lockout.client.gui.BoardScreen;
+import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
@@ -17,11 +18,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -37,17 +41,20 @@ import java.util.Map;
 public class LockoutClient implements ClientModInitializer {
 
     public static Lockout lockout;
+    public static boolean amIPlayingLockout = false;
     private static KeyBinding keyBinding;
     public static int CURRENT_TICK = 0;
     public static final Map<String, String> goalLoreMap = new HashMap<>();
 
     public static boolean shouldOpenBoardBuilder = false;
 
+    public static final ScreenHandlerType<BoardScreenHandler> BOARD_SCREEN_HANDLER;
+
     static {
+        BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(Constants.BOARD_SCREEN_ID, BoardScreenHandler::new);
         try {
             BoardBuilderIO.INSTANCE.convertLegacyBoards();
         } catch (IOException e) {
-            System.err.println("Error while converting legacy boards.");
             e.printStackTrace();
         }
     }
@@ -57,15 +64,19 @@ public class LockoutClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Constants.LOCKOUT_GOALS_TEAMS_PACKET, (client, handler, buf, responseSender) -> {
             int teamsSize = buf.readInt();
             List<LockoutTeam> teams = new ArrayList<>();
+            boolean amIPlaying = false;
             for (int i = 0; i < teamsSize; i++) {
                 int teamSize = buf.readInt();
                 Formatting color = Formatting.byName(buf.readString());
                 List<String> playerNames = new ArrayList<>();
                 for (int j = 0; j < teamSize; j++) {
-                    playerNames.add(buf.readString());
+                    String playerName = buf.readString();
+                    playerNames.add(playerName);
+                    amIPlaying |= playerName.equals(client.player.getName().getString());
                 }
                 teams.add(new LockoutTeam(playerNames, color));
             }
+            LockoutClient.amIPlayingLockout = amIPlaying;
 
             List<Pair<String, String>> goals = new ArrayList<>();
             List<Integer> completedByTeam = new ArrayList<>();
@@ -88,7 +99,7 @@ public class LockoutClient implements ClientModInitializer {
 
             client.execute(() -> {
                 if (client.player != null) {
-                    client.setScreen(new BoardBuilderScreen(Text.empty()));
+                    client.setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
                 }
             });
         });
@@ -118,7 +129,7 @@ public class LockoutClient implements ClientModInitializer {
                     team.addPoint();
                     goal.setCompleted(true, lockout.getTeams().get(teamIndex));
 
-                    if (client.player != null) {
+                    if (client.player != null && amIPlayingLockout) {
                         if (team.getPlayerNames().contains(client.player.getName().getString())) {
                             client.player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), 2f, 1f);
                         } else {
@@ -227,12 +238,15 @@ public class LockoutClient implements ClientModInitializer {
                 }
 
                 // Open GUI
-                client.setScreen(new BoardBuilderScreen(Text.empty()));
+                client.setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
             }
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
             lockout = null;
+            goalLoreMap.clear();
         }));
+
+        HandledScreens.register(BOARD_SCREEN_HANDLER, BoardScreen::new);
 
     }
 

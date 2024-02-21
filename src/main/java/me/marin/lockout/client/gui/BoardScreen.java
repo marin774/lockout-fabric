@@ -5,13 +5,14 @@ import me.marin.lockout.lockout.Goal;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
-public class BoardScreen extends Screen {
+public class BoardScreen extends HandledScreen<BoardScreenHandler> {
 
-    public BoardScreen(Text title) {
-        super(title);
+    public BoardScreen(BoardScreenHandler handler, PlayerInventory inventory, Text title) {
+        super(handler, inventory, title);
     }
 
     @Override
@@ -24,6 +25,11 @@ public class BoardScreen extends Screen {
         if (hoveredGoal != null) {
             Utility.drawGoalInformation(context, textRenderer, hoveredGoal, mouseX, mouseY);
         }
+    }
+
+    @Override
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+
     }
 
 }

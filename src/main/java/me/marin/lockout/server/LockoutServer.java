@@ -236,6 +236,14 @@ public class LockoutServer {
                 }
                 player.changeGameMode(GameMode.SURVIVAL);
             } else {
+                for (Goal goal : lockout.getBoard().getGoals()) {
+                    if (goal instanceof HasTooltipInfo hasTooltipInfo) {
+                        PacketByteBuf buf = PacketByteBufs.create();
+                        buf.writeString(goal.getId());
+                        buf.writeString(String.join("\n", hasTooltipInfo.getSpectatorTooltip()));
+                        ServerPlayNetworking.send(player, Constants.UPDATE_LORE, buf);
+                    }
+                }
                 player.changeGameMode(GameMode.SPECTATOR);
                 player.sendMessage(Text.literal("You are spectating this match.").formatted(Formatting.GRAY, Formatting.ITALIC));
             }
@@ -253,6 +261,7 @@ public class LockoutServer {
                 if (gameStartRunnables.get(runnable) <= 0) {
                     runnable.run();
                     gameStartRunnables.remove(runnable);
+                    return;
                 }
                 gameStartRunnables.merge(runnable, -1, Integer::sum);
             }
@@ -273,7 +282,7 @@ public class LockoutServer {
                     if (goal instanceof ObtainItemsGoal obtainItemsGoal) {
                         if (obtainItemsGoal.satisfiedBy(player.getInventory())) {
                             if (goal instanceof OpponentObtainsItemGoal opponentObtainsItemGoal) {
-                                lockout.opponentCompletedGoal(goal, player, opponentObtainsItemGoal.getMessage(player));
+                                lockout.completed1v1Goal(goal, player, false, opponentObtainsItemGoal.getMessage(player));
                             } else {
                                 lockout.completeGoal(goal, player);
                             }
@@ -325,7 +334,7 @@ public class LockoutServer {
                     }
                     if (goal instanceof OpponentTouchesWaterGoal) {
                         if (Objects.equals(player.getWorld().getBlockState(player.getBlockPos()).getBlock(), Blocks.WATER)) {
-                            lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " touched water.");
+                            lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " touched water.");
                         }
                     }
                 }
@@ -426,10 +435,10 @@ public class LockoutServer {
                 }
                 if (entity instanceof PlayerEntity player) {
                     if (goal instanceof OpponentDiesGoal) {
-                        lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " died.");
+                        lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " died.");
                     }
                     if (goal instanceof OpponentDies3TimesGoal && lockout.deaths.get(player.getUuid()) >= 3) {
-                        lockout.opponentCompletedGoal(goal, player, player.getName().getString() + " died 3 times.");
+                        lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " died 3 times.");
                     }
                     if (goal instanceof DieToDamageTypeGoal dieToDamageTypeGoal) {
                         for (RegistryKey<DamageType> key : dieToDamageTypeGoal.getDamageRegistryKeys()) {
@@ -507,15 +516,13 @@ public class LockoutServer {
             }
 
             boolean hasCocoaBeans;
-            hasCocoaBeans = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
+            hasCocoaBeans  = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
             hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).isInRequiredDistance();
             hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
 
             if (hasCocoaBeans) {
                 AVAILABLE_DYE_COLORS.add(DyeColor.BROWN);
             }
-
-            // Lockout.log("Available colors: " + String.join(", ", AVAILABLE_DYE_COLORS.stream().map(GoalDataConstants::getDyeColorFormatted).toList()));
 
             for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
                 GoalRequirementsProvider goalRequirementsProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);

@@ -69,7 +69,7 @@ public class Take200DamageGoal extends Goal implements TextureProvider, CustomTe
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             double damage = LockoutServer.lockout.damageTaken.getOrDefault(team, 0.0);
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + Math.min(400, (int) damage) + "/200");
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + Math.min(400, (int) damage) + "/200");
         }
         lore.add(" ");
 

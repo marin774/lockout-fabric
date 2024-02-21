@@ -24,7 +24,6 @@ public class ZombifiedPiglinEntityMixin {
         ServerPlayerEntity player = ((ZombifiedPiglinEntity) (Object) this).getServer().getPlayerManager().getPlayer(angryAt);
 
         if (player == null) {
-            System.err.println("Player with UUID could not be set as angry: " + angryAt);
             return;
         }
 

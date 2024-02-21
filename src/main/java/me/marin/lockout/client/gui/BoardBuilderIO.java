@@ -17,10 +17,10 @@ public class BoardBuilderIO {
 
     public static final Path DIRECTORY = MinecraftClient.getInstance().runDirectory.toPath().resolve("lockout-boards");
     private static final String FILE_EXTENSION = ".json";
+    @Deprecated
     private static final String LEGACY_FILE_EXTENSION = ".txt";
 
     public static final BoardBuilderIO INSTANCE = new BoardBuilderIO();
-
 
     public BoardBuilderIO() {
         if (!Files.exists(DIRECTORY)) {
@@ -53,13 +53,14 @@ public class BoardBuilderIO {
         return gson.fromJson(Files.readString(getBoardPath(name)), JSONBoard.class);
     }
 
+    @Deprecated
     public void convertLegacyBoards() throws IOException {
         List<Path> paths = Files.list(DIRECTORY).filter(p -> p.getFileName().toString().endsWith(LEGACY_FILE_EXTENSION)).toList();
         for (Path path : paths) {
-            String legacy = Files.readString(path, Charset.defaultCharset());
+            String legacyBoardString = Files.readString(path, Charset.defaultCharset());
 
             List<JSONBoard.JSONGoal> goals = new ArrayList<>();
-            for (String line : legacy.split("\n")) {
+            for (String line : legacyBoardString.split("\n")) {
                 line = line.trim();
                 String id;
                 String data = null;
@@ -69,9 +70,6 @@ public class BoardBuilderIO {
                 } else {
                     id = line;
                 }
-                System.out.println(id);
-                System.out.println(data);
-                System.out.println("===");
                 JSONBoard.JSONGoal goal = new JSONBoard.JSONGoal();
                 goal.id = id;
                 goal.data = data;

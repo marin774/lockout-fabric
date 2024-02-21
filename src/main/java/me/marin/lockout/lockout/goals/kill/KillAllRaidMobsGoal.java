@@ -73,7 +73,7 @@ public class KillAllRaidMobsGoal extends KillAllSpecificMobsGoal implements Cust
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var raidMobs = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + raidMobs.size() + "/" + MOBS.size());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + raidMobs.size() + "/" + MOBS.size());
         }
         lore.add(" ");
 

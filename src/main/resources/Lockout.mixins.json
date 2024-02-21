@@ -40,7 +40,6 @@
     "client.InGameHudMixin",
     "client.InputMixin",
     "client.ItemInHandRendererMixin",
-    "client.KeyboardMixin",
     "client.integrated.IntegratedServerMixin",
     "client.toasts.AdvancementToastMixin",
     "client.toasts.RecipeToastMixin",

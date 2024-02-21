@@ -68,7 +68,7 @@ public class Kill100MobsGoal extends Goal implements TextureProvider, CustomText
 
         lore.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
-            lore.add(team.getColor() + team.getDisplayName() + ":" + Formatting.RESET + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
+            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
         }
         lore.add(" ");
 

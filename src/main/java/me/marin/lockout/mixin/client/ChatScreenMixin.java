@@ -4,7 +4,6 @@ import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.client.gui.BoardBuilderScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,7 +19,7 @@ public class ChatScreenMixin {
 
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player != null) {
-                client.setScreen(new BoardBuilderScreen(Text.empty()));
+                client.setScreen(new BoardBuilderScreen());
             }
             cir.setReturnValue(true);
             cir.cancel();

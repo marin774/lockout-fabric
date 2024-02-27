@@ -1,6 +1,8 @@
 # Lockout
 Lockout Bingo with over 200 goals, inspired by Smallant's Lockout Bingo mod.
 
+Supports up to 16 different teams, Lockout and Blackout modes, and the ability to create your own boards.
+
 ![image](https://github.com/marin774/lockout-fabric/assets/87690741/fd1a3617-f6a0-499b-90c3-247dc4b4282e)
 
 ## Client side installation

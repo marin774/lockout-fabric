@@ -183,7 +183,12 @@ public class LockoutClient implements ClientModInitializer {
                 dispatcher.getRoot().addChild(commandNode);
             }
             {
-                var commandNode = ClientCommandManager.literal("SetCustomBoard").requires(ccs -> ccs.getPlayer().hasPermissionLevel(2)).build();
+                var commandNode = ClientCommandManager.literal("SetCustomBoard").requires(ccs -> {
+                    if (MinecraftClient.getInstance().isInSingleplayer()) {
+                        return true;
+                    }
+                    return ccs.hasPermissionLevel(2);
+                }).build();
 
                 var boardNameNode = ClientCommandManager.argument("board name", CustomBoardFileArgumentType.newInstance()).executes((context) -> {
                     String boardName = context.getArgument("board name", String.class);

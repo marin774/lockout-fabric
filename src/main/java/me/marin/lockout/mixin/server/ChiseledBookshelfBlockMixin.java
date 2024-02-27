@@ -28,7 +28,6 @@ public class ChiseledBookshelfBlockMixin {
         if (!Lockout.isLockoutRunning(lockout)) return;
 
         ChiseledBookshelfBlockEntity blockEntity = (ChiseledBookshelfBlockEntity) world.getBlockEntity(pos);
-        System.out.println(blockEntity.getOpenSlotCount());
         if (blockEntity.getOpenSlotCount() < 6) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {

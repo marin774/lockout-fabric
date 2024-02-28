@@ -150,6 +150,17 @@ public class DefaultGoalRegister {
                 return null;
             }
         });
+        INSTANCE.register(GoalType.BREED_FROGS, BreedFrogsGoal.class, new GoalRequirementsProvider() {
+            @Override
+            public List<RegistryKey<Biome>> getRequiredBiomes() {
+                return List.of(BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP);
+            }
+
+            @Override
+            public List<RegistryKey<Structure>> getRequiredStructures() {
+                return null;
+            }
+        });
         INSTANCE.register(GoalType.KILL_WITCH, KillWitchGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {

@@ -84,11 +84,12 @@ import java.util.function.Function;
 
 public class LockoutServer {
 
-    private static final int START_TIME = 60;
     public static final int LOCATE_SEARCH = 1500;
     public static final Map<RegistryKey<Biome>, LocateData> BIOME_LOCATE_DATA = new HashMap<>();
     public static final Map<RegistryKey<Structure>, LocateData> STRUCTURE_LOCATE_DATA = new HashMap<>();
     public static final List<DyeColor> AVAILABLE_DYE_COLORS = new ArrayList<>();
+
+    private static int lockoutStartTime = 60;
 
     public static Lockout lockout;
     public static MinecraftServer server;
@@ -274,7 +275,7 @@ public class LockoutServer {
                         }
                     }
                     if (goal instanceof ReachBedrockGoal) {
-                        if (Objects.equals(player.getWorld().getBlockState(player.getBlockPos().down()).getBlock(), Blocks.BEDROCK)) {
+                        if (player.getY() < 10 && Objects.equals(player.getWorld().getBlockState(player.getBlockPos().down()).getBlock(), Blocks.BEDROCK)) {
                             lockout.completeGoal(goal, player);
                         }
                     }
@@ -686,7 +687,7 @@ public class LockoutServer {
                 final int secs = i;
                 ((LockoutRunnable) () -> {
                     playerManager.broadcast(Text.literal("Starting in " + secs + "..."), false);
-                }).runTaskAfter(20 * (START_TIME - i));
+                }).runTaskAfter(20 * (lockoutStartTime - i));
             } else {
                 ((LockoutRunnable) () -> {
                     lockout.setStarted(true);
@@ -700,7 +701,7 @@ public class LockoutServer {
                         }
                     }
                     server.getPlayerManager().broadcast(Text.literal(lockout.getModeName() + " has begun."), false);
-                }).runTaskAfter(20 * START_TIME);
+                }).runTaskAfter(20 * lockoutStartTime);
             }
         }
     }
@@ -883,8 +884,16 @@ public class LockoutServer {
 
         Goal goal = lockout.getBoard().getGoals().get(idx - 1);
 
-        context.getSource().sendMessage(Text.of("Gave " + gp.getName() + " goal \"" + goal.getGoalName() + "\""));
+        context.getSource().sendMessage(Text.of("Gave " + gp.getName() + " goal \"" + goal.getGoalName() + "\"."));
         lockout.updateGoalCompletion(goal, gp.getId());
+        return 1;
+    }
+
+    public static int setStartTime(CommandContext<ServerCommandSource> context) {
+        int seconds = context.getArgument("seconds", Integer.class);
+
+        lockoutStartTime = seconds;
+        context.getSource().sendMessage(Text.of("Updated start time to " + seconds + "s."));
         return 1;
     }
 

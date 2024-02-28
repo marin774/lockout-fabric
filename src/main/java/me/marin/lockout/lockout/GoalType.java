@@ -38,6 +38,7 @@ public class GoalType {
     public static final String BREED_FOX = "BREED_FOX";
     public static final String BREED_GOAT = "BREED_GOAT";
     public static final String BREED_STRIDER = "BREED_STRIDER";
+    public static final String BREED_FROGS = "BREED_FROGS";
     public static final String KILL_WITCH = "KILL_WITCH";
     public static final String KILL_ZOMBIE_VILLAGER = "KILL_ZOMBIE_VILLAGER";
     public static final String KILL_STRAY = "KILL_STRAY";

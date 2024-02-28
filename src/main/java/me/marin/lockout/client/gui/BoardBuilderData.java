@@ -16,6 +16,7 @@ public class BoardBuilderData {
     private final List<Goal> goals = new ArrayList<>();
     private String title = "";
     private Integer editingIdx = null;
+    private String search = "";
 
     private BoardBuilderData() {
         for (int i = 0; i < 25; i++) {
@@ -48,6 +49,14 @@ public class BoardBuilderData {
 
     public void setEditingIdx(Integer editingIdx) {
         this.editingIdx = editingIdx;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
     }
 
     public List<Goal> getGoals() {

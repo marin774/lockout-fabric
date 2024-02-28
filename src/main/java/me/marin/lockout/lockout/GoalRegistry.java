@@ -1,5 +1,6 @@
 package me.marin.lockout.lockout;
 
+import me.marin.lockout.Lockout;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -23,6 +24,10 @@ public class GoalRegistry {
         register(id, goalClass, goalRequirementsProvider, null);
     }
     public void register(String id, Class<? extends Goal> goalClass, GoalRequirementsProvider goalRequirementsProvider, GoalDataGenerator goalDataGenerator) {
+        if (registry.containsKey(id)) {
+            Lockout.log("Goal with id " + id + " has already been registered..");
+            return;
+        }
         registry.put(id, goalClass);
         goalGeneratorProviders.put(id, goalRequirementsProvider);
         goalDataGenerators.put(id, goalDataGenerator);
@@ -47,6 +52,10 @@ public class GoalRegistry {
 
     public List<String> getRegisteredGoals() {
         return new ArrayList<>(registry.keySet());
+    }
+
+    public Map<String, Class<? extends Goal>> getRegistry() {
+        return Collections.unmodifiableMap(registry);
     }
 
 }

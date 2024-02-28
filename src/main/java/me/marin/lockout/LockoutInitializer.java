@@ -23,10 +23,14 @@ import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class LockoutInitializer implements ModInitializer {
+
+    private static final Predicate<ServerCommandSource> PERMISSIONS = (ssc) -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer();
 
     @Override
     public void onInitialize() {
@@ -36,7 +40,7 @@ public class LockoutInitializer implements ModInitializer {
             {
                 {
                     // Lockout command
-                    var commandNode = CommandManager.literal("lockout").requires(ssc -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer()).build();
+                    var commandNode = CommandManager.literal("lockout").requires(PERMISSIONS).build();
                     var teamsNode = CommandManager.literal("teams").build();
                     var playersNode = CommandManager.literal("players").build();
                     var teamListNode = CommandManager.argument("team names", StringArgumentType.greedyString()).executes(LockoutServer::lockoutCommandLogic).build();
@@ -52,7 +56,7 @@ public class LockoutInitializer implements ModInitializer {
 
                 {
                     // Blackout command
-                    var commandNode = CommandManager.literal("blackout").requires(ssc -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer()).build();
+                    var commandNode = CommandManager.literal("blackout").requires(PERMISSIONS).build();
                     var teamNode = CommandManager.literal("team").build();
                     var playersNode = CommandManager.literal("players").build();
                     var teamNameNode = CommandManager.argument("team name", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
@@ -81,7 +85,7 @@ public class LockoutInitializer implements ModInitializer {
 
             {
                 // GiveGoal command
-                var giveGoalRoot = CommandManager.literal("GiveGoal").requires(ssc -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer()).build();
+                var giveGoalRoot = CommandManager.literal("GiveGoal").requires(PERMISSIONS).build();
                 var playerName = CommandManager.argument("player name", GameProfileArgumentType.gameProfile()).build();
                 var goalIndex = CommandManager.argument("goal number", IntegerArgumentType.integer(1, 25)).executes(LockoutServer::giveGoal).build();
 
@@ -91,9 +95,18 @@ public class LockoutInitializer implements ModInitializer {
             }
 
             {
+                // SetStartTime command
+                var setStartTimeRoot = CommandManager.literal("SetStartTime").requires(PERMISSIONS).build();
+                var seconds = CommandManager.argument("seconds", IntegerArgumentType.integer(5, 300)).executes(LockoutServer::setStartTime).build();
+
+                dispatcher.getRoot().addChild(setStartTimeRoot);
+                setStartTimeRoot.addChild(seconds);
+            }
+
+            {
                 // RemoveCustomBoard command (SetCustomBoard is registered LockoutClient, and server listens for a packet)
 
-                dispatcher.getRoot().addChild(CommandManager.literal("RemoveCustomBoard").requires(ssc -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer()).executes((context) -> {
+                dispatcher.getRoot().addChild(CommandManager.literal("RemoveCustomBoard").requires(PERMISSIONS).executes((context) -> {
                     PacketByteBuf buf = PacketByteBufs.create();
                     buf.writeBoolean(true); // whether board should be cleared
                     ClientPlayNetworking.send(Constants.CUSTOM_BOARD_PACKET, buf);

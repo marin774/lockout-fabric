@@ -209,6 +209,7 @@ public class GoalType {
     public static final String OPPONENT_TAKES_100_DAMAGE = "OPPONENT_TAKES_100_DAMAGE";
     public static final String OPPONENT_TAKES_FALL_DAMAGE = "OPPONENT_TAKES_FALL_DAMAGE";
     public static final String OPPONENT_TOUCHES_WATER = "OPPONENT_TOUCHES_WATER";
+    public static final String OPPONENT_EATS_FOOD = "OPPONENT_EATS_FOOD";
     public static final String REACH_NETHER_ROOF = "REACH_NETHER_ROOF";
     public static final String HAVE_MORE_XP_LEVELS = "HAVE_MORE_XP_LEVELS";
     public static final String FREEZE_TO_DEATH = "FREEZE_TO_DEATH";

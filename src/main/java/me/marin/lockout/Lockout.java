@@ -120,19 +120,19 @@ public class Lockout {
         evaulateWinnerAndEndGame(team);
     }
 
-    public void completed1v1Goal(Goal goal, PlayerEntity player, boolean isWinner, String message) {
-        completed1v1Goal(goal, player.getUuid(), isWinner, message);
+    public void complete1v1Goal(Goal goal, PlayerEntity player, boolean isWinner, String message) {
+        complete1v1Goal(goal, player.getUuid(), isWinner, message);
     }
-    public void completed1v1Goal(Goal goal, UUID playerId, boolean isWinner, String message) {
+    public void complete1v1Goal(Goal goal, UUID playerId, boolean isWinner, String message) {
         if (goal.isCompleted()) return;
         if (!isLockoutPlayer(playerId)) return;
         if (!hasStarted()) return;
 
         LockoutTeamServer team = (LockoutTeamServer) getPlayerTeam(playerId);
 
-        completed1v1Goal(goal, team, isWinner, message);
+        complete1v1Goal(goal, team, isWinner, message);
     }
-    public void completed1v1Goal(Goal goal, LockoutTeam team, boolean isWinner, String message) {
+    public void complete1v1Goal(Goal goal, LockoutTeam team, boolean isWinner, String message) {
         if (goal.isCompleted()) return;
         if (!hasStarted()) return;
 

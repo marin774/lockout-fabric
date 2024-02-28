@@ -15,7 +15,7 @@ public class BreedRabbitGoal extends BreedAnimalGoal implements TextureProvider 
 
     @Override
     public String getGoalName() {
-        return "Breed Rabbit";
+        return "Breed Rabbits";
     }
 
     @Override

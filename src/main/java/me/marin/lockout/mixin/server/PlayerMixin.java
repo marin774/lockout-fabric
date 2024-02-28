@@ -7,10 +7,7 @@ import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentHitByEggGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentHitBySnowballGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentTakes100DamageGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentTakesFallDamageGoal;
+import me.marin.lockout.lockout.goals.opponent.*;
 import me.marin.lockout.lockout.interfaces.ConsumeItemGoal;
 import me.marin.lockout.lockout.interfaces.EatUniqueFoodsGoal;
 import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
@@ -69,14 +66,14 @@ public abstract class PlayerMixin {
             if (goal instanceof OpponentHitBySnowballGoal) {
                 if (entity instanceof SnowballEntity snowballEntity) {
                     if (snowballEntity.getOwner() instanceof PlayerEntity shooter && !Objects.equals(player, shooter)) {
-                        lockout.completed1v1Goal(goal, shooter, true, shooter.getName().getString() + " hit " + player.getName().getString() + " with a Snowball.");
+                        lockout.complete1v1Goal(goal, shooter, true, shooter.getName().getString() + " hit " + player.getName().getString() + " with a Snowball.");
                     }
                 }
             }
             if (goal instanceof OpponentHitByEggGoal) {
                 if (entity instanceof EggEntity snowballEntity) {
                     if (snowballEntity.getOwner() instanceof PlayerEntity shooter && !Objects.equals(player, shooter)) {
-                        lockout.completed1v1Goal(goal, shooter, true, shooter.getName().getString() + " hit " + player.getName().getString() + " with an Egg.");
+                        lockout.complete1v1Goal(goal, shooter, true, shooter.getName().getString() + " hit " + player.getName().getString() + " with an Egg.");
                     }
                 }
             }
@@ -121,12 +118,12 @@ public abstract class PlayerMixin {
             }
             if (goal instanceof OpponentTakesFallDamageGoal) {
                 if (source.isOf(DamageTypes.FALL)) {
-                    lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " took fall damage.");
+                    lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " took fall damage.");
                 }
             }
             if (goal instanceof OpponentTakes100DamageGoal) {
                 if (lockout.damageTaken.get(team) >= 100) {
-                    lockout.completed1v1Goal(goal, team, false, team.getDisplayName() + " took 100 damage.");
+                    lockout.complete1v1Goal(goal, team, false, team.getDisplayName() + " took 100 damage.");
                 }
             }
         }
@@ -142,6 +139,7 @@ public abstract class PlayerMixin {
         if (!lockout.isLockoutPlayer(player.getUuid())) return;
         LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
 
+
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
@@ -152,9 +150,9 @@ public abstract class PlayerMixin {
                 }
             }
             if (goal instanceof EatUniqueFoodsGoal eatUniqueFoodsGoal) {
-                eatUniqueFoodsGoal.getTrackerMap().putIfAbsent(team, new LinkedHashSet<>());
                 FoodComponent foodComponent = itemStack.getItem().getFoodComponent();
                 if (foodComponent != null) {
+                    eatUniqueFoodsGoal.getTrackerMap().putIfAbsent(team, new LinkedHashSet<>());
                     eatUniqueFoodsGoal.getTrackerMap().get(team).add(foodComponent);
 
                     int size = eatUniqueFoodsGoal.getTrackerMap().get(team).size();
@@ -164,6 +162,9 @@ public abstract class PlayerMixin {
                         lockout.completeGoal(goal, team);
                     }
                 }
+            }
+            if (goal instanceof OpponentEatsFoodGoal) {
+                lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " ate food.");
             }
         }
 
@@ -179,10 +180,12 @@ public abstract class PlayerMixin {
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
-            if (!(goal instanceof IncrementStatGoal incrementStatGoal)) continue;
 
-            if (incrementStatGoal.getStats().contains(stat)) {
+            if (goal instanceof IncrementStatGoal incrementStatGoal && incrementStatGoal.getStats().contains(stat)) {
                 lockout.completeGoal(goal, player);
+            }
+            if (goal instanceof OpponentEatsFoodGoal && stat.equals(Stats.EAT_CAKE_SLICE)) {
+                lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " ate food.");
             }
         }
     }

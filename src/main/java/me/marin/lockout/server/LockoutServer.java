@@ -229,7 +229,7 @@ public class LockoutServer {
                     if (goal instanceof ObtainItemsGoal obtainItemsGoal) {
                         if (obtainItemsGoal.satisfiedBy(player.getInventory())) {
                             if (goal instanceof OpponentObtainsItemGoal opponentObtainsItemGoal) {
-                                lockout.completed1v1Goal(goal, player, false, opponentObtainsItemGoal.getMessage(player));
+                                lockout.complete1v1Goal(goal, player, false, opponentObtainsItemGoal.getMessage(player));
                             } else {
                                 lockout.completeGoal(goal, player);
                             }
@@ -281,7 +281,7 @@ public class LockoutServer {
                     }
                     if (goal instanceof OpponentTouchesWaterGoal) {
                         if (Objects.equals(player.getWorld().getBlockState(player.getBlockPos()).getBlock(), Blocks.WATER)) {
-                            lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " touched water.");
+                            lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " touched water.");
                         }
                     }
                 }
@@ -382,10 +382,10 @@ public class LockoutServer {
                 }
                 if (entity instanceof PlayerEntity player) {
                     if (goal instanceof OpponentDiesGoal) {
-                        lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " died.");
+                        lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died.");
                     }
                     if (goal instanceof OpponentDies3TimesGoal && lockout.deaths.get(player.getUuid()) >= 3) {
-                        lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " died 3 times.");
+                        lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died 3 times.");
                     }
                     if (goal instanceof DieToDamageTypeGoal dieToDamageTypeGoal) {
                         for (RegistryKey<DamageType> key : dieToDamageTypeGoal.getDamageRegistryKeys()) {

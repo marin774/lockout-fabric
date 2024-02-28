@@ -475,6 +475,8 @@ public class DefaultGoalRegister {
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_TOUCHES_WATER, OpponentTouchesWaterGoal.class,
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
+        INSTANCE.register(GoalType.OPPONENT_EATS_FOOD, OpponentEatsFoodGoal.class,
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
 
         INSTANCE.register(GoalType.TAKE_200_DAMAGE, Take200DamageGoal.class);
         INSTANCE.register(GoalType.REACH_NETHER_ROOF, ReachNetherRoofGoal.class);

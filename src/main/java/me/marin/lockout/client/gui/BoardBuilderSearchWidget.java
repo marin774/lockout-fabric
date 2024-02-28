@@ -127,7 +127,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
             String data = goalDataGenerator == null ? null : goalDataGenerator.generateData(new ArrayList<>(GoalDataGenerator.ALL_DYES));
             this.goal = GoalRegistry.INSTANCE.newGoal(id, data);
 
-            this.display = data == null ? goal.getGoalName() : StringUtils.capitalize(goal.getId().replace("_", ""));
+            this.display = data == null ? goal.getGoalName() : StringUtils.capitalize(goal.getId().replace("_", " ").toLowerCase());
         }
 
 

@@ -4,7 +4,6 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.interfaces.BreedAnimalGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class BreedStriderGoal extends BreedAnimalGoal implements TextureProvider {
@@ -16,11 +15,6 @@ public class BreedStriderGoal extends BreedAnimalGoal implements TextureProvider
     @Override
     public String getGoalName() {
         return "Breed Striders";
-    }
-
-    @Override
-    public ItemStack getTextureItemStack() {
-        return null;
     }
 
     @Override

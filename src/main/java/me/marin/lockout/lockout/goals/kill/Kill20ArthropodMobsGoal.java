@@ -10,7 +10,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -86,19 +85,6 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
 
         lore.add(" ");
         lore.add("Arthropods killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
-        lore.add(" ");
-
-        return lore;
-    }
-
-    @Override
-    public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
-
-        lore.add(" ");
-        for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
-        }
         lore.add(" ");
 
         return lore;

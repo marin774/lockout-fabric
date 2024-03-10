@@ -95,7 +95,7 @@ public class LockoutServer {
     public static MinecraftServer server;
     public static CompassItemHandler compassHandler;
 
-    public static final Map<LockoutRunnable, Integer> gameStartRunnables = new HashMap<>();
+    public static final Map<LockoutRunnable, Long> gameStartRunnables = new HashMap<>();
 
     private static LockoutBoard CUSTOM_BOARD = null;
 
@@ -196,8 +196,9 @@ public class LockoutServer {
             }
 
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
+            ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
             if (lockout.hasStarted()) {
-                ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getStartTimePacket());
+                ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, PacketByteBufs.empty());
             }
         });
 
@@ -210,7 +211,7 @@ public class LockoutServer {
                     gameStartRunnables.remove(runnable);
                     return;
                 }
-                gameStartRunnables.merge(runnable, -1, Integer::sum);
+                gameStartRunnables.merge(runnable, -1L, Long::sum);
             }
 
             for (Goal goal : lockout.getBoard().getGoals()) {
@@ -287,6 +288,12 @@ public class LockoutServer {
                 }
             }
 
+            lockout.tick();
+            if (lockout.getTicks() % 20 == 0) {
+                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                    ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
+                }
+            }
         });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
@@ -525,8 +532,6 @@ public class LockoutServer {
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
         if (BIOME_LOCATE_DATA.containsKey(biome)) return BIOME_LOCATE_DATA.get(biome);
 
-        // Lockout.log("Locating biome " + biome.getValue());
-
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
 
@@ -552,11 +557,10 @@ public class LockoutServer {
     public static LocateData locateStructure(MinecraftServer server, RegistryKey<Structure> structure) {
         if (STRUCTURE_LOCATE_DATA.containsKey(structure)) return STRUCTURE_LOCATE_DATA.get(structure);
 
-        // Lockout.log("Locating structure " + structure.getValue());
-
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
 
+        // All of this was taken from `/locate` command logic.
         Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE);
         Either<RegistryKey<Structure>, TagKey<Structure>> either = Either.left(structure);
         Function<RegistryKey<Structure>, Optional<RegistryEntryList<Structure>>> function = (key) -> registry.getEntry(key).map(RegistryEntryList::of);
@@ -612,10 +616,10 @@ public class LockoutServer {
         List<UUID> allLockoutPlayers = teams.stream()
                 .flatMap(team -> team.getPlayers().stream())
                 .toList();
-        List<UUID> allSpectatorPlayers = allServerPlayers.stream()
+        /*List<UUID> allSpectatorPlayers = allServerPlayers.stream()
                 .map(ServerPlayerEntity::getUuid)
                 .filter(uuid -> !allLockoutPlayers.contains(uuid))
-                .toList();
+                .toList();*/
 
         for (ServerPlayerEntity serverPlayer : allServerPlayers) {
             serverPlayer.getInventory().clear();
@@ -657,6 +661,9 @@ public class LockoutServer {
         }
 
         lockout = new Lockout(lockoutBoard, teams);
+        lockout.setTicks(-20L * lockoutStartTime); // see Lockout#ticks
+
+
         compassHandler = new CompassItemHandler(allLockoutPlayers, playerManager);
 
         List<Goal> loreGoals = new ArrayList<>(lockout.getBoard().getGoals()).stream().filter(g -> g instanceof HasTooltipInfo).toList();
@@ -664,15 +671,17 @@ public class LockoutServer {
         for (Goal goal : loreGoals) {
             for (LockoutTeam team : lockout.getTeams()) {
                 ((LockoutTeamServer) team).sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                // FIXME: spectators get sent lore updates teams.size() times.
             }
-            for (UUID spectatorPlayer : allSpectatorPlayers) {
+            /*for (UUID spectatorPlayer : allSpectatorPlayers) {
                 ServerPlayerEntity player = playerManager.getPlayer(spectatorPlayer);
 
-            }
+            }*/
         }
 
         for (ServerPlayerEntity player : allServerPlayers) {
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
+            ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
 
             if (!lockout.isSoloBlackout() && allLockoutPlayers.contains(player.getUuid())) {
                 player.giveItemStack(compassHandler.newCompass());
@@ -687,21 +696,20 @@ public class LockoutServer {
                 final int secs = i;
                 ((LockoutRunnable) () -> {
                     playerManager.broadcast(Text.literal("Starting in " + secs + "..."), false);
-                }).runTaskAfter(20 * (lockoutStartTime - i));
+                }).runTaskAfter(20L * (lockoutStartTime - i));
             } else {
                 ((LockoutRunnable) () -> {
                     lockout.setStarted(true);
-                    lockout.setStartTime(System.currentTimeMillis());
 
                     for (ServerPlayerEntity player : allServerPlayers) {
                         if (player == null) continue;
-                        ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getStartTimePacket());
+                        ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getUpdateTimerPacket());
                         if (allLockoutPlayers.contains(player.getUuid())) {
                             player.changeGameMode(GameMode.SURVIVAL);
                         }
                     }
                     server.getPlayerManager().broadcast(Text.literal(lockout.getModeName() + " has begun."), false);
-                }).runTaskAfter(20 * lockoutStartTime);
+                }).runTaskAfter(20L * lockoutStartTime);
             }
         }
     }

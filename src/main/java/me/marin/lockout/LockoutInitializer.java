@@ -104,7 +104,7 @@ public class LockoutInitializer implements ModInitializer {
             }
 
             {
-                // RemoveCustomBoard command (SetCustomBoard is registered LockoutClient, and server listens for a packet)
+                // RemoveCustomBoard command (SetCustomBoard is registered in LockoutClient, and server listens for a packet)
 
                 dispatcher.getRoot().addChild(CommandManager.literal("RemoveCustomBoard").requires(PERMISSIONS).executes((context) -> {
                     PacketByteBuf buf = PacketByteBufs.create();

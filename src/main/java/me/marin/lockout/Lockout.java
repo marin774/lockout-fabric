@@ -25,7 +25,7 @@ public class Lockout {
 
     private static final Logger logger = LogManager.getLogger("Lockout");
     public static final Random random = new Random();
-    public final static int[] COLOR_ORDERS = new int[]{12, 9, 10, 14, 6, 13, 11, 5, 3, 2, 15, 4, 7, 1, 8, 0};
+    public static final int[] COLOR_ORDERS = new int[]{12, 9, 10, 14, 6, 13, 11, 5, 3, 2, 15, 4, 7, 1, 8, 0};
 
     public final Map<LockoutTeam, LinkedHashSet<EntityType<?>>> bredAnimalTypes = new HashMap<>();
     public final Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedHostileTypes = new HashMap<>();
@@ -48,14 +48,31 @@ public class Lockout {
 
     private final LockoutBoard board;
     private final List<? extends LockoutTeam> teams;
-    private long startTime;
-    private long endTime;
     private boolean hasStarted = false;
     private boolean isRunning = true;
+
+    /**
+     * Amount of *server* ticks the game has been running for.
+     * Negative values mean that the game hasn't started yet (players are looking at the board).
+     * This value is incremented by 1 every server tick.
+     */
+    private long ticks;
 
     public Lockout(LockoutBoard board, List<? extends LockoutTeam> teams) {
         this.board = board;
         this.teams = teams;
+    }
+
+    public static void log(String message) {
+        logger.log(Level.INFO, message);
+    }
+
+    public static boolean exists(Lockout lockout) {
+        return lockout != null;
+    }
+
+    public static boolean isLockoutRunning(Lockout lockout) {
+        return exists(lockout) && lockout.isRunning;
     }
 
     public LockoutBoard getBoard() {
@@ -70,16 +87,16 @@ public class Lockout {
         return teams.size() == 1 && teams.get(0).getPlayerNames().size() == 1;
     }
 
-    public static void log(String message) {
-        logger.log(Level.INFO, message);
+    public void tick() {
+        ticks++;
     }
 
-    public static boolean exists(Lockout lockout) {
-        return lockout != null;
+    public void setTicks(long ticks) {
+        this.ticks = ticks;
     }
 
-    public static boolean isLockoutRunning(Lockout lockout) {
-        return exists(lockout) && lockout.isRunning;
+    public long getTicks() {
+        return this.ticks;
     }
 
     public void completeGoal(Goal goal, PlayerEntity player) {
@@ -227,24 +244,8 @@ public class Lockout {
         return isRunning;
     }
 
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
-
     public void setStarted(boolean hasStarted) {
         this.hasStarted = hasStarted;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
     }
 
     public boolean isLockoutPlayer(UUID playerId) {
@@ -325,11 +326,10 @@ public class Lockout {
         return sb.toString();
     }
 
-    public PacketByteBuf getStartTimePacket() {
+    public PacketByteBuf getUpdateTimerPacket() {
         PacketByteBuf buf = PacketByteBufs.create();
 
-        buf.writeLong(startTime);
-        buf.writeLong(System.currentTimeMillis());
+        buf.writeLong(ticks);
 
         return buf;
     }

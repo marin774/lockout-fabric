@@ -52,11 +52,6 @@ public class LockoutClient implements ClientModInitializer {
 
     static {
         BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(Constants.BOARD_SCREEN_ID, BoardScreenHandler::new);
-        try {
-            BoardBuilderIO.INSTANCE.convertLegacyBoards();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -64,7 +59,9 @@ public class LockoutClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Constants.LOCKOUT_GOALS_TEAMS_PACKET, (client, handler, buf, responseSender) -> {
             int teamsSize = buf.readInt();
             List<LockoutTeam> teams = new ArrayList<>();
+
             boolean amIPlaying = false;
+
             for (int i = 0; i < teamsSize; i++) {
                 int teamSize = buf.readInt();
                 Formatting color = Formatting.byName(buf.readString());
@@ -108,12 +105,14 @@ public class LockoutClient implements ClientModInitializer {
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             lockout.setStarted(true);
-            lockout.setStartTime(buf.readLong() + (System.currentTimeMillis() - buf.readLong())); // clock sync
             client.execute(() -> {
                 if (MinecraftClient.getInstance().currentScreen != null) {
                     MinecraftClient.getInstance().currentScreen.close();
                 }
             });
+        });
+        ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_TIMER_PACKET, (client, handler, buf, responseSender) -> {
+            lockout.setTicks(buf.readLong());
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.COMPLETE_TASK_PACKET, (client, handler, buf, responseSender) -> {
             String goalId = buf.readString();
@@ -149,7 +148,6 @@ public class LockoutClient implements ClientModInitializer {
             }
 
             lockout.setRunning(false);
-            lockout.setEndTime(System.currentTimeMillis());
             buf.readLong();
             client.execute(() -> {
                 if (client.player != null) {

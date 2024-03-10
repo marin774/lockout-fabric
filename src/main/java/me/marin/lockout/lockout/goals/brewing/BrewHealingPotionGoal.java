@@ -8,7 +8,6 @@ import java.util.List;
 
 public class BrewHealingPotionGoal extends ObtainPotionItemGoal {
 
-
     public BrewHealingPotionGoal(String id, String data) {
         super(id, data);
     }

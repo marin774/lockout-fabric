@@ -15,7 +15,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
 import java.util.List;
@@ -127,7 +127,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
             String data = goalDataGenerator == null ? null : goalDataGenerator.generateData(new ArrayList<>(GoalDataGenerator.ALL_DYES));
             this.goal = GoalRegistry.INSTANCE.newGoal(id, data);
 
-            this.display = data == null ? goal.getGoalName() : StringUtils.capitalize(goal.getId().replace("_", " ").toLowerCase());
+            this.display = data == null ? goal.getGoalName() : "[*] " + WordUtils.capitalize(goal.getId().replace("_", " ").toLowerCase());
         }
 
 

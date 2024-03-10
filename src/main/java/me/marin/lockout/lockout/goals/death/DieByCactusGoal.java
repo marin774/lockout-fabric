@@ -17,7 +17,7 @@ public class DieByCactusGoal extends DieToDamageTypeGoal {
 
     @Override
     public String getGoalName() {
-        return "Die by Cactus";
+        return "Die to Cactus";
     }
 
     @Override

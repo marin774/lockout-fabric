@@ -56,21 +56,9 @@ public class Utility {
         }
 
         context.drawText(textRenderer, String.join(Formatting.RESET + "" + Formatting.GRAY + "-", pointsList), x, y, 0, true);
-        if (lockout.hasStarted()) {
-            long duration = (lockout.isRunning() ? System.currentTimeMillis() : lockout.getEndTime()) - lockout.getStartTime();
-            long second = (duration / 1000) % 60;
-            long minute = (duration / (1000 * 60)) % 60;
-            long hour = (duration / (1000 * 60 * 60)) % 24;
 
-            String time;
-            if (hour > 0) {
-                time = String.format("%02d:%02d:%02d", hour, minute, second);
-            } else {
-                time = String.format("%02d:%02d", minute, second);
-            }
-
-            context.drawText(textRenderer, Formatting.WHITE + time, context.getScaledWindowWidth() - textRenderer.getWidth(time) - 4, y, 0, true);
-        }
+        String timer = Utility.ticksToTimer(lockout.getTicks());
+        context.drawText(textRenderer, Formatting.WHITE + timer, context.getScaledWindowWidth() - textRenderer.getWidth(timer) - 4, y, 0, true);
 
         List<String> formattedNames = new ArrayList<>();
         int maxWidth = 0;
@@ -169,6 +157,22 @@ public class Utility {
                 .stream()
                 .filter(p -> !lockout.isLockoutPlayer(p.getUuid()))
                 .toList();
+    }
+
+    public static String ticksToTimer(long ticks) {
+        ticks = Math.abs(ticks);
+        long second = (ticks / 20) % 60;
+        long minute = ((ticks / 20) / 60) % 60;
+        long hour = ((ticks / 20) / 60 / 60) % 24;
+
+        String time;
+        if (hour > 0) {
+            time = String.format("%02d:%02d:%02d", hour, minute, second);
+        } else {
+            time = String.format("%02d:%02d", minute, second);
+        }
+
+        return time;
     }
 
 }

@@ -27,6 +27,11 @@ public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmo
     }
 
     @Override
+    public String getGoalName() {
+        return String.format("Breed %d Unique Animals", getAmount());
+    }
+
+    @Override
     public List<String> getTooltip(LockoutTeam team) {
         List<String> lore = new ArrayList<>();
         var animals = LockoutServer.lockout.bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
@@ -58,6 +63,11 @@ public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmo
         context.drawTexture(TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
         context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, DISPLAY_ITEM_STACK, x, y);
         return true;
+    }
+
+    @Override
+    public ItemStack getTextureItemStack() {
+        return null;
     }
 
 }

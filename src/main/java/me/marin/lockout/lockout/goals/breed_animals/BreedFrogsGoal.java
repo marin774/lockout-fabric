@@ -6,23 +6,23 @@ import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
-public class BreedHoglinGoal extends BreedAnimalGoal implements TextureProvider {
+public class BreedFrogsGoal extends BreedAnimalGoal implements TextureProvider {
 
-    public BreedHoglinGoal(String id, String data) {
+    public BreedFrogsGoal(String id, String data) {
         super(id, data);
     }
 
     @Override
     public String getGoalName() {
-        return "Breed Hoglins";
+        return "Breed Frogs";
     }
 
     @Override
     public EntityType<?> getAnimal() {
-        return EntityType.HOGLIN;
+        return EntityType.FROG;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_hoglin.png");
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_frogs.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

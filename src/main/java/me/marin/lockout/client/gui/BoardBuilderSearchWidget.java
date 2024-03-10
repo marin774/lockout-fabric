@@ -15,19 +15,20 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
-public class BoardBuilderGoalsWidget extends ScrollableWidget {
+public class BoardBuilderSearchWidget extends ScrollableWidget {
 
     private static final int MARGIN_X = 3;
     private static final int MARGIN_Y = 3;
     private static final int ITEM_HEIGHT = 18;
-    private static final Map<String, GoalEntry> registeredGoals = new HashMap<>();
+    private static final Map<String, GoalEntry> registeredGoals = new LinkedHashMap<>();
 
     private int rowWidth;
     private int left;
@@ -36,12 +37,13 @@ public class BoardBuilderGoalsWidget extends ScrollableWidget {
     private static GoalEntry hovered;
     private List<GoalEntry> visibleGoals;
 
-    public BoardBuilderGoalsWidget(int x, int y, int width, int height, Text text) {
+    public BoardBuilderSearchWidget(int x, int y, int width, int height, Text text) {
         super(x, y, width, height, text);
         for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-            registeredGoals.putIfAbsent(id, new BoardBuilderGoalsWidget.GoalEntry(id));
+            registeredGoals.putIfAbsent(id, new BoardBuilderSearchWidget.GoalEntry(id));
         }
         visibleGoals = new ArrayList<>(registeredGoals.values());
+        searchUpdated(BoardBuilderData.INSTANCE.getSearch());
     }
 
     public void setScrollY(double scrollY) {
@@ -125,7 +127,7 @@ public class BoardBuilderGoalsWidget extends ScrollableWidget {
             String data = goalDataGenerator == null ? null : goalDataGenerator.generateData(new ArrayList<>(GoalDataGenerator.ALL_DYES));
             this.goal = GoalRegistry.INSTANCE.newGoal(id, data);
 
-            this.display = data == null ? goal.getGoalName() : goal.getId();
+            this.display = data == null ? goal.getGoalName() : "[*] " + WordUtils.capitalize(goal.getId().replace("_", " ").toLowerCase());
         }
 
 

@@ -38,6 +38,7 @@ public class GoalType {
     public static final String BREED_FOX = "BREED_FOX";
     public static final String BREED_GOAT = "BREED_GOAT";
     public static final String BREED_STRIDER = "BREED_STRIDER";
+    public static final String BREED_FROGS = "BREED_FROGS";
     public static final String KILL_WITCH = "KILL_WITCH";
     public static final String KILL_ZOMBIE_VILLAGER = "KILL_ZOMBIE_VILLAGER";
     public static final String KILL_STRAY = "KILL_STRAY";
@@ -45,6 +46,7 @@ public class GoalType {
     public static final String KILL_SILVERFISH = "KILL_SILVERFISH";
     public static final String KILL_GUARDIAN = "KILL_GUARDIAN";
     public static final String KILL_GHAST = "KILL_GHAST";
+    public static final String KILL_BAT = "KILL_BAT";
     public static final String KILL_SNOW_GOLEM = "KILL_SNOW_GOLEM";
     public static final String KILL_SNOW_GOLEM_IN_NETHER = "KILL_SNOW_GOLEM_IN_NETHER";
     public static final String KILL_ELDER_GUARDIAN = "KILL_ELDER_GUARDIAN";
@@ -207,6 +209,7 @@ public class GoalType {
     public static final String OPPONENT_TAKES_100_DAMAGE = "OPPONENT_TAKES_100_DAMAGE";
     public static final String OPPONENT_TAKES_FALL_DAMAGE = "OPPONENT_TAKES_FALL_DAMAGE";
     public static final String OPPONENT_TOUCHES_WATER = "OPPONENT_TOUCHES_WATER";
+    public static final String OPPONENT_EATS_FOOD = "OPPONENT_EATS_FOOD";
     public static final String REACH_NETHER_ROOF = "REACH_NETHER_ROOF";
     public static final String HAVE_MORE_XP_LEVELS = "HAVE_MORE_XP_LEVELS";
     public static final String FREEZE_TO_DEATH = "FREEZE_TO_DEATH";
@@ -220,5 +223,6 @@ public class GoalType {
     public static final String FILL_CAMPFIRE = "FILL_CAMPFIRE";
     public static final String PUT_FLOWER_IN_POT = "PUT_FLOWER_IN_POT";
     public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
+    public static final String FILL_CHISELED_BOOKSHELF = "FILL_CHISELED_BOOKSHELF";
 
 }

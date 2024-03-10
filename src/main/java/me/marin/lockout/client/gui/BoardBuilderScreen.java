@@ -47,7 +47,7 @@ public class BoardBuilderScreen extends Screen {
     private ButtonWidget closeButton;
     private ButtonWidget closeSearchButton;
     private TextFieldWidget searchTextField;
-    private BoardBuilderGoalsWidget boardBuilderGoalsWidget;
+    private BoardBuilderSearchWidget boardBuilderSearchWidget;
     private ButtonWidget saveDataButton;
     private ButtonWidget closeEditDataButton;
     private TextWidget editDataErrorTextWidget;
@@ -66,9 +66,7 @@ public class BoardBuilderScreen extends Screen {
         int centerY = height / 2;
 
         titleTextField = new TextFieldWidget(textRenderer, centerX - 60 - CENTER_OFFSET, centerY - 80, 120, 18, Text.empty());
-        titleTextField.setChangedListener(s -> {
-            BoardBuilderData.INSTANCE.setTitle(s);
-        });
+        titleTextField.setChangedListener(BoardBuilderData.INSTANCE::setTitle);
         titleTextField.setText(BoardBuilderData.INSTANCE.getTitle());
         this.addDrawableChild(titleTextField);
 
@@ -90,24 +88,28 @@ public class BoardBuilderScreen extends Screen {
         this.addDrawableChild(clearBoardButton);
 
         if (displaySearch) {
-            double scrollY = boardBuilderGoalsWidget == null ? 0 : boardBuilderGoalsWidget.getScrollY();
-            boardBuilderGoalsWidget = new BoardBuilderGoalsWidget(
+            double scrollY = boardBuilderSearchWidget == null ? 0 : boardBuilderSearchWidget.getScrollY();
+            boardBuilderSearchWidget = new BoardBuilderSearchWidget(
                     centerX + 90 - CENTER_OFFSET,
                     40,
                     width / 2 - 125 + CENTER_OFFSET,
                     height - 40 * 2, Text.empty());
-            boardBuilderGoalsWidget.setScrollY(scrollY);
-            this.addDrawableChild(boardBuilderGoalsWidget);
+            boardBuilderSearchWidget.setScrollY(scrollY);
+            this.addDrawableChild(boardBuilderSearchWidget);
 
             closeSearchButton = ButtonWidget.builder(Text.of("<"), (b) -> {
                 closeSearch();
-            }).tooltip(Tooltip.of(Text.of("Close search"))).width(20).position(boardBuilderGoalsWidget.getX(), boardBuilderGoalsWidget.getY() - 21).build();
+            }).tooltip(Tooltip.of(Text.of("Close search"))).width(20).position(boardBuilderSearchWidget.getX(), boardBuilderSearchWidget.getY() - 21).build();
             this.addDrawableChild(closeSearchButton);
 
-            searchTextField = new TextFieldWidget(textRenderer, closeSearchButton.getX() + closeSearchButton.getWidth() + 1 + 5, closeSearchButton.getY() + 1, boardBuilderGoalsWidget.getWidth() - closeSearchButton.getWidth() - 2 - 5, 18, Text.empty());
+            searchTextField = new TextFieldWidget(textRenderer, closeSearchButton.getX() + closeSearchButton.getWidth() + 1 + 5, closeSearchButton.getY() + 1, boardBuilderSearchWidget.getWidth() - closeSearchButton.getWidth() - 2 - 5, 18, Text.empty());
             searchTextField.setChangedListener(s -> {
-                boardBuilderGoalsWidget.searchUpdated(s);
+                BoardBuilderData.INSTANCE.setSearch(s);
+                boardBuilderSearchWidget.searchUpdated(s);
             });
+            if (!BoardBuilderData.INSTANCE.getSearch().isEmpty()) {
+                searchTextField.setText(BoardBuilderData.INSTANCE.getSearch());
+            }
             this.addDrawableChild(searchTextField);
         }
         if (displayEditData) {
@@ -217,7 +219,7 @@ public class BoardBuilderScreen extends Screen {
         String finalBoardName = boardName;
         Text openBoardFile = Text.literal("[Open file]").styled(style ->
                 style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, BoardBuilderIO.INSTANCE.getBoardPath(finalBoardName).toFile().getAbsolutePath()))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open board file.")))
                         .withFormatting(Formatting.WHITE)
         );
         Text openBoardsDirectory = Text.literal("[View all boards]").styled(style ->
@@ -225,7 +227,7 @@ public class BoardBuilderScreen extends Screen {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
                         .withFormatting(Formatting.WHITE)
         );
-        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved board as " + boardName + ".txt!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved custom board as " + boardName + BoardBuilderIO.FILE_EXTENSION + "!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
         close();
     }
 
@@ -289,7 +291,7 @@ public class BoardBuilderScreen extends Screen {
         BoardBuilderData.INSTANCE.setEditingIdx(null);
         CENTER_OFFSET = 0;
 
-        this.boardBuilderGoalsWidget = null;
+        this.boardBuilderSearchWidget = null;
         this.closeSearchButton = null;
         this.searchTextField = null;
 

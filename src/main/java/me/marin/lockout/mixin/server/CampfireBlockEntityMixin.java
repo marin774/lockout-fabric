@@ -25,21 +25,21 @@ public class CampfireBlockEntityMixin {
 
         CampfireBlockEntity campfire = (CampfireBlockEntity) (Object) this;
 
+        boolean filled = true;
+        for (ItemStack itemStack : campfire.getItemsBeingCooked()) {
+            if (itemStack.isEmpty()) {
+                filled = false;
+                break;
+            }
+        }
+        if (!filled) return;
+
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
 
             if (goal instanceof FillCampfireWithFoodGoal) {
-                boolean filled = true;
-                for (ItemStack itemStack : campfire.getItemsBeingCooked()) {
-                    if (itemStack.isEmpty()) {
-                        filled = false;
-                        break;
-                    }
-                }
-                if (filled) {
-                    lockout.completeGoal(goal, player);
-                }
+                lockout.completeGoal(goal, player);
             }
         }
     }

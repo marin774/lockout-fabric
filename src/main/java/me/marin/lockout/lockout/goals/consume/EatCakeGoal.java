@@ -1,6 +1,8 @@
 package me.marin.lockout.lockout.goals.consume;
 
+import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
+import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.stat.Stats;
@@ -8,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class EatCakeGoal extends IncrementStatGoal {
+public class EatCakeGoal extends IncrementStatGoal implements TextureProvider {
 
     public EatCakeGoal(String id, String data) {
         super(id, data);
@@ -29,6 +31,12 @@ public class EatCakeGoal extends IncrementStatGoal {
     @Override
     public ItemStack getTextureItemStack() {
         return ITEM_STACK;
+    }
+
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/eat_cake.png");
+    @Override
+    public Identifier getTextureIdentifier() {
+        return TEXTURE;
     }
 
 }

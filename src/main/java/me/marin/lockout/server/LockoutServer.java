@@ -31,14 +31,12 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.argument.GameProfileArgumentType;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.damage.DamageType;
@@ -51,15 +49,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.EnchantRandomlyLootFunction;
-import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
-import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -95,17 +84,18 @@ import java.util.function.Function;
 
 public class LockoutServer {
 
-    private static final int START_TIME = 60;
     public static final int LOCATE_SEARCH = 1500;
     public static final Map<RegistryKey<Biome>, LocateData> BIOME_LOCATE_DATA = new HashMap<>();
     public static final Map<RegistryKey<Structure>, LocateData> STRUCTURE_LOCATE_DATA = new HashMap<>();
     public static final List<DyeColor> AVAILABLE_DYE_COLORS = new ArrayList<>();
 
+    private static int lockoutStartTime = 60;
+
     public static Lockout lockout;
     public static MinecraftServer server;
     public static CompassItemHandler compassHandler;
 
-    public static final Map<LockoutRunnable, Integer> gameStartRunnables = new HashMap<>();
+    public static final Map<LockoutRunnable, Long> gameStartRunnables = new HashMap<>();
 
     private static LockoutBoard CUSTOM_BOARD = null;
 
@@ -160,49 +150,6 @@ public class LockoutServer {
             }
         });
 
-        LootTableEvents.REPLACE.register(((resourceManager, lootManager, id, original, source) -> {
-            if (Objects.equals(id, LootTables.PIGLIN_BARTERING_GAMEPLAY)) {
-                NbtCompound fireRes = new NbtCompound();
-                fireRes.putString("Potion", "minecraft:fire_resistance");
-
-                UniformLootNumberProvider ironNuggetsCount = UniformLootNumberProvider.create(9.0F, 36.0F);
-                UniformLootNumberProvider quartzCount = UniformLootNumberProvider.create(8.0F, 16.0F);
-                UniformLootNumberProvider glowstoneDustCount = UniformLootNumberProvider.create(5.0F, 12.0F);
-                UniformLootNumberProvider magmaCreamCount = UniformLootNumberProvider.create(2.0F, 6.0F);
-                UniformLootNumberProvider enderPearlCount = UniformLootNumberProvider.create(4.0F, 8.0F);
-                UniformLootNumberProvider stringCount = UniformLootNumberProvider.create(8.0F, 24.0F);
-                UniformLootNumberProvider fireChargeCount = UniformLootNumberProvider.create(1.0F, 5.0F);
-                UniformLootNumberProvider gravelCount = UniformLootNumberProvider.create(8.0F, 16.0F);
-                UniformLootNumberProvider leatherCount = UniformLootNumberProvider.create(4.0F, 10.0F);
-                UniformLootNumberProvider netherBrickCount = UniformLootNumberProvider.create(4.0F, 16.0F);
-                UniformLootNumberProvider cryingObsidianCount = UniformLootNumberProvider.create(1.0F, 3.0F);
-                UniformLootNumberProvider soulSandCount = UniformLootNumberProvider.create(4.0F, 16.0F);
-
-                @SuppressWarnings("deprecation")
-                LootPool pool = LootPool.builder()
-                        .with(ItemEntry.builder(Items.BOOK).apply(EnchantRandomlyLootFunction.create().add(Enchantments.SOUL_SPEED)).weight(5))
-                        .with(ItemEntry.builder(Items.IRON_BOOTS).apply(EnchantRandomlyLootFunction.create().add(Enchantments.SOUL_SPEED)).weight(8))
-                        .with(ItemEntry.builder(Items.POTION).apply(SetNbtLootFunction.builder(fireRes)).weight(10))
-                        .with(ItemEntry.builder(Items.SPLASH_POTION).apply(SetNbtLootFunction.builder(fireRes)).weight(10))
-                        .with(ItemEntry.builder(Items.IRON_NUGGET).apply(SetCountLootFunction.builder(ironNuggetsCount)).weight(10))
-                        .with(ItemEntry.builder(Items.QUARTZ).apply(SetCountLootFunction.builder(quartzCount)).weight(20))
-                        .with(ItemEntry.builder(Items.GLOWSTONE_DUST).apply(SetCountLootFunction.builder(glowstoneDustCount)).weight(20))
-                        .with(ItemEntry.builder(Items.MAGMA_CREAM).apply(SetCountLootFunction.builder(magmaCreamCount)).weight(20))
-                        .with(ItemEntry.builder(Items.ENDER_PEARL).apply(SetCountLootFunction.builder(enderPearlCount)).weight(20))
-                        .with(ItemEntry.builder(Items.STRING).apply(SetCountLootFunction.builder(stringCount)).weight(20))
-                        .with(ItemEntry.builder(Items.FIRE_CHARGE).apply(SetCountLootFunction.builder(fireChargeCount)).weight(40))
-                        .with(ItemEntry.builder(Items.GRAVEL).apply(SetCountLootFunction.builder(gravelCount)).weight(40))
-                        .with(ItemEntry.builder(Items.LEATHER).apply(SetCountLootFunction.builder(leatherCount)).weight(40))
-                        .with(ItemEntry.builder(Items.NETHER_BRICK).apply(SetCountLootFunction.builder(netherBrickCount)).weight(40))
-                        .with(ItemEntry.builder(Items.OBSIDIAN).weight(40))
-                        .with(ItemEntry.builder(Items.CRYING_OBSIDIAN).apply(SetCountLootFunction.builder(cryingObsidianCount)).weight(40))
-                        .with(ItemEntry.builder(Items.SOUL_SAND).apply(SetCountLootFunction.builder(soulSandCount)).weight(40))
-                        .build();
-                return LootTable.builder().pool(pool).build();
-            }
-            return null;
-        }));
-
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
             if (!Lockout.isLockoutRunning(lockout)) return;
 
@@ -249,8 +196,9 @@ public class LockoutServer {
             }
 
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
+            ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
             if (lockout.hasStarted()) {
-                ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getStartTimePacket());
+                ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, PacketByteBufs.empty());
             }
         });
 
@@ -263,7 +211,7 @@ public class LockoutServer {
                     gameStartRunnables.remove(runnable);
                     return;
                 }
-                gameStartRunnables.merge(runnable, -1, Integer::sum);
+                gameStartRunnables.merge(runnable, -1L, Long::sum);
             }
 
             for (Goal goal : lockout.getBoard().getGoals()) {
@@ -282,7 +230,7 @@ public class LockoutServer {
                     if (goal instanceof ObtainItemsGoal obtainItemsGoal) {
                         if (obtainItemsGoal.satisfiedBy(player.getInventory())) {
                             if (goal instanceof OpponentObtainsItemGoal opponentObtainsItemGoal) {
-                                lockout.completed1v1Goal(goal, player, false, opponentObtainsItemGoal.getMessage(player));
+                                lockout.complete1v1Goal(goal, player, false, opponentObtainsItemGoal.getMessage(player));
                             } else {
                                 lockout.completeGoal(goal, player);
                             }
@@ -328,18 +276,24 @@ public class LockoutServer {
                         }
                     }
                     if (goal instanceof ReachBedrockGoal) {
-                        if (Objects.equals(player.getWorld().getBlockState(player.getBlockPos().down()).getBlock(), Blocks.BEDROCK)) {
+                        if (player.getY() < 10 && Objects.equals(player.getWorld().getBlockState(player.getBlockPos().down()).getBlock(), Blocks.BEDROCK)) {
                             lockout.completeGoal(goal, player);
                         }
                     }
                     if (goal instanceof OpponentTouchesWaterGoal) {
                         if (Objects.equals(player.getWorld().getBlockState(player.getBlockPos()).getBlock(), Blocks.WATER)) {
-                            lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " touched water.");
+                            lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " touched water.");
                         }
                     }
                 }
             }
 
+            lockout.tick();
+            if (lockout.getTicks() % 20 == 0) {
+                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                    ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
+                }
+            }
         });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
@@ -435,10 +389,10 @@ public class LockoutServer {
                 }
                 if (entity instanceof PlayerEntity player) {
                     if (goal instanceof OpponentDiesGoal) {
-                        lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " died.");
+                        lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died.");
                     }
                     if (goal instanceof OpponentDies3TimesGoal && lockout.deaths.get(player.getUuid()) >= 3) {
-                        lockout.completed1v1Goal(goal, player, false, player.getName().getString() + " died 3 times.");
+                        lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died 3 times.");
                     }
                     if (goal instanceof DieToDamageTypeGoal dieToDamageTypeGoal) {
                         for (RegistryKey<DamageType> key : dieToDamageTypeGoal.getDamageRegistryKeys()) {
@@ -547,10 +501,13 @@ public class LockoutServer {
         });
 
         ServerPlayNetworking.registerGlobalReceiver(Constants.CUSTOM_BOARD_PACKET, (server, player, handler, buf, responseSender) -> {
-            if (!player.hasPermissionLevel(2)) {
-                player.sendMessage(Text.literal("You do not have the permission for this command!").formatted(Formatting.RED));
-                return;
+            if (!server.isSingleplayer()) {
+                if (!player.hasPermissionLevel(2)) {
+                    player.sendMessage(Text.literal("You do not have the permission for this command!").formatted(Formatting.RED));
+                    return;
+                }
             }
+
             try {
                 boolean clearBoard = buf.readBoolean();
                 if (clearBoard) {
@@ -574,8 +531,6 @@ public class LockoutServer {
 
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
         if (BIOME_LOCATE_DATA.containsKey(biome)) return BIOME_LOCATE_DATA.get(biome);
-
-        // Lockout.log("Locating biome " + biome.getValue());
 
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
@@ -602,11 +557,10 @@ public class LockoutServer {
     public static LocateData locateStructure(MinecraftServer server, RegistryKey<Structure> structure) {
         if (STRUCTURE_LOCATE_DATA.containsKey(structure)) return STRUCTURE_LOCATE_DATA.get(structure);
 
-        // Lockout.log("Locating structure " + structure.getValue());
-
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
 
+        // All of this was taken from `/locate` command logic.
         Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE);
         Either<RegistryKey<Structure>, TagKey<Structure>> either = Either.left(structure);
         Function<RegistryKey<Structure>, Optional<RegistryEntryList<Structure>>> function = (key) -> registry.getEntry(key).map(RegistryEntryList::of);
@@ -662,10 +616,10 @@ public class LockoutServer {
         List<UUID> allLockoutPlayers = teams.stream()
                 .flatMap(team -> team.getPlayers().stream())
                 .toList();
-        List<UUID> allSpectatorPlayers = allServerPlayers.stream()
+        /*List<UUID> allSpectatorPlayers = allServerPlayers.stream()
                 .map(ServerPlayerEntity::getUuid)
                 .filter(uuid -> !allLockoutPlayers.contains(uuid))
-                .toList();
+                .toList();*/
 
         for (ServerPlayerEntity serverPlayer : allServerPlayers) {
             serverPlayer.getInventory().clear();
@@ -707,6 +661,9 @@ public class LockoutServer {
         }
 
         lockout = new Lockout(lockoutBoard, teams);
+        lockout.setTicks(-20L * lockoutStartTime); // see Lockout#ticks
+
+
         compassHandler = new CompassItemHandler(allLockoutPlayers, playerManager);
 
         List<Goal> loreGoals = new ArrayList<>(lockout.getBoard().getGoals()).stream().filter(g -> g instanceof HasTooltipInfo).toList();
@@ -714,15 +671,17 @@ public class LockoutServer {
         for (Goal goal : loreGoals) {
             for (LockoutTeam team : lockout.getTeams()) {
                 ((LockoutTeamServer) team).sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                // FIXME: spectators get sent lore updates teams.size() times.
             }
-            for (UUID spectatorPlayer : allSpectatorPlayers) {
+            /*for (UUID spectatorPlayer : allSpectatorPlayers) {
                 ServerPlayerEntity player = playerManager.getPlayer(spectatorPlayer);
 
-            }
+            }*/
         }
 
         for (ServerPlayerEntity player : allServerPlayers) {
             ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
+            ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
 
             if (!lockout.isSoloBlackout() && allLockoutPlayers.contains(player.getUuid())) {
                 player.giveItemStack(compassHandler.newCompass());
@@ -737,21 +696,20 @@ public class LockoutServer {
                 final int secs = i;
                 ((LockoutRunnable) () -> {
                     playerManager.broadcast(Text.literal("Starting in " + secs + "..."), false);
-                }).runTaskAfter(20 * (START_TIME - i));
+                }).runTaskAfter(20L * (lockoutStartTime - i));
             } else {
                 ((LockoutRunnable) () -> {
                     lockout.setStarted(true);
-                    lockout.setStartTime(System.currentTimeMillis());
 
                     for (ServerPlayerEntity player : allServerPlayers) {
                         if (player == null) continue;
-                        ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getStartTimePacket());
+                        ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getUpdateTimerPacket());
                         if (allLockoutPlayers.contains(player.getUuid())) {
                             player.changeGameMode(GameMode.SURVIVAL);
                         }
                     }
                     server.getPlayerManager().broadcast(Text.literal(lockout.getModeName() + " has begun."), false);
-                }).runTaskAfter(20 * START_TIME);
+                }).runTaskAfter(20L * lockoutStartTime);
             }
         }
     }
@@ -934,8 +892,16 @@ public class LockoutServer {
 
         Goal goal = lockout.getBoard().getGoals().get(idx - 1);
 
-        context.getSource().sendMessage(Text.of("Gave " + gp.getName() + " goal \"" + goal.getGoalName() + "\""));
+        context.getSource().sendMessage(Text.of("Gave " + gp.getName() + " goal \"" + goal.getGoalName() + "\"."));
         lockout.updateGoalCompletion(goal, gp.getId());
+        return 1;
+    }
+
+    public static int setStartTime(CommandContext<ServerCommandSource> context) {
+        int seconds = context.getArgument("seconds", Integer.class);
+
+        lockoutStartTime = seconds;
+        context.getSource().sendMessage(Text.of("Updated start time to " + seconds + "s."));
         return 1;
     }
 

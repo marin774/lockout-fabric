@@ -4,27 +4,43 @@ import me.marin.lockout.Lockout;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
 import me.marin.lockout.lockout.goals.advancement.*;
-import me.marin.lockout.lockout.goals.advancement.unique.*;
-import me.marin.lockout.lockout.goals.biome.*;
+import me.marin.lockout.lockout.goals.advancement.unique.Get10UniqueAdvancementsGoal;
+import me.marin.lockout.lockout.goals.advancement.unique.Get20UniqueAdvancementsGoal;
+import me.marin.lockout.lockout.goals.advancement.unique.Get30UniqueAdvancementsGoal;
+import me.marin.lockout.lockout.goals.biome.VisitBadlandsBiomeGoal;
+import me.marin.lockout.lockout.goals.biome.VisitIceSpikesBiomeGoal;
+import me.marin.lockout.lockout.goals.biome.VisitMushroomBiomeGoal;
 import me.marin.lockout.lockout.goals.breed_animals.*;
 import me.marin.lockout.lockout.goals.brewing.*;
 import me.marin.lockout.lockout.goals.consume.*;
 import me.marin.lockout.lockout.goals.consume.unique.*;
 import me.marin.lockout.lockout.goals.death.*;
-import me.marin.lockout.lockout.goals.experience.*;
+import me.marin.lockout.lockout.goals.dimension.EnterEndGoal;
+import me.marin.lockout.lockout.goals.dimension.EnterNetherGoal;
+import me.marin.lockout.lockout.goals.experience.ReachXPLevel15Goal;
+import me.marin.lockout.lockout.goals.experience.ReachXPLevel30Goal;
 import me.marin.lockout.lockout.goals.have_more.HaveMostUniqueCraftsGoal;
-import me.marin.lockout.lockout.goals.kill.*;
-import me.marin.lockout.lockout.goals.kill.unique.*;
-import me.marin.lockout.lockout.goals.mine.*;
-import me.marin.lockout.lockout.goals.dimension.*;
-import me.marin.lockout.lockout.goals.misc.*;
 import me.marin.lockout.lockout.goals.have_more.HaveMostXPLevelsGoal;
+import me.marin.lockout.lockout.goals.kill.*;
+import me.marin.lockout.lockout.goals.kill.unique.Kill10UniqueHostileMobsGoal;
+import me.marin.lockout.lockout.goals.kill.unique.Kill13UniqueHostileMobsGoal;
+import me.marin.lockout.lockout.goals.kill.unique.Kill15UniqueHostileMobsGoal;
+import me.marin.lockout.lockout.goals.kill.unique.Kill7UniqueHostileMobsGoal;
+import me.marin.lockout.lockout.goals.mine.*;
+import me.marin.lockout.lockout.goals.misc.*;
 import me.marin.lockout.lockout.goals.obtain.*;
 import me.marin.lockout.lockout.goals.opponent.*;
-import me.marin.lockout.lockout.goals.ride.*;
+import me.marin.lockout.lockout.goals.ride.RideHorseGoal;
+import me.marin.lockout.lockout.goals.ride.RideMinecartGoal;
+import me.marin.lockout.lockout.goals.ride.RidePigGoal;
 import me.marin.lockout.lockout.goals.status_effect.*;
-import me.marin.lockout.lockout.goals.status_effect.unique.*;
-import me.marin.lockout.lockout.goals.tame_animal.*;
+import me.marin.lockout.lockout.goals.status_effect.unique.Get3StatusEffectsGoal;
+import me.marin.lockout.lockout.goals.status_effect.unique.Get4StatusEffectsGoal;
+import me.marin.lockout.lockout.goals.status_effect.unique.Get6StatusEffectsGoal;
+import me.marin.lockout.lockout.goals.tame_animal.TameCatGoal;
+import me.marin.lockout.lockout.goals.tame_animal.TameHorseGoal;
+import me.marin.lockout.lockout.goals.tame_animal.TameParrotGoal;
+import me.marin.lockout.lockout.goals.tame_animal.TameWolfGoal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.goals.wear_armor.*;
 import me.marin.lockout.lockout.goals.workstation.*;
@@ -37,7 +53,7 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 import java.util.List;
 
-import static me.marin.lockout.lockout.GoalRegistry.*;
+import static me.marin.lockout.lockout.GoalRegistry.INSTANCE;
 
 public class DefaultGoalRegister {
 
@@ -134,6 +150,17 @@ public class DefaultGoalRegister {
                 return null;
             }
         });
+        INSTANCE.register(GoalType.BREED_FROGS, BreedFrogsGoal.class, new GoalRequirementsProvider() {
+            @Override
+            public List<RegistryKey<Biome>> getRequiredBiomes() {
+                return List.of(BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP);
+            }
+
+            @Override
+            public List<RegistryKey<Structure>> getRequiredStructures() {
+                return null;
+            }
+        });
         INSTANCE.register(GoalType.KILL_WITCH, KillWitchGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
@@ -163,6 +190,7 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.KILL_GUARDIAN, KillGuardianGoal.class,
                 GoalRequirementsProvider.MONUMENT);
         INSTANCE.register(GoalType.KILL_GHAST, KillGhastGoal.class);
+        INSTANCE.register(GoalType.KILL_BAT, KillBatGoal.class);
         INSTANCE.register(GoalType.KILL_SNOW_GOLEM, KillSnowGolemGoal.class);
         INSTANCE.register(GoalType.KILL_SNOW_GOLEM_IN_NETHER, KillSnowGolemInNetherGoal.class);
         INSTANCE.register(GoalType.KILL_ELDER_GUARDIAN, KillElderGuardianGoal.class,
@@ -447,6 +475,8 @@ public class DefaultGoalRegister {
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_TOUCHES_WATER, OpponentTouchesWaterGoal.class,
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
+        INSTANCE.register(GoalType.OPPONENT_EATS_FOOD, OpponentEatsFoodGoal.class,
+                GoalRequirementsProvider.TO2_ONLY_GOAL);
 
         INSTANCE.register(GoalType.TAKE_200_DAMAGE, Take200DamageGoal.class);
         INSTANCE.register(GoalType.REACH_NETHER_ROOF, ReachNetherRoofGoal.class);
@@ -478,7 +508,9 @@ public class DefaultGoalRegister {
                         return List.of(StructureKeys.PILLAGER_OUTPOST, StructureKeys.MANSION);
                     }
                 });
-
+        INSTANCE.register(GoalType.FILL_CHISELED_BOOKSHELF, FillChiseledBookshelfGoal.class);
     }
+
+
 
 }

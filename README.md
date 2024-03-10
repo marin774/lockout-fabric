@@ -30,10 +30,14 @@ Create your teams using the vanilla `/team` command (`/team add <team name>`, `/
 To start a lockout match, run:
 `/lockout teams <team name> <team name> ...` (there can be up to 16 teams)
 
-Or if you want to do FFA:
+Or if you want to do FFA, run:
 `/lockout players <player name> <player name> ...` (there can be up to 16 players)
 
+> Note: /blackout works the same as /lockout.
+
 If you want to chat with your team, run `/chat team`.
+
+If you want to adjust the start time (time before the game begins), run `/SetStartTime <seconds>` (between 5-300s)
 
 # Board Builder
 

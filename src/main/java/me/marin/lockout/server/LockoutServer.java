@@ -653,6 +653,10 @@ public class LockoutServer {
             BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, AVAILABLE_DYE_COLORS, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
             lockoutBoard = boardGenerator.generateBoard();
         } else {
+            // Reset custom board (TODO: do this somewhere else)
+            for (Goal goal : CUSTOM_BOARD.getGoals()) {
+                goal.setCompleted(false, null);
+            }
             lockoutBoard = CUSTOM_BOARD;
         }
 

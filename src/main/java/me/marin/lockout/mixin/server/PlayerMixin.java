@@ -4,7 +4,6 @@ import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.consume.DrinkWaterBottleGoal;
 import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
@@ -23,8 +22,6 @@ import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.potion.Potions;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -47,6 +44,7 @@ public abstract class PlayerMixin {
 
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
+        if (!lockout.isLockoutPlayer(player)) return;
 
         if (CompassItemHandler.isCompass(stack)) {
             cir.setReturnValue(null);
@@ -134,10 +132,11 @@ public abstract class PlayerMixin {
 
     @Inject(method="eatFood", at = @At("HEAD"))
     public void onEat(World world, ItemStack itemStack, CallbackInfoReturnable<ItemStack> cir) {
-        Lockout lockout = LockoutServer.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
+
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         if (!lockout.isLockoutPlayer(player.getUuid())) return;
         LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
@@ -149,13 +148,7 @@ public abstract class PlayerMixin {
 
             if (goal instanceof ConsumeItemGoal consumeItemGoal) {
                 if (consumeItemGoal.getItem().equals(itemStack.getItem())) {
-                    if (goal instanceof DrinkWaterBottleGoal) {
-                        if (PotionUtil.getPotion(itemStack.getNbt()) == Potions.WATER) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    } else {
-                        lockout.completeGoal(goal, player);
-                    }
+                    lockout.completeGoal(goal, player);
                 }
             }
             if (goal instanceof EatUniqueFoodsGoal eatUniqueFoodsGoal) {
@@ -181,10 +174,11 @@ public abstract class PlayerMixin {
 
     @Inject(method = "incrementStat(Lnet/minecraft/util/Identifier;)V", at = @At("HEAD"))
     public void onIncrementStat(Identifier stat, CallbackInfo ci) {
-        Lockout lockout = LockoutServer.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
+
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

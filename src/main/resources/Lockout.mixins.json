@@ -27,6 +27,7 @@
     "server.PlayerAdvancementTrackerMixin",
     "server.PlayerInventoryAccessor",
     "server.PlayerMixin",
+    "server.PotionItemMixin",
     "server.RaidMixin",
     "server.ServerPlayerEntityMixin",
     "server.SlotMixin",

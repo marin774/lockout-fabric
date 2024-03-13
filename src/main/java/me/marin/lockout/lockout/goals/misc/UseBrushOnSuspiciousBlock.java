@@ -10,15 +10,15 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class GetItemFromSuspiciousBlock extends Goal implements CustomTextureRenderer {
+public class UseBrushOnSuspiciousBlock extends Goal implements CustomTextureRenderer {
 
-    public GetItemFromSuspiciousBlock(String id, String data) {
+    public UseBrushOnSuspiciousBlock(String id, String data) {
         super(id, data);
     }
 
     @Override
     public String getGoalName() {
-        return "Get any item from Suspicious Sand/Gravel using Brush";
+        return "Use Brush on Suspicious Sand/Gravel";
     }
 
     @Override

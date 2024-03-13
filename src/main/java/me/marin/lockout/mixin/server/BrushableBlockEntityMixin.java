@@ -2,7 +2,7 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.misc.GetItemFromSuspiciousBlock;
+import me.marin.lockout.lockout.goals.misc.UseBrushOnSuspiciousBlock;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.block.entity.BrushableBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BrushableBlockEntity.class)
 public class BrushableBlockEntityMixin {
 
-    @Inject(method = "finishBrushing", at = @At("TAIL"))
+    @Inject(method = "finishBrushing", at = @At("HEAD"))
     public void finishBrushing(PlayerEntity player, CallbackInfo ci) {
         if (player.getWorld().isClient) return;
         Lockout lockout = LockoutServer.lockout;
@@ -24,7 +24,7 @@ public class BrushableBlockEntityMixin {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
 
-            if (goal instanceof GetItemFromSuspiciousBlock) {
+            if (goal instanceof UseBrushOnSuspiciousBlock) {
                 lockout.completeGoal(goal, player);
             }
         }

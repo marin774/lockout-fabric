@@ -26,8 +26,8 @@ public class CompassItemMixin {
         if (entity.getWorld().isClient) return;
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
-
         if (!(entity instanceof PlayerEntity player)) return;
+        if (!lockout.isLockoutPlayer(player)) return;
 
         if (!CompassItemHandler.isCompass(stack)) return;
 

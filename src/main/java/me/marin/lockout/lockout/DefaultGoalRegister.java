@@ -431,7 +431,7 @@ public class DefaultGoalRegister {
                     }
                 });
         INSTANCE.register(GoalType.FILL_CHISELED_BOOKSHELF, FillChiseledBookshelfGoal.class);
-        INSTANCE.register(GoalType.GET_ITEM_FROM_SUSPICIOUS_BLOCK, GetItemFromSuspiciousBlock.class, new GoalRequirementsProvider() {
+        INSTANCE.register(GoalType.USE_BRUSH_ON_SUSPICIOUS_BLOCK, UseBrushOnSuspiciousBlock.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Structure>> getRequiredStructures() {
                 return List.of(StructureKeys.OCEAN_RUIN_WARM, StructureKeys.TRAIL_RUINS);

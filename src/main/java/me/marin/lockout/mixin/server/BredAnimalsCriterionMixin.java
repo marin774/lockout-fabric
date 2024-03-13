@@ -26,8 +26,6 @@ public class BredAnimalsCriterionMixin {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
 
-        if (!lockout.isLockoutPlayer(player.getUuid())) return;
-
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;

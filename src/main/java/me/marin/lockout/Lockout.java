@@ -247,6 +247,9 @@ public class Lockout {
         this.hasStarted = hasStarted;
     }
 
+    public boolean isLockoutPlayer(PlayerEntity player) {
+        return isLockoutPlayer(player.getUuid());
+    }
     public boolean isLockoutPlayer(UUID playerId) {
         for (LockoutTeam team : teams) {
             if (((LockoutTeamServer)team).getPlayers().contains(playerId)) {

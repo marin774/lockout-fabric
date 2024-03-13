@@ -139,17 +139,17 @@ public class Utility {
     }
 
     public static void drawGoalInformation(DrawContext context, TextRenderer textRenderer, Goal goal, int mouseX, int mouseY) {
-        List<OrderedText> lore = new ArrayList<>();
-        lore.add(Text.of(((goal instanceof HasTooltipInfo) ? Formatting.UNDERLINE : "") + goal.getGoalName()).asOrderedText());
+        List<OrderedText> tooltip = new ArrayList<>();
+        tooltip.add(Text.of(((goal instanceof HasTooltipInfo) ? Formatting.UNDERLINE : "") + goal.getGoalName()).asOrderedText());
         if (goal instanceof HasTooltipInfo) {
-            String s = LockoutClient.goalLoreMap.get(goal.getId());
+            String s = LockoutClient.goalTooltipMap.get(goal.getId());
             if (s != null) {
                 for (String t : s.split("\n")) {
-                    lore.add(Text.of(t).asOrderedText());
+                    tooltip.add(Text.of(t).asOrderedText());
                 }
             }
         }
-        context.drawOrderedTooltip(textRenderer, lore, mouseX, mouseY);
+        context.drawOrderedTooltip(textRenderer, tooltip, mouseX, mouseY);
     }
 
     public static List<ServerPlayerEntity> getSpectators(Lockout lockout, MinecraftServer server) {

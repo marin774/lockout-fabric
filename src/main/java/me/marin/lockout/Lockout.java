@@ -39,7 +39,6 @@ public class Lockout {
     public final Map<LockoutTeam, Double> damageDealt = new HashMap<>();
     public final Map<UUID, Integer> deaths = new HashMap<>();
     public final Map<LockoutTeam, Integer> mobsKilled = new HashMap<>();
-    // public Map<UUID, Integer> most_x_Item = new LinkedHashMap<>();
     public final Map<UUID, Integer> distanceSprinted = new HashMap<>();
     public final Map<UUID, Set<Item>> uniqueCrafts = new HashMap<>();
 

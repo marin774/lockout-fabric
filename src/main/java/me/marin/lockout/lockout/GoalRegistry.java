@@ -7,6 +7,9 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.util.*;
 
+/**
+ * TODO: make this an actual {@link net.minecraft.registry.Registry}
+ */
 public class GoalRegistry {
 
     public static final GoalRegistry INSTANCE = new GoalRegistry();
@@ -25,7 +28,7 @@ public class GoalRegistry {
     }
     public void register(String id, Class<? extends Goal> goalClass, GoalRequirementsProvider goalRequirementsProvider, GoalDataGenerator goalDataGenerator) {
         if (registry.containsKey(id)) {
-            Lockout.log("Goal with id " + id + " has already been registered..");
+            Lockout.log("Goal with id " + id + " has already been registered.");
             return;
         }
         registry.put(id, goalClass);

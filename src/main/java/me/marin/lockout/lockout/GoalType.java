@@ -122,6 +122,7 @@ public class GoalType {
     public static final String EAT_RABBIT_STEW = "EAT_RABBIT_STEW";
     public static final String EAT_SUSPICIOUS_STEW = "EAT_SUSPICIOUS_STEW";
     public static final String DRINK_HONEY_BOTTLE = "DRINK_HONEY_BOTTLE";
+    public static final String DRINK_WATER_BOTTLE = "DRINK_WATER_BOTTLE";
     public static final String EAT_CAKE = "EAT_CAKE";
     public static final String OBTAIN_4_UNIQUE_SAPLINGS = "OBTAIN_4_UNIQUE_SAPLINGS";
     public static final String TOOT_GOAT_HORN = "TOOT_GOAT_HORN";
@@ -224,5 +225,6 @@ public class GoalType {
     public static final String PUT_FLOWER_IN_POT = "PUT_FLOWER_IN_POT";
     public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
     public static final String FILL_CHISELED_BOOKSHELF = "FILL_CHISELED_BOOKSHELF";
+    public static final String GET_ITEM_FROM_SUSPICIOUS_BLOCK = "GET_ITEM_FROM_SUSPICIOUS_BLOCK";
 
 }

@@ -139,6 +139,7 @@ public class LockoutServer {
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             if (!Lockout.exists(lockout)) return;
+            if (lockout.isSoloBlackout()) return;
             if (lockout.isLockoutPlayer(newPlayer.getUuid())) {
                 int slot = LockoutServer.compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
                 if (slot == 40) {
@@ -178,7 +179,7 @@ public class LockoutServer {
                         PacketByteBuf buf = PacketByteBufs.create();
                         buf.writeString(goal.getId());
                         buf.writeString(String.join("\n", hasTooltipInfo.getTooltip(team)));
-                        ServerPlayNetworking.send(player, Constants.UPDATE_LORE, buf);
+                        ServerPlayNetworking.send(player, Constants.UPDATE_TOOLTIP, buf);
                     }
                 }
                 player.changeGameMode(GameMode.SURVIVAL);
@@ -188,7 +189,7 @@ public class LockoutServer {
                         PacketByteBuf buf = PacketByteBufs.create();
                         buf.writeString(goal.getId());
                         buf.writeString(String.join("\n", hasTooltipInfo.getSpectatorTooltip()));
-                        ServerPlayNetworking.send(player, Constants.UPDATE_LORE, buf);
+                        ServerPlayNetworking.send(player, Constants.UPDATE_TOOLTIP, buf);
                     }
                 }
                 player.changeGameMode(GameMode.SPECTATOR);
@@ -344,7 +345,7 @@ public class LockoutServer {
 
                                 int size = killAllSpecificMobsGoal.getTrackerMap().get(team).size();
 
-                                team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                                team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
                                 if (size >= killAllSpecificMobsGoal.getEntityTypes().size()) {
                                     lockout.completeGoal(killAllSpecificMobsGoal, team);
                                 }
@@ -357,7 +358,7 @@ public class LockoutServer {
 
                                 int size = lockout.killedHostileTypes.get(team).size();
 
-                                team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                                team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
                                 if (size >= killUniqueHostileMobsGoal.getAmount()) {
                                     lockout.completeGoal(killUniqueHostileMobsGoal, team);
                                 }
@@ -366,7 +367,7 @@ public class LockoutServer {
                         if (goal instanceof Kill100MobsGoal kill100MobsGoal) {
                             int size = lockout.mobsKilled.get(team);
 
-                            team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                            team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
                             if (size >= kill100MobsGoal.getAmount()) {
                                 lockout.completeGoal(goal, team);
                             }
@@ -378,7 +379,7 @@ public class LockoutServer {
 
                                 int size = killSpecificMobsGoal.getTrackerMap().get(team);
 
-                                team.sendLoreUpdate((Goal & HasTooltipInfo) goal);
+                                team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
                                 if (size >= killSpecificMobsGoal.getAmount()) {
                                     lockout.completeGoal(killSpecificMobsGoal, attackerPlayer);
                                 }
@@ -437,67 +438,63 @@ public class LockoutServer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-            Lockout.log("Locating all required Structures and Biomes");
-            LockoutServer.server = server;
-            long start = System.currentTimeMillis();
+            server.execute(() -> {
+                Lockout.log("Locating all required Structures and Biomes");
+                LockoutServer.server = server;
+                long start = System.currentTimeMillis();
 
-            boolean hasCactus = locateBiome(server, BiomeKeys.DESERT).isInRequiredDistance();
-            hasCactus |= locateBiome(server, BiomeKeys.BADLANDS).isInRequiredDistance();
-            hasCactus |= locateBiome(server, BiomeKeys.ERODED_BADLANDS).isInRequiredDistance();
-            hasCactus |= locateBiome(server, BiomeKeys.WOODED_BADLANDS).isInRequiredDistance();
+                AVAILABLE_DYE_COLORS.add(DyeColor.BLACK);
+                AVAILABLE_DYE_COLORS.add(DyeColor.WHITE);
+                AVAILABLE_DYE_COLORS.add(DyeColor.GRAY);
+                AVAILABLE_DYE_COLORS.add(DyeColor.LIGHT_GRAY);
+                AVAILABLE_DYE_COLORS.add(DyeColor.BLUE);
+                AVAILABLE_DYE_COLORS.add(DyeColor.LIGHT_BLUE);
+                AVAILABLE_DYE_COLORS.add(DyeColor.ORANGE);
+                AVAILABLE_DYE_COLORS.add(DyeColor.RED);
+                AVAILABLE_DYE_COLORS.add(DyeColor.YELLOW);
+                AVAILABLE_DYE_COLORS.add(DyeColor.MAGENTA);
+                AVAILABLE_DYE_COLORS.add(DyeColor.PINK);
+                AVAILABLE_DYE_COLORS.add(DyeColor.PURPLE);
 
-            AVAILABLE_DYE_COLORS.add(DyeColor.BLACK);
-            AVAILABLE_DYE_COLORS.add(DyeColor.WHITE);
-            AVAILABLE_DYE_COLORS.add(DyeColor.GRAY);
-            AVAILABLE_DYE_COLORS.add(DyeColor.LIGHT_GRAY);
-            AVAILABLE_DYE_COLORS.add(DyeColor.BLUE);
-            AVAILABLE_DYE_COLORS.add(DyeColor.LIGHT_BLUE);
-            AVAILABLE_DYE_COLORS.add(DyeColor.ORANGE);
-            AVAILABLE_DYE_COLORS.add(DyeColor.RED);
-            AVAILABLE_DYE_COLORS.add(DyeColor.YELLOW);
-            AVAILABLE_DYE_COLORS.add(DyeColor.MAGENTA);
-            AVAILABLE_DYE_COLORS.add(DyeColor.PINK);
-            AVAILABLE_DYE_COLORS.add(DyeColor.PURPLE);
-
-            if (hasCactus) {
-                AVAILABLE_DYE_COLORS.add(DyeColor.GREEN);
-                AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
-                AVAILABLE_DYE_COLORS.add(DyeColor.CYAN);
-            } else {
-                if (locateBiome(server, BiomeKeys.WARM_OCEAN).isInRequiredDistance()) {
+                boolean hasCactus = locateBiome(server, BiomeKeys.DESERT).isInRequiredDistance();
+                hasCactus |= locateBiome(server, BiomeKeys.BADLANDS).isInRequiredDistance();
+                hasCactus |= locateBiome(server, BiomeKeys.ERODED_BADLANDS).isInRequiredDistance();
+                hasCactus |= locateBiome(server, BiomeKeys.WOODED_BADLANDS).isInRequiredDistance();
+                if (hasCactus) {
+                    AVAILABLE_DYE_COLORS.add(DyeColor.GREEN);
                     AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
+                    AVAILABLE_DYE_COLORS.add(DyeColor.CYAN);
+                } else {
+                    if (locateBiome(server, BiomeKeys.WARM_OCEAN).isInRequiredDistance()) {
+                        AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
+                    }
                 }
-            }
 
-            boolean hasCocoaBeans;
-            hasCocoaBeans  = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
-            hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).isInRequiredDistance();
-            hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
+                boolean hasCocoaBeans;
+                hasCocoaBeans  = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
+                hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).isInRequiredDistance();
+                hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
+                if (hasCocoaBeans) {
+                    AVAILABLE_DYE_COLORS.add(DyeColor.BROWN);
+                }
 
-            if (hasCocoaBeans) {
-                AVAILABLE_DYE_COLORS.add(DyeColor.BROWN);
-            }
+                for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
+                    GoalRequirementsProvider goalRequirementsProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);
+                    if (goalRequirementsProvider == null) continue;
 
-            for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-                GoalRequirementsProvider goalRequirementsProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);
-                if (goalRequirementsProvider == null) continue;
-
-                if (goalRequirementsProvider.getRequiredBiomes() != null) {
                     for (RegistryKey<Biome> biome : goalRequirementsProvider.getRequiredBiomes()) {
                         locateBiome(server, biome);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
-                }
 
-                if (goalRequirementsProvider.getRequiredStructures() != null) {
                     for (RegistryKey<Structure> structure : goalRequirementsProvider.getRequiredStructures()) {
                         locateStructure(server, structure);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
                 }
-            }
-            long end = System.currentTimeMillis();
-            Lockout.log("Located " + BIOME_LOCATE_DATA.size() + " biomes and " + STRUCTURE_LOCATE_DATA.size() + " structures in " + String.format("%.2f", ((end-start)/1000.0)) + "s!");
+                long end = System.currentTimeMillis();
+                Lockout.log("Located " + BIOME_LOCATE_DATA.size() + " biomes and " + STRUCTURE_LOCATE_DATA.size() + " structures in " + String.format("%.2f", ((end-start)/1000.0)) + "s!");
+            });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(Constants.CUSTOM_BOARD_PACKET, (server, player, handler, buf, responseSender) -> {
@@ -616,10 +613,10 @@ public class LockoutServer {
         List<UUID> allLockoutPlayers = teams.stream()
                 .flatMap(team -> team.getPlayers().stream())
                 .toList();
-        /*List<UUID> allSpectatorPlayers = allServerPlayers.stream()
+        List<UUID> allSpectatorPlayers = allServerPlayers.stream()
                 .map(ServerPlayerEntity::getUuid)
                 .filter(uuid -> !allLockoutPlayers.contains(uuid))
-                .toList();*/
+                .toList();
 
         for (ServerPlayerEntity serverPlayer : allServerPlayers) {
             serverPlayer.getInventory().clear();
@@ -654,8 +651,7 @@ public class LockoutServer {
         LockoutBoard lockoutBoard;
         if (CUSTOM_BOARD == null) {
             BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, AVAILABLE_DYE_COLORS, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
-            List<Pair<String,String>> board = boardGenerator.generateBoard();
-            lockoutBoard = new LockoutBoard(board);
+            lockoutBoard = boardGenerator.generateBoard();
         } else {
             lockoutBoard = CUSTOM_BOARD;
         }
@@ -663,20 +659,23 @@ public class LockoutServer {
         lockout = new Lockout(lockoutBoard, teams);
         lockout.setTicks(-20L * lockoutStartTime); // see Lockout#ticks
 
-
         compassHandler = new CompassItemHandler(allLockoutPlayers, playerManager);
 
-        List<Goal> loreGoals = new ArrayList<>(lockout.getBoard().getGoals()).stream().filter(g -> g instanceof HasTooltipInfo).toList();
-        // Update lore
-        for (Goal goal : loreGoals) {
+        List<Goal> tooltipGoals = new ArrayList<>(lockout.getBoard().getGoals()).stream().filter(g -> g instanceof HasTooltipInfo).toList();
+        for (Goal goal : tooltipGoals) {
+            // Update teams tooltip
             for (LockoutTeam team : lockout.getTeams()) {
-                ((LockoutTeamServer) team).sendLoreUpdate((Goal & HasTooltipInfo) goal);
-                // FIXME: spectators get sent lore updates teams.size() times.
+                ((LockoutTeamServer) team).sendTooltipUpdate((Goal & HasTooltipInfo) goal, false);
             }
-            /*for (UUID spectatorPlayer : allSpectatorPlayers) {
-                ServerPlayerEntity player = playerManager.getPlayer(spectatorPlayer);
-
-            }*/
+            // Update spectator tooltip
+            if (!allSpectatorPlayers.isEmpty()) {
+                PacketByteBuf specBuf = PacketByteBufs.create();
+                specBuf.writeString(goal.getId());
+                specBuf.writeString(String.join("\n", ((HasTooltipInfo) goal).getSpectatorTooltip()));
+                for (UUID spectator : allSpectatorPlayers) {
+                    ServerPlayNetworking.send(playerManager.getPlayer(spectator), Constants.UPDATE_TOOLTIP, specBuf);
+                }
+            }
         }
 
         for (ServerPlayerEntity player : allServerPlayers) {
@@ -872,7 +871,7 @@ public class LockoutServer {
 
         int idx = context.getArgument("goal number", Integer.class);
 
-        Collection<GameProfile> gps = null;
+        Collection<GameProfile> gps;
         try {
             gps = GameProfileArgumentType.getProfileArgument(context, "player name");
         } catch (CommandSyntaxException e) {

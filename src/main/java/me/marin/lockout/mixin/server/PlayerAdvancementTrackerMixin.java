@@ -51,7 +51,7 @@ public abstract class PlayerAdvancementTrackerMixin {
 
                     int size = getUniqueAdvancementsGoal.getTrackerMap().get(team).size();
 
-                    team.sendLoreUpdate(getUniqueAdvancementsGoal);
+                    team.sendTooltipUpdate(getUniqueAdvancementsGoal);
                     if (size >= getUniqueAdvancementsGoal.getAmount()) {
                         lockout.completeGoal(goal, team);
                     }

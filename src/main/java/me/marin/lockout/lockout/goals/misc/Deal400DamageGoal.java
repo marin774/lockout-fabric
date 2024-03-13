@@ -52,28 +52,28 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
         double damage = LockoutServer.lockout.damageDealt.getOrDefault(team, 0.0);
 
-        lore.add(" ");
-        lore.add("Damage: " + Math.min(400, (int) damage) + "/400");
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Damage: " + Math.min(400, (int) damage) + "/400");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             double damage = LockoutServer.lockout.damageDealt.getOrDefault(team, 0.0);
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + Math.min(400, (int) damage) + "/400");
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + Math.min(400, (int) damage) + "/400");
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
 }

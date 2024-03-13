@@ -53,26 +53,26 @@ public class Kill100MobsGoal extends Goal implements TextureProvider, CustomText
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
-        lore.add("Mobs killed: " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Mobs killed: " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + LockoutServer.lockout.mobsKilled.getOrDefault(team, 0) + "/" + getAmount());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class LivingEntityMixin {
             if (goal.isCompleted()) continue;
 
             if (goal instanceof Deal400DamageGoal deal400DamageGoal) {
-                team.sendLoreUpdate(deal400DamageGoal);
+                team.sendTooltipUpdate(deal400DamageGoal);
                 if (lockout.damageDealt.get(team) >= 400) {
                     lockout.completeGoal(goal, player);
                 }

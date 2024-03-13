@@ -7,112 +7,91 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public interface GoalRequirementsProvider {
+public abstract class GoalRequirementsProvider {
 
-    GoalRequirementsProvider VILLAGE = new GoalRequirementsProvider() {
-        @Override
-        public List<RegistryKey<Biome>> getRequiredBiomes() {
-            return null;
-        }
-
+    public static final GoalRequirementsProvider VILLAGE = new GoalRequirementsProvider() {
         @Override
         public List<RegistryKey<Structure>> getRequiredStructures() {
             return List.of(StructureKeys.VILLAGE_DESERT, StructureKeys.VILLAGE_PLAINS, StructureKeys.VILLAGE_SAVANNA, StructureKeys.VILLAGE_SNOWY, StructureKeys.VILLAGE_TAIGA);
         }
     };
-    GoalRequirementsProvider MONUMENT = new GoalRequirementsProvider() {
-        @Override
-        public List<RegistryKey<Biome>> getRequiredBiomes() {
-            return null;
-        }
-
+    public static final GoalRequirementsProvider MONUMENT = new GoalRequirementsProvider() {
         @Override
         public List<RegistryKey<Structure>> getRequiredStructures() {
             return List.of(StructureKeys.MONUMENT);
         }
     };
-    GoalRequirementsProvider JUNGLE_BIOMES = new GoalRequirementsProvider() {
+    public static final GoalRequirementsProvider JUNGLE_BIOMES = new GoalRequirementsProvider() {
         @Override
         public List<RegistryKey<Biome>> getRequiredBiomes() {
             return List.of(BiomeKeys.BAMBOO_JUNGLE, BiomeKeys.JUNGLE, BiomeKeys.SPARSE_JUNGLE);
         }
-
-        @Override
-        public List<RegistryKey<Structure>> getRequiredStructures() {
-            return null;
-        }
     };
-    GoalRequirementsProvider RABBIT_BIOMES = new GoalRequirementsProvider() {
+    public static final GoalRequirementsProvider RABBIT_BIOMES = new GoalRequirementsProvider() {
         @Override
         public List<RegistryKey<Biome>> getRequiredBiomes() {
             return List.of(BiomeKeys.DESERT, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_TAIGA, BiomeKeys.GROVE, BiomeKeys.SNOWY_SLOPES, BiomeKeys.FLOWER_FOREST,
                     BiomeKeys.TAIGA, BiomeKeys.MEADOW, BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, BiomeKeys.CHERRY_GROVE);
         }
-
-        @Override
-        public List<RegistryKey<Structure>> getRequiredStructures() {
-            return null;
-        }
     };
-    GoalRequirementsProvider TEAMS_GOAL = new GoalRequirementsProvider() {
-        @Override
-        public List<RegistryKey<Biome>> getRequiredBiomes() {
-            return null;
-        }
-
-        @Override
-        public List<RegistryKey<Structure>> getRequiredStructures() {
-            return null;
-        }
-
+    public static final GoalRequirementsProvider TEAMS_GOAL = new GoalRequirementsProvider() {
         @Override
         public boolean isTeamsSizeOk(int size) {
             return size >= 2;
         }
     };
-    GoalRequirementsProvider TO2_ONLY_GOAL = new GoalRequirementsProvider() {
-        @Override
-        public List<RegistryKey<Biome>> getRequiredBiomes() {
-            return null;
-        }
-
-        @Override
-        public List<RegistryKey<Structure>> getRequiredStructures() {
-            return null;
-        }
-
+    public static final GoalRequirementsProvider TO2_ONLY_GOAL = new GoalRequirementsProvider() {
         @Override
         public boolean isTeamsSizeOk(int size) {
             return size == 2;
         }
-
+    };
+    public static final GoalRequirementsProvider TO2_ONLY_GOAL_NOT_IN_RANDOM_POOL = new GoalRequirementsProvider() {
+        @Override
+        public boolean isTeamsSizeOk(int size) {
+            return size == 2;
+        }
+        @Override
+        public boolean isPartOfRandomPool() {
+            return false;
+        }
+    };
+    public static final GoalRequirementsProvider NOT_IN_RANDOM_POOL = new GoalRequirementsProvider() {
         @Override
         public boolean isPartOfRandomPool() {
             return false;
         }
     };
 
+    /**
+     * At least one of these biomes needs to be close to spawn. Keys can be found in {@link BiomeKeys}.
+     */
+    public List<RegistryKey<Biome>> getRequiredBiomes() {
+        return Collections.emptyList();
+    }
+
 
     /**
-     * Any of these biomes must be present
-     * BiomeKeys.BIOME_NAME
+     * At least one of these structures needs to be close to spawn. Keys can be found in {@link StructureKeys}.
      */
-    List<RegistryKey<Biome>> getRequiredBiomes();
+    public List<RegistryKey<Structure>> getRequiredStructures() {
+        return Collections.emptyList();
+    }
+
+    public boolean isPartOfRandomPool() {
+        return true;
+    }
+
+    public boolean isTeamsSizeOk(int teamsSize) {
+        return true;
+    }
 
 
-    /**
-     * Any of these structures must be present
-     * StructureKeys.STRUCTURE_NAME
-     */
-    List<RegistryKey<Structure>> getRequiredStructures();
-
-
-
-
-    default boolean isSatisfied(Map<RegistryKey<Biome>, LocateData> biomes, Map<RegistryKey<Structure>, LocateData> structures) {
+    public final boolean isSatisfied(Map<RegistryKey<Biome>, LocateData> biomes, Map<RegistryKey<Structure>, LocateData> structures) {
         boolean hasRequiredBiome = true;
         if (getRequiredBiomes() != null) {
             for (RegistryKey<Biome> biome : getRequiredBiomes()) {
@@ -139,13 +118,6 @@ public interface GoalRequirementsProvider {
         }
 
         return hasRequiredBiome && hasRequiredStructure;
-    }
-
-    default boolean isPartOfRandomPool() {
-        return true;
-    }
-    default boolean isTeamsSizeOk(int teamsSize) {
-        return true;
     }
 
 }

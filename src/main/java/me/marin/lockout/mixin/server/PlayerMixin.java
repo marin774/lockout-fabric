@@ -4,6 +4,7 @@ import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.goals.consume.DrinkWaterBottleGoal;
 import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
@@ -22,6 +23,8 @@ import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -111,7 +114,7 @@ public abstract class PlayerMixin {
             if (goal.isCompleted()) continue;
 
             if (goal instanceof Take200DamageGoal take200DamageGoal) {
-                team.sendLoreUpdate(take200DamageGoal);
+                team.sendTooltipUpdate(take200DamageGoal);
                 if (lockout.damageTaken.get(team) >= 200) {
                     lockout.completeGoal(goal, team);
                 }
@@ -146,7 +149,13 @@ public abstract class PlayerMixin {
 
             if (goal instanceof ConsumeItemGoal consumeItemGoal) {
                 if (consumeItemGoal.getItem().equals(itemStack.getItem())) {
-                    lockout.completeGoal(goal, player);
+                    if (goal instanceof DrinkWaterBottleGoal) {
+                        if (PotionUtil.getPotion(itemStack.getNbt()) == Potions.WATER) {
+                            lockout.completeGoal(goal, player);
+                        }
+                    } else {
+                        lockout.completeGoal(goal, player);
+                    }
                 }
             }
             if (goal instanceof EatUniqueFoodsGoal eatUniqueFoodsGoal) {
@@ -157,7 +166,7 @@ public abstract class PlayerMixin {
 
                     int size = eatUniqueFoodsGoal.getTrackerMap().get(team).size();
 
-                    team.sendLoreUpdate(eatUniqueFoodsGoal);
+                    team.sendTooltipUpdate(eatUniqueFoodsGoal);
                     if (size >= eatUniqueFoodsGoal.getAmount()) {
                         lockout.completeGoal(goal, team);
                     }

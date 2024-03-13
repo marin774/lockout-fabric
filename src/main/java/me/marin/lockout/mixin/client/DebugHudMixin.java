@@ -62,23 +62,13 @@ public abstract class DebugHudMixin {
         BlockPos blockPos = entity.getBlockPos();
         Direction direction = entity.getHorizontalFacing();
 
-        String directionString;
-        switch (direction) {
-            case NORTH:
-                directionString = "Towards negative Z";
-                break;
-            case SOUTH:
-                directionString = "Towards positive Z";
-                break;
-            case WEST:
-                directionString = "Towards negative X";
-                break;
-            case EAST:
-                directionString = "Towards positive X";
-                break;
-            default:
-                directionString = "Invalid";
-        }
+        String directionString = switch (direction) {
+            case NORTH -> "Towards negative Z";
+            case SOUTH -> "Towards positive Z";
+            case WEST -> "Towards negative X";
+            case EAST -> "Towards positive X";
+            default -> "Invalid";
+        };
 
         ChunkPos chunkPos = new ChunkPos(blockPos);
         if (!Objects.equals(this.pos, chunkPos)) {

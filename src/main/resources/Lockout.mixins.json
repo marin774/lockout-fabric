@@ -10,6 +10,7 @@
     "server.BredAnimalsCriterionMixin",
     "server.BrewedPotionCriterionMixin",
     "server.BrewingStandScreenHandlerPotionSlotMixin",
+    "server.BrushableBlockEntityMixin",
     "server.CampfireBlockEntityMixin",
     "server.ChiseledBookshelfBlockMixin",
     "server.CompassItemMixin",

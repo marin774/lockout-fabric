@@ -55,13 +55,18 @@ public class LockoutTeamServer extends LockoutTeam {
         }
     }
 
-    public <T extends Goal & HasTooltipInfo> void sendLoreUpdate(T goal) {
+    public <T extends Goal & HasTooltipInfo> void sendTooltipUpdate(T goal) {
+        sendTooltipUpdate(goal, true);
+    }
+    public <T extends Goal & HasTooltipInfo> void sendTooltipUpdate(T goal, boolean updateSpectators) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(goal.getId());
         buf.writeString(String.join("\n", goal.getTooltip(this)));
-        this.sendPacket(Constants.UPDATE_LORE, buf);
+        this.sendPacket(Constants.UPDATE_TOOLTIP, buf);
 
-        this.sendTooltipPacketSpectators(goal);
+        if (updateSpectators) {
+            this.sendTooltipPacketSpectators(goal);
+        }
     }
     public void sendPacket(Identifier packetId, PacketByteBuf packet) {
         for (UUID playerId : players) {
@@ -76,7 +81,7 @@ public class LockoutTeamServer extends LockoutTeam {
         specBuf.writeString(goal.getId());
         specBuf.writeString(String.join("\n", goal.getSpectatorTooltip()));
         for (ServerPlayerEntity spectator : Utility.getSpectators(LockoutServer.lockout, server)) {
-            ServerPlayNetworking.send(spectator, Constants.UPDATE_LORE, specBuf);
+            ServerPlayNetworking.send(spectator, Constants.UPDATE_TOOLTIP, specBuf);
         }
     }
 

@@ -81,13 +81,13 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
-        lore.add("Arthropods killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Arthropods killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
 }

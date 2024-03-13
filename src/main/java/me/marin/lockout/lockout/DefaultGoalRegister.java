@@ -61,15 +61,9 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.MINE_DIAMOND_ORE, MineDiamondOreGoal.class);
         INSTANCE.register(GoalType.MINE_EMERALD_ORE, MineEmeraldOreGoal.class,
                 new GoalRequirementsProvider() {
-                    // check for: Jagged Peaks, Frozen Peaks, Stony Peaks, Grove, Snowy slopes
                     @Override
                     public List<RegistryKey<Biome>> getRequiredBiomes() {
                         return List.of(BiomeKeys.JAGGED_PEAKS, BiomeKeys.FROZEN_PEAKS, BiomeKeys.STONY_PEAKS, BiomeKeys.GROVE, BiomeKeys.SNOWY_SLOPES);
-                    }
-
-                    @Override
-                    public List<RegistryKey<Structure>> getRequiredStructures() {
-                        return null;
                     }
                 });
         INSTANCE.register(GoalType.MINE_MOB_SPAWNER, MineMobSpawnerGoal.class);
@@ -78,11 +72,6 @@ public class DefaultGoalRegister {
                     @Override
                     public List<RegistryKey<Biome>> getRequiredBiomes() {
                         return List.of(BiomeKeys.BEACH);
-                    }
-
-                    @Override
-                    public List<RegistryKey<Structure>> getRequiredStructures() {
-                        return null;
                     }
                 });
         INSTANCE.register(GoalType.ENTER_NETHER, EnterNetherGoal.class);
@@ -131,11 +120,6 @@ public class DefaultGoalRegister {
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.SNOWY_TAIGA, BiomeKeys.GROVE);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.BREED_SHEEP, BreedSheepGoal.class);
         INSTANCE.register(GoalType.BREED_STRIDER, BreedStriderGoal.class);
@@ -144,29 +128,14 @@ public class DefaultGoalRegister {
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.FROZEN_PEAKS, BiomeKeys.JAGGED_PEAKS, BiomeKeys.SNOWY_SLOPES);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.BREED_FROGS, BreedFrogsGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
-                return List.of(BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP);
-            }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
+                return List.of(BiomeKeys.SWAMP);
             }
         });
         INSTANCE.register(GoalType.KILL_WITCH, KillWitchGoal.class, new GoalRequirementsProvider() {
-            @Override
-            public List<RegistryKey<Biome>> getRequiredBiomes() {
-                return null;
-            }
-
             @Override
             public List<RegistryKey<Structure>> getRequiredStructures() {
                 return List.of(StructureKeys.SWAMP_HUT);
@@ -178,11 +147,6 @@ public class DefaultGoalRegister {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.FROZEN_RIVER, BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES);
-            }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
             }
         });
         INSTANCE.register(GoalType.KILL_ZOGLIN, KillZoglinGoal.class);
@@ -218,11 +182,6 @@ public class DefaultGoalRegister {
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.WARM_OCEAN, BiomeKeys.DEEP_LUKEWARM_OCEAN, BiomeKeys.LUKEWARM_OCEAN, BiomeKeys.LUSH_CAVES, BiomeKeys.MANGROVE_SWAMP);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.OBTAIN_BOOKSHELF, ObtainBookshelfGoal.class);
         INSTANCE.register(GoalType.OBTAIN_MOSSY_STONE_BRICK_WALL, ObtainMossyStoneBrickWallGoal.class);
@@ -232,7 +191,12 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.OBTAIN_BELL, ObtainBellGoal.class,
                 GoalRequirementsProvider.VILLAGE);
         INSTANCE.register(GoalType.OBTAIN_ENCHANT_BOTTLE, ObtainEnchantBottleGoal.class);
-        INSTANCE.register(GoalType.OBTAIN_POWDER_SNOW_BUCKET, ObtainPowderSnowBucketGoal.class); // what biomes?
+        INSTANCE.register(GoalType.OBTAIN_POWDER_SNOW_BUCKET, ObtainPowderSnowBucketGoal.class, new GoalRequirementsProvider() {
+            @Override
+            public List<RegistryKey<Biome>> getRequiredBiomes() {
+                return List.of(BiomeKeys.GROVE, BiomeKeys.SNOWY_SLOPES);
+            }
+        });
         INSTANCE.register(GoalType.OBTAIN_SOUL_LANTERN, ObtainSoulLanternGoal.class);
         INSTANCE.register(GoalType.OBTAIN_ANCIENT_DEBRIS, ObtainAncientDebrisGoal.class);
         INSTANCE.register(GoalType.OBTAIN_ENDER_CHEST, ObtainEnderChestGoal.class);
@@ -287,32 +251,17 @@ public class DefaultGoalRegister {
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.ICE_SPIKES);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.VISIT_BADLANDS_BIOME, VisitBadlandsBiomeGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.BADLANDS, BiomeKeys.ERODED_BADLANDS, BiomeKeys.WOODED_BADLANDS);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.VISIT_MUSHROOM_BIOME, VisitMushroomBiomeGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.MUSHROOM_FIELDS);
-            }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
             }
         });
         INSTANCE.register(GoalType.EAT_5_UNIQUE_FOOD, Eat5UniqueFoodsGoal.class);
@@ -328,17 +277,13 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.EAT_RABBIT_STEW, EatRabbitStewGoal.class);
         INSTANCE.register(GoalType.EAT_SUSPICIOUS_STEW, EatSuspiciousStewGoal.class);
         INSTANCE.register(GoalType.DRINK_HONEY_BOTTLE, DrinkHoneyBottleGoal.class);
+        INSTANCE.register(GoalType.DRINK_WATER_BOTTLE, DrinkWaterBottleGoal.class);
         INSTANCE.register(GoalType.EAT_CAKE, EatCakeGoal.class);
         INSTANCE.register(GoalType.OBTAIN_4_UNIQUE_SAPLINGS, Obtain4UniqueSaplingsGoal.class);
         INSTANCE.register(GoalType.TOOT_GOAT_HORN, TootGoatHornGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.FROZEN_PEAKS, BiomeKeys.JAGGED_PEAKS, BiomeKeys.SNOWY_SLOPES);
-            }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
             }
         });
         INSTANCE.register(GoalType.GET_ANY_SPYGLASS_ADVANCEMENT, GetAnySpyglassAdvancementGoal.class);
@@ -350,11 +295,6 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.GET_WHAT_A_DEAL_ADVANCEMENT, GetWhatADealAdvancementGoal.class);
         INSTANCE.register(GoalType.GET_ABSORPTION_STATUS_EFFECT, GetAbsorptionStatusEffectGoal.class);
         INSTANCE.register(GoalType.GET_BAD_OMEN_STATUS_EFFECT, GetBadOmenStatusEffectGoal.class, new GoalRequirementsProvider() {
-            @Override
-            public List<RegistryKey<Biome>> getRequiredBiomes() {
-                return null;
-            }
-
             @Override
             public List<RegistryKey<Structure>> getRequiredStructures() {
                 return List.of(StructureKeys.PILLAGER_OUTPOST);
@@ -370,11 +310,6 @@ public class DefaultGoalRegister {
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.WARM_OCEAN, BiomeKeys.DEEP_LUKEWARM_OCEAN, BiomeKeys.LUKEWARM_OCEAN);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.GET_POISON_STATUS_EFFECT, GetPoisonStatusEffectGoal.class);
         INSTANCE.register(GoalType.GET_WEAKNESS_STATUS_EFFECT, GetWeaknessStatusEffectGoal.class);
@@ -385,21 +320,11 @@ public class DefaultGoalRegister {
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.TAIGA, BiomeKeys.SNOWY_TAIGA);
             }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
-            }
         });
         INSTANCE.register(GoalType.DIE_BY_CACTUS, DieByCactusGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.DESERT, BiomeKeys.BADLANDS, BiomeKeys.WOODED_BADLANDS, BiomeKeys.ERODED_BADLANDS);
-            }
-
-            @Override
-            public List<RegistryKey<Structure>> getRequiredStructures() {
-                return null;
             }
         });
         INSTANCE.register(GoalType.DIE_BY_FALLING_OFF_VINE, DieByFallingOffVinesGoal.class);
@@ -407,8 +332,7 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.DIE_BY_FIREWORK, DieByFireworkGoal.class);
         INSTANCE.register(GoalType.DIE_BY_INTENTIONAL_GAME_DESIGN, DieByIntentionalGameDesignGoal.class);
         INSTANCE.register(GoalType.DIE_BY_IRON_GOLEM, DieByIronGolemGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_MAGIC, DieByMagicGoal.class,
-                GoalRequirementsProvider.MONUMENT);
+        INSTANCE.register(GoalType.DIE_BY_MAGIC, DieByMagicGoal.class, GoalRequirementsProvider.MONUMENT);
         INSTANCE.register(GoalType.DIE_BY_TNT_MINECART, DieByTNTMinecartGoal.class);
         INSTANCE.register(GoalType.GET_A_TERRIBLE_FORTRESS_ADVANCEMENT, GetATerribleFortressAdvancementGoal.class);
         INSTANCE.register(GoalType.GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT, GetCityAtTheEndOfTheGameAdvancementGoal.class);
@@ -453,7 +377,7 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.KILL_OTHER_PLAYER, KillOtherTeamPlayer.class,
                 GoalRequirementsProvider.TEAMS_GOAL);
         INSTANCE.register(GoalType.OPPONENT_OBTAINS_CRAFTING_TABLE, OpponentObtainsCraftingTableGoal.class,
-                GoalRequirementsProvider.TO2_ONLY_GOAL);
+                GoalRequirementsProvider.TO2_ONLY_GOAL_NOT_IN_RANDOM_POOL);
         INSTANCE.register(GoalType.OPPONENT_OBTAINS_OBSIDIAN, OpponentObtainsObsidianGoal.class,
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_OBTAINS_SEEDS, OpponentObtainsSeedsGoal.class,
@@ -465,10 +389,9 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.OPPONENT_DIES, OpponentDiesGoal.class,
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_HIT_BY_EGG, OpponentHitByEggGoal.class,
-                GoalRequirementsProvider.TO2_ONLY_GOAL);
+                GoalRequirementsProvider.TO2_ONLY_GOAL_NOT_IN_RANDOM_POOL);
         INSTANCE.register(GoalType.OPPONENT_HIT_BY_SNOWBALL, OpponentHitBySnowballGoal.class,
-                GoalRequirementsProvider.TO2_ONLY_GOAL);
-        // INSTANCE.register(GoalType.OPPONENT_JUMPS, OpponentJumpsGoal.class);
+                GoalRequirementsProvider.TO2_ONLY_GOAL_NOT_IN_RANDOM_POOL);
         INSTANCE.register(GoalType.OPPONENT_TAKES_100_DAMAGE, OpponentTakes100DamageGoal.class,
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_TAKES_FALL_DAMAGE, OpponentTakesFallDamageGoal.class,
@@ -476,13 +399,18 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.OPPONENT_TOUCHES_WATER, OpponentTouchesWaterGoal.class,
                 GoalRequirementsProvider.TO2_ONLY_GOAL);
         INSTANCE.register(GoalType.OPPONENT_EATS_FOOD, OpponentEatsFoodGoal.class,
-                GoalRequirementsProvider.TO2_ONLY_GOAL);
+                GoalRequirementsProvider.TO2_ONLY_GOAL_NOT_IN_RANDOM_POOL);
 
         INSTANCE.register(GoalType.TAKE_200_DAMAGE, Take200DamageGoal.class);
         INSTANCE.register(GoalType.REACH_NETHER_ROOF, ReachNetherRoofGoal.class);
         INSTANCE.register(GoalType.HAVE_MORE_XP_LEVELS, HaveMostXPLevelsGoal.class,
                 GoalRequirementsProvider.TEAMS_GOAL);
-        INSTANCE.register(GoalType.FREEZE_TO_DEATH, DieByFreezingGoal.class); // same as powder snow?
+        INSTANCE.register(GoalType.FREEZE_TO_DEATH, DieByFreezingGoal.class, new GoalRequirementsProvider() {
+            @Override
+            public List<RegistryKey<Biome>> getRequiredBiomes() {
+                return List.of(BiomeKeys.GROVE, BiomeKeys.SNOWY_SLOPES);
+            }
+        });
         INSTANCE.register(GoalType.KILL_100_MOBS, Kill100MobsGoal.class);
         INSTANCE.register(GoalType.DEAL_400_DAMAGE, Deal400DamageGoal.class);
         INSTANCE.register(GoalType.SPRINT_1_KM, Sprint1KmGoal.class);
@@ -490,8 +418,7 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.GET_WAX_ON_ADVANCEMENT, GetWaxOnAdvancementGoal.class);
         INSTANCE.register(GoalType.GET_WAX_OFF_ADVANCEMENT, GetWaxOffAdvancementGoal.class);
         INSTANCE.register(GoalType.PUT_BANNER_ON_SHIELD, ObtainShieldWithBannerGoal.class);
-        INSTANCE.register(GoalType.HAVE_MORE_UNIQUE_CRAFTS, HaveMostUniqueCraftsGoal.class,
-                GoalRequirementsProvider.TEAMS_GOAL);
+        INSTANCE.register(GoalType.HAVE_MORE_UNIQUE_CRAFTS, HaveMostUniqueCraftsGoal.class, GoalRequirementsProvider.TEAMS_GOAL);
         INSTANCE.register(GoalType.HAVE_YOUR_SHIELD_DISABLED, HaveShieldDisabledGoal.class);
         INSTANCE.register(GoalType.ITEM_FRAME_IN_ITEM_FRAME, ItemFrameInItemFrameGoal.class);
         INSTANCE.register(GoalType.FILL_CAMPFIRE, FillCampfireWithFoodGoal.class);
@@ -499,18 +426,17 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.KILL_ALL_RAID_MOBS, KillAllRaidMobsGoal.class,
                 new GoalRequirementsProvider() {
                     @Override
-                    public List<RegistryKey<Biome>> getRequiredBiomes() {
-                        return null;
-                    }
-
-                    @Override
                     public List<RegistryKey<Structure>> getRequiredStructures() {
                         return List.of(StructureKeys.PILLAGER_OUTPOST, StructureKeys.MANSION);
                     }
                 });
         INSTANCE.register(GoalType.FILL_CHISELED_BOOKSHELF, FillChiseledBookshelfGoal.class);
+        INSTANCE.register(GoalType.GET_ITEM_FROM_SUSPICIOUS_BLOCK, GetItemFromSuspiciousBlock.class, new GoalRequirementsProvider() {
+            @Override
+            public List<RegistryKey<Structure>> getRequiredStructures() {
+                return List.of(StructureKeys.OCEAN_RUIN_WARM, StructureKeys.TRAIL_RUINS);
+            }
+        });
     }
-
-
 
 }

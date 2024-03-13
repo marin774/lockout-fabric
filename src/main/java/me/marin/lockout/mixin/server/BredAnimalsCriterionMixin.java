@@ -42,7 +42,7 @@ public class BredAnimalsCriterionMixin {
                 lockout.bredAnimalTypes.get(team).add(parent.getType());
                 int size = lockout.bredAnimalTypes.get(team).size();
 
-                team.sendLoreUpdate(breedUniqueAnimalsGoal);
+                team.sendTooltipUpdate(breedUniqueAnimalsGoal);
                 if (size >= breedUniqueAnimalsGoal.getAmount()) {
                     lockout.completeGoal(breedUniqueAnimalsGoal, team);
                 }

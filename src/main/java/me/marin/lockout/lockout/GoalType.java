@@ -154,6 +154,7 @@ public class GoalType {
     public static final String DIE_BY_FIREWORK = "DIE_BY_FIREWORK";
     public static final String DIE_BY_INTENTIONAL_GAME_DESIGN = "DIE_BY_INTENTIONAL_GAME_DESIGN";
     public static final String DIE_BY_IRON_GOLEM = "DIE_BY_IRON_GOLEM";
+    public static final String DIE_TO_POLAR_BEAR = "DIE_TO_POLAR_BEAR";
     public static final String DIE_BY_MAGIC = "DIE_BY_MAGIC";
     public static final String DIE_BY_TNT_MINECART = "DIE_BY_TNT_MINECART";
     public static final String GET_A_TERRIBLE_FORTRESS_ADVANCEMENT = "GET_A_TERRIBLE_FORTRESS_ADVANCEMENT";

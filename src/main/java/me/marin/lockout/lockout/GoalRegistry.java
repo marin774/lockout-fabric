@@ -36,6 +36,10 @@ public class GoalRegistry {
         goalDataGenerators.put(id, goalDataGenerator);
     }
 
+    public boolean isRegistered(String id) {
+        return registry.containsKey(id);
+    }
+
     public Goal newGoal(String id, String data) {
         try {
             return ConstructorUtils.invokeConstructor(registry.get(id), id, data);

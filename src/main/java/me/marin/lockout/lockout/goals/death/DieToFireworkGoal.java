@@ -9,23 +9,23 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class DieByBeeStingGoal extends DieToDamageTypeGoal {
+public class DieToFireworkGoal extends DieToDamageTypeGoal {
 
-    public DieByBeeStingGoal(String id, String data) {
+    public DieToFireworkGoal(String id, String data) {
         super(id, data);
     }
 
     @Override
     public String getGoalName() {
-        return "Die to Bee Sting";
+        return "Die to Firework Rocket";
     }
 
     @Override
     public List<RegistryKey<DamageType>> getDamageRegistryKeys() {
-        return List.of(DamageTypes.STING);
+        return List.of(DamageTypes.FIREWORKS);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_bee.png");
+    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_firework.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

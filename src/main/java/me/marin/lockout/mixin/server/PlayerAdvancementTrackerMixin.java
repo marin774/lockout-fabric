@@ -33,6 +33,7 @@ public abstract class PlayerAdvancementTrackerMixin {
     public void onBroadcastInChat(PlayerManager instance, Text message, boolean overlay) {
         Lockout lockout = LockoutServer.lockout;
 
+        // Prevent spectator advancements from showing in chat
         if (!Lockout.isLockoutRunning(lockout) || (Lockout.isLockoutRunning(lockout) && lockout.isLockoutPlayer(owner.getUuid()))) {
             instance.broadcast(message, overlay);
         }

@@ -10,9 +10,8 @@ import me.marin.lockout.generator.BoardGenerator;
 import me.marin.lockout.generator.GoalRequirementsProvider;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
-import me.marin.lockout.lockout.goals.death.DieByFallingOffVinesGoal;
-import me.marin.lockout.lockout.goals.death.DieByIronGolemGoal;
-import me.marin.lockout.lockout.goals.death.DieByTNTMinecartGoal;
+import me.marin.lockout.lockout.goals.death.DieToFallingOffVinesGoal;
+import me.marin.lockout.lockout.goals.death.DieToTNTMinecartGoal;
 import me.marin.lockout.lockout.goals.have_more.HaveMostXPLevelsGoal;
 import me.marin.lockout.lockout.goals.kill.Kill100MobsGoal;
 import me.marin.lockout.lockout.goals.kill.KillColoredSheepGoal;
@@ -43,7 +42,6 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.damage.FallLocation;
 import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
@@ -402,12 +400,12 @@ public class LockoutServer {
                             }
                         }
                     }
-                    if (goal instanceof DieByIronGolemGoal) {
-                        if (source.getAttacker() instanceof IronGolemEntity) {
+                    if (goal instanceof DieToEntityGoal dieToEntityGoal) {
+                        if (source.getAttacker().getType() == dieToEntityGoal.getEntityType()) {
                             lockout.completeGoal(goal, player);
                         }
                     }
-                    if (goal instanceof DieByFallingOffVinesGoal) {
+                    if (goal instanceof DieToFallingOffVinesGoal) {
                         if (source.getTypeRegistryEntry().matchesKey(DamageTypes.FALL)) {
                             FallLocation fallLocation = FallLocation.fromEntity(player);
                             if (fallLocation != null) {
@@ -417,7 +415,7 @@ public class LockoutServer {
                             }
                         }
                     }
-                    if (goal instanceof DieByTNTMinecartGoal) {
+                    if (goal instanceof DieToTNTMinecartGoal) {
                         if (source.getSource() instanceof TntMinecartEntity) {
                             lockout.completeGoal(goal, player);
                         }
@@ -513,7 +511,12 @@ public class LockoutServer {
                 } else {
                     List<Pair<String, String>> goals = new ArrayList<>();
                     for (int i = 0; i < 25; i++) {
-                        goals.add(new Pair<>(buf.readString(), buf.readString()));
+                        String goalId = buf.readString();
+                        if (!GoalRegistry.INSTANCE.isRegistered(goalId)) {
+                            player.sendMessage(Text.literal("Invalid goal id: " + goalId + "."));
+                            return;
+                        }
+                        goals.add(new Pair<>(goalId, buf.readString()));
                     }
                     CUSTOM_BOARD = new LockoutBoard(goals);
                     player.sendMessage(Text.literal("Set custom board."));

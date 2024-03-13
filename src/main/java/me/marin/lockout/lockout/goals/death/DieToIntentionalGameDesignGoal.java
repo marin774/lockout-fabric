@@ -11,9 +11,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class DieByIntentionalGameDesignGoal extends DieToDamageTypeGoal implements CycleTexturesProvider {
+public class DieToIntentionalGameDesignGoal extends DieToDamageTypeGoal implements CycleTexturesProvider {
 
-    public DieByIntentionalGameDesignGoal(String id, String data) {
+    public DieToIntentionalGameDesignGoal(String id, String data) {
         super(id, data);
     }
 

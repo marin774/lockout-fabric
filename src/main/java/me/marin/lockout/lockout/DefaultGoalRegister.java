@@ -313,27 +313,28 @@ public class DefaultGoalRegister {
         });
         INSTANCE.register(GoalType.GET_POISON_STATUS_EFFECT, GetPoisonStatusEffectGoal.class);
         INSTANCE.register(GoalType.GET_WEAKNESS_STATUS_EFFECT, GetWeaknessStatusEffectGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_ANVIL, DieByAnvilGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_BEE_STING, DieByBeeStingGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_BERRY_BUSH, DieByBerryBushGoal.class, new GoalRequirementsProvider() {
+        INSTANCE.register(GoalType.DIE_BY_ANVIL, DieToAnvilGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_BEE_STING, DieToBeeStingGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_BERRY_BUSH, DieToBerryBushGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.TAIGA, BiomeKeys.SNOWY_TAIGA);
             }
         });
-        INSTANCE.register(GoalType.DIE_BY_CACTUS, DieByCactusGoal.class, new GoalRequirementsProvider() {
+        INSTANCE.register(GoalType.DIE_BY_CACTUS, DieToCactusGoal.class, new GoalRequirementsProvider() {
             @Override
             public List<RegistryKey<Biome>> getRequiredBiomes() {
                 return List.of(BiomeKeys.DESERT, BiomeKeys.BADLANDS, BiomeKeys.WOODED_BADLANDS, BiomeKeys.ERODED_BADLANDS);
             }
         });
-        INSTANCE.register(GoalType.DIE_BY_FALLING_OFF_VINE, DieByFallingOffVinesGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_FALLING_STALACTITE, DieByFallingStalactiteGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_FIREWORK, DieByFireworkGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_INTENTIONAL_GAME_DESIGN, DieByIntentionalGameDesignGoal.class);
-        INSTANCE.register(GoalType.DIE_BY_IRON_GOLEM, DieByIronGolemGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_FALLING_OFF_VINE, DieToFallingOffVinesGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_FALLING_STALACTITE, DieToFallingStalactiteGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_FIREWORK, DieToFireworkGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_INTENTIONAL_GAME_DESIGN, DieToIntentionalGameDesignGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_IRON_GOLEM, DieToIronGolemGoal.class);
+        INSTANCE.register(GoalType.DIE_TO_POLAR_BEAR, DieToPolarBearGoal.class);
         INSTANCE.register(GoalType.DIE_BY_MAGIC, DieByMagicGoal.class, GoalRequirementsProvider.MONUMENT);
-        INSTANCE.register(GoalType.DIE_BY_TNT_MINECART, DieByTNTMinecartGoal.class);
+        INSTANCE.register(GoalType.DIE_BY_TNT_MINECART, DieToTNTMinecartGoal.class);
         INSTANCE.register(GoalType.GET_A_TERRIBLE_FORTRESS_ADVANCEMENT, GetATerribleFortressAdvancementGoal.class);
         INSTANCE.register(GoalType.GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT, GetCityAtTheEndOfTheGameAdvancementGoal.class);
         INSTANCE.register(GoalType.GET_EYE_SPY_ADVANCEMENT, GetEyeSpyAdvancementGoal.class);

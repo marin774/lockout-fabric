@@ -2,6 +2,7 @@ package me.marin.lockout.generator;
 
 import me.marin.lockout.LocateData;
 import me.marin.lockout.LockoutTeamServer;
+import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import net.minecraft.registry.RegistryKey;
@@ -28,7 +29,7 @@ public class BoardGenerator {
         this.structures = structures;
     }
 
-    public List<Pair<String, String>> generateBoard() {
+    public LockoutBoard generateBoard() {
         Collections.shuffle(registeredGoals);
 
         List<Pair<String, String>> goals = new ArrayList<>();
@@ -66,7 +67,11 @@ public class BoardGenerator {
             return generateBoard();
         }
 
-        return goals;
+        // Shuffle the board again. Some goals will always be after some other goals (GoalGroup#requirePredecessor),
+        // and shuffle fixes this.
+        Collections.shuffle(goals);
+
+        return new LockoutBoard(goals);
     }
 
 }

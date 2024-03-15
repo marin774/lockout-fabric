@@ -370,12 +370,12 @@ public class BoardBuilderScreen extends Screen {
                 }
                 if (hoveredIdx.isPresent() && hoveredIdx.get() == idx) {
                     if (goal != null) {
-                        List<OrderedText> lore = new ArrayList<>();
-                        lore.add(Text.of(goal.getGoalName()).asOrderedText());
+                        List<OrderedText> tooltip = new ArrayList<>();
+                        tooltip.add(Text.of(goal.getGoalName()).asOrderedText());
                         if (goal.getData() != null) {
-                            lore.add(Text.literal("Right-click to edit data.").formatted(Formatting.GRAY, Formatting.ITALIC).asOrderedText());
+                            tooltip.add(Text.literal("Right-click to edit data.").formatted(Formatting.GRAY, Formatting.ITALIC).asOrderedText());
                         }
-                        context.drawOrderedTooltip(textRenderer, lore, mouseX, mouseY);
+                        context.drawOrderedTooltip(textRenderer, tooltip, mouseX, mouseY);
                     }
                 }
 

@@ -33,29 +33,29 @@ public abstract class BreedUniqueAnimalsGoal extends Goal implements RequiresAmo
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
         var animals = LockoutServer.lockout.bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
 
-        lore.add(" ");
-        lore.add("Animals bred: " + animals.size() + "/" + getAmount());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(animals.stream().map(type -> type.getName().getString()).toList()));
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Animals bred: " + animals.size() + "/" + getAmount());
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(animals.stream().map(type -> type.getName().getString()).toList()));
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var animals = LockoutServer.lockout.bredAnimalTypes.getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + animals.size() + "/" + getAmount());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + animals.size() + "/" + getAmount());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override

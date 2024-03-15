@@ -122,6 +122,7 @@ public class GoalType {
     public static final String EAT_RABBIT_STEW = "EAT_RABBIT_STEW";
     public static final String EAT_SUSPICIOUS_STEW = "EAT_SUSPICIOUS_STEW";
     public static final String DRINK_HONEY_BOTTLE = "DRINK_HONEY_BOTTLE";
+    public static final String DRINK_WATER_BOTTLE = "DRINK_WATER_BOTTLE";
     public static final String EAT_CAKE = "EAT_CAKE";
     public static final String OBTAIN_4_UNIQUE_SAPLINGS = "OBTAIN_4_UNIQUE_SAPLINGS";
     public static final String TOOT_GOAT_HORN = "TOOT_GOAT_HORN";
@@ -153,6 +154,7 @@ public class GoalType {
     public static final String DIE_BY_FIREWORK = "DIE_BY_FIREWORK";
     public static final String DIE_BY_INTENTIONAL_GAME_DESIGN = "DIE_BY_INTENTIONAL_GAME_DESIGN";
     public static final String DIE_BY_IRON_GOLEM = "DIE_BY_IRON_GOLEM";
+    public static final String DIE_TO_POLAR_BEAR = "DIE_TO_POLAR_BEAR";
     public static final String DIE_BY_MAGIC = "DIE_BY_MAGIC";
     public static final String DIE_BY_TNT_MINECART = "DIE_BY_TNT_MINECART";
     public static final String GET_A_TERRIBLE_FORTRESS_ADVANCEMENT = "GET_A_TERRIBLE_FORTRESS_ADVANCEMENT";
@@ -224,5 +226,6 @@ public class GoalType {
     public static final String PUT_FLOWER_IN_POT = "PUT_FLOWER_IN_POT";
     public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
     public static final String FILL_CHISELED_BOOKSHELF = "FILL_CHISELED_BOOKSHELF";
+    public static final String USE_BRUSH_ON_SUSPICIOUS_BLOCK = "USE_BRUSH_ON_SUSPICIOUS_BLOCK";
 
 }

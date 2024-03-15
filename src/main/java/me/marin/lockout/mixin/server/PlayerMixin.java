@@ -44,6 +44,7 @@ public abstract class PlayerMixin {
 
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
+        if (!lockout.isLockoutPlayer(player)) return;
 
         if (CompassItemHandler.isCompass(stack)) {
             cir.setReturnValue(null);
@@ -111,7 +112,7 @@ public abstract class PlayerMixin {
             if (goal.isCompleted()) continue;
 
             if (goal instanceof Take200DamageGoal take200DamageGoal) {
-                team.sendLoreUpdate(take200DamageGoal);
+                team.sendTooltipUpdate(take200DamageGoal);
                 if (lockout.damageTaken.get(team) >= 200) {
                     lockout.completeGoal(goal, team);
                 }
@@ -131,10 +132,11 @@ public abstract class PlayerMixin {
 
     @Inject(method="eatFood", at = @At("HEAD"))
     public void onEat(World world, ItemStack itemStack, CallbackInfoReturnable<ItemStack> cir) {
-        Lockout lockout = LockoutServer.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
+
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         if (!lockout.isLockoutPlayer(player.getUuid())) return;
         LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
@@ -157,7 +159,7 @@ public abstract class PlayerMixin {
 
                     int size = eatUniqueFoodsGoal.getTrackerMap().get(team).size();
 
-                    team.sendLoreUpdate(eatUniqueFoodsGoal);
+                    team.sendTooltipUpdate(eatUniqueFoodsGoal);
                     if (size >= eatUniqueFoodsGoal.getAmount()) {
                         lockout.completeGoal(goal, team);
                     }
@@ -172,10 +174,11 @@ public abstract class PlayerMixin {
 
     @Inject(method = "incrementStat(Lnet/minecraft/util/Identifier;)V", at = @At("HEAD"))
     public void onIncrementStat(Identifier stat, CallbackInfo ci) {
-        Lockout lockout = LockoutServer.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
+
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

@@ -13,12 +13,11 @@ public class InputMixin {
 
     @Inject(method ="tick", at = @At("TAIL"))
     public void tick(boolean slowDown, float slowDownFactor, CallbackInfo ci) {
-        Lockout lockout = LockoutClient.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
+        if (!Lockout.isLockoutRunning(LockoutClient.lockout)) return;
         if (!LockoutClient.amIPlayingLockout) return;
 
         KeyboardInput input = (KeyboardInput) (Object) this;
-        if (!lockout.hasStarted()) {
+        if (!LockoutClient.lockout.hasStarted()) {
             input.pressingForward = false;
             input.pressingBack = false;
             input.pressingLeft = false;

@@ -9,9 +9,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class DieByCactusGoal extends DieToDamageTypeGoal {
+public class DieToCactusGoal extends DieToDamageTypeGoal {
 
-    public DieByCactusGoal(String id, String data) {
+    public DieToCactusGoal(String id, String data) {
         super(id, data);
     }
 

@@ -39,7 +39,6 @@ public class Lockout {
     public final Map<LockoutTeam, Double> damageDealt = new HashMap<>();
     public final Map<UUID, Integer> deaths = new HashMap<>();
     public final Map<LockoutTeam, Integer> mobsKilled = new HashMap<>();
-    // public Map<UUID, Integer> most_x_Item = new LinkedHashMap<>();
     public final Map<UUID, Integer> distanceSprinted = new HashMap<>();
     public final Map<UUID, Set<Item>> uniqueCrafts = new HashMap<>();
 
@@ -248,6 +247,9 @@ public class Lockout {
         this.hasStarted = hasStarted;
     }
 
+    public boolean isLockoutPlayer(PlayerEntity player) {
+        return isLockoutPlayer(player.getUuid());
+    }
     public boolean isLockoutPlayer(UUID playerId) {
         for (LockoutTeam team : teams) {
             if (((LockoutTeamServer)team).getPlayers().contains(playerId)) {

@@ -35,29 +35,29 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
         var advancements = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 
-        lore.add(" ");
-        lore.add("Advancements: " + advancements.size() + "/" + getAmount());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(advancements.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).getDisplay().getTitle().getString()).toList()));
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Advancements: " + advancements.size() + "/" + getAmount());
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(advancements.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).getDisplay().getTitle().getString()).toList()));
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var advancements = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + advancements.size() + "/" + getAmount());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + advancements.size() + "/" + getAmount());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
 }

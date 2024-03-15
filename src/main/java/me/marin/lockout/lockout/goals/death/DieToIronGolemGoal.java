@@ -1,14 +1,14 @@
 package me.marin.lockout.lockout.goals.death;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.interfaces.DieToEntityGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
-public class DieByIronGolemGoal extends Goal implements TextureProvider {
+public class DieToIronGolemGoal extends DieToEntityGoal implements TextureProvider {
 
-    public DieByIronGolemGoal(String id, String data) {
+    public DieToIronGolemGoal(String id, String data) {
         super(id, data);
     }
 
@@ -18,8 +18,8 @@ public class DieByIronGolemGoal extends Goal implements TextureProvider {
     }
 
     @Override
-    public ItemStack getTextureItemStack() {
-        return null;
+    public EntityType getEntityType() {
+        return EntityType.IRON_GOLEM;
     }
 
     private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_golem.png");

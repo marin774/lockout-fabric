@@ -26,8 +26,6 @@ public class BredAnimalsCriterionMixin {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
 
-        if (!lockout.isLockoutPlayer(player.getUuid())) return;
-
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
@@ -42,7 +40,7 @@ public class BredAnimalsCriterionMixin {
                 lockout.bredAnimalTypes.get(team).add(parent.getType());
                 int size = lockout.bredAnimalTypes.get(team).size();
 
-                team.sendLoreUpdate(breedUniqueAnimalsGoal);
+                team.sendTooltipUpdate(breedUniqueAnimalsGoal);
                 if (size >= breedUniqueAnimalsGoal.getAmount()) {
                     lockout.completeGoal(breedUniqueAnimalsGoal, team);
                 }

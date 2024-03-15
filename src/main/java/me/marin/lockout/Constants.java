@@ -8,7 +8,7 @@ public class Constants {
 
     public static final Identifier LOCKOUT_GOALS_TEAMS_PACKET = new Identifier(NAMESPACE, "lockout_goals_teams");
     public static final Identifier START_LOCKOUT_PACKET = new Identifier(NAMESPACE, "start_lockout");
-    public static final Identifier UPDATE_LORE = new Identifier(NAMESPACE, "update_lore");
+    public static final Identifier UPDATE_TOOLTIP = new Identifier(NAMESPACE, "update_tooltip");
     public static final Identifier COMPLETE_TASK_PACKET = new Identifier(NAMESPACE, "complete_task");
     public static final Identifier END_LOCKOUT_PACKET = new Identifier(NAMESPACE, "end_lockout");
     public static final Identifier UPDATE_TIMER_PACKET = new Identifier(NAMESPACE, "update_timer");

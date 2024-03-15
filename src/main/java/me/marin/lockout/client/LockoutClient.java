@@ -44,7 +44,7 @@ public class LockoutClient implements ClientModInitializer {
     public static boolean amIPlayingLockout = false;
     private static KeyBinding keyBinding;
     public static int CURRENT_TICK = 0;
-    public static final Map<String, String> goalLoreMap = new HashMap<>();
+    public static final Map<String, String> goalTooltipMap = new HashMap<>();
 
     public static boolean shouldOpenBoardBuilder = false;
 
@@ -100,8 +100,8 @@ public class LockoutClient implements ClientModInitializer {
                 }
             });
         });
-        ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_LORE, (client, handler, buf, responseSender) -> {
-            goalLoreMap.put(buf.readString(), buf.readString());
+        ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_TOOLTIP, (client, handler, buf, responseSender) -> {
+            goalTooltipMap.put(buf.readString(), buf.readString());
         });
         ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
             lockout.setStarted(true);
@@ -246,7 +246,7 @@ public class LockoutClient implements ClientModInitializer {
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
             lockout = null;
-            goalLoreMap.clear();
+            goalTooltipMap.clear();
         }));
 
         HandledScreens.register(BOARD_SCREEN_HANDLER, BoardScreen::new);

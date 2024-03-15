@@ -17,29 +17,29 @@ public abstract class KillUniqueHostileMobsGoal extends Goal implements Requires
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
         var hostiles = LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>());
 
-        lore.add(" ");
-        lore.add("Unique Hostile Mobs Killed: " + LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>()).size() + "/" + getAmount());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(hostiles.stream().map(type -> type.getName().getString()).toList()));
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Unique Hostile Mobs Killed: " + LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>()).size() + "/" + getAmount());
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(hostiles.stream().map(type -> type.getName().getString()).toList()));
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var hostiles = LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + hostiles.size() + "/" + getAmount());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + hostiles.size() + "/" + getAmount());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
 }

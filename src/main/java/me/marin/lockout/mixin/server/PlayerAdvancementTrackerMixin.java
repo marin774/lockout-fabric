@@ -10,22 +10,34 @@ import me.marin.lockout.server.LockoutServer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.LinkedHashSet;
-
 
 @Mixin(PlayerAdvancementTracker.class)
 public abstract class PlayerAdvancementTrackerMixin {
 
     @Shadow
     private ServerPlayerEntity owner;
+
+    @Redirect(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V") )
+    public void onBroadcastInChat(PlayerManager instance, Text message, boolean overlay) {
+        Lockout lockout = LockoutServer.lockout;
+
+        // Prevent spectator advancements from showing in chat
+        if (!Lockout.isLockoutRunning(lockout) || (Lockout.isLockoutRunning(lockout) && lockout.isLockoutPlayer(owner.getUuid()))) {
+            instance.broadcast(message, overlay);
+        }
+    }
 
     @Inject(method = "grantCriterion", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancement/Advancement;getRewards()Lnet/minecraft/advancement/AdvancementRewards;") )
     public void onGrantCriterion(Advancement advancement, String criterionName, CallbackInfoReturnable<Boolean> cir) {
@@ -51,7 +63,7 @@ public abstract class PlayerAdvancementTrackerMixin {
 
                     int size = getUniqueAdvancementsGoal.getTrackerMap().get(team).size();
 
-                    team.sendLoreUpdate(getUniqueAdvancementsGoal);
+                    team.sendTooltipUpdate(getUniqueAdvancementsGoal);
                     if (size >= getUniqueAdvancementsGoal.getAmount()) {
                         lockout.completeGoal(goal, team);
                     }

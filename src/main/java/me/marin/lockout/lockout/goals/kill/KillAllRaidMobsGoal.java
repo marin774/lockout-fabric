@@ -55,29 +55,29 @@ public class KillAllRaidMobsGoal extends KillAllSpecificMobsGoal implements Cust
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
         var raidMobs = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 
-        lore.add(" ");
-        lore.add("Raid mobs killed: " + raidMobs.size() + "/" + MOBS.size());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(raidMobs.stream().map(type -> type.getName().getString()).toList()));
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Raid mobs killed: " + raidMobs.size() + "/" + MOBS.size());
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(raidMobs.stream().map(type -> type.getName().getString()).toList()));
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var raidMobs = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + raidMobs.size() + "/" + MOBS.size());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + raidMobs.size() + "/" + MOBS.size());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override

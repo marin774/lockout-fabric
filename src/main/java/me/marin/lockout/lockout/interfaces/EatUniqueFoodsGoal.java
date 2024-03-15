@@ -49,29 +49,29 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
         var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 
-        lore.add(" ");
-        lore.add("Unique Food types: " + foods.size() + "/" + getAmount());
-        lore.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(EatUniqueFoodsGoal::foodComponentToString).toList()));
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Unique Food types: " + foods.size() + "/" + getAmount());
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(EatUniqueFoodsGoal::foodComponentToString).toList()));
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
             var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + foods.size() + "/" + getAmount());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + foods.size() + "/" + getAmount());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
     private static String foodComponentToString(FoodComponent foodComponent) {

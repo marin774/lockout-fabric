@@ -19,15 +19,15 @@ public abstract class KillSpecificMobsGoal extends Goal implements RequiresAmoun
 
     @Override
     public List<String> getSpectatorTooltip() {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
+        tooltip.add(" ");
         for (LockoutTeam team : LockoutServer.lockout.getTeams()) {
-            lore.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+            tooltip.add(team.getColor() + team.getDisplayName() + Formatting.RESET + ": " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
         }
-        lore.add(" ");
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
 }

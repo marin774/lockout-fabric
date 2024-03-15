@@ -8,9 +8,9 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class DieByFallingOffVinesGoal extends Goal implements CycleTexturesProvider {
+public class DieToFallingOffVinesGoal extends Goal implements CycleTexturesProvider {
 
-    public DieByFallingOffVinesGoal(String id, String data) {
+    public DieToFallingOffVinesGoal(String id, String data) {
         super(id, data);
     }
 

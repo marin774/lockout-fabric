@@ -6,9 +6,9 @@ import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-public class DieByTNTMinecartGoal extends Goal implements TextureProvider {
+public class DieToTNTMinecartGoal extends Goal implements TextureProvider {
 
-    public DieByTNTMinecartGoal(String id, String data) {
+    public DieToTNTMinecartGoal(String id, String data) {
         super(id, data);
     }
 

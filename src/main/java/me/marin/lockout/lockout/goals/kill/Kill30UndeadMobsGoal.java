@@ -90,13 +90,13 @@ public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleT
 
     @Override
     public List<String> getTooltip(LockoutTeam team) {
-        List<String> lore = new ArrayList<>();
+        List<String> tooltip = new ArrayList<>();
 
-        lore.add(" ");
-        lore.add("Undead Mobs killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
-        lore.add(" ");
+        tooltip.add(" ");
+        tooltip.add("Undead Mobs killed: " + getTrackerMap().getOrDefault(team, 0) + "/" + getAmount());
+        tooltip.add(" ");
 
-        return lore;
+        return tooltip;
     }
 
 }

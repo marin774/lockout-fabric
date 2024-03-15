@@ -43,6 +43,7 @@ public class LockoutInitializer implements ModInitializer {
                     var commandNode = CommandManager.literal("lockout").requires(PERMISSIONS).build();
                     var teamsNode = CommandManager.literal("teams").build();
                     var playersNode = CommandManager.literal("players").build();
+                    //TODO make custom argument types
                     var teamListNode = CommandManager.argument("team names", StringArgumentType.greedyString()).executes(LockoutServer::lockoutCommandLogic).build();
                     var playerListNode = CommandManager.argument("player names", StringArgumentType.greedyString()).executes(LockoutServer::lockoutCommandLogic).build();
 
@@ -59,6 +60,7 @@ public class LockoutInitializer implements ModInitializer {
                     var commandNode = CommandManager.literal("blackout").requires(PERMISSIONS).build();
                     var teamNode = CommandManager.literal("team").build();
                     var playersNode = CommandManager.literal("players").build();
+                    //TODO make custom argument types
                     var teamNameNode = CommandManager.argument("team name", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
                     var playerListNode = CommandManager.argument("player names", StringArgumentType.greedyString()).executes(LockoutServer::blackoutCommandLogic).build();
 

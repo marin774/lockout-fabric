@@ -332,7 +332,12 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.DIE_BY_FIREWORK, DieToFireworkGoal.class);
         INSTANCE.register(GoalType.DIE_BY_INTENTIONAL_GAME_DESIGN, DieToIntentionalGameDesignGoal.class);
         INSTANCE.register(GoalType.DIE_BY_IRON_GOLEM, DieToIronGolemGoal.class);
-        INSTANCE.register(GoalType.DIE_TO_POLAR_BEAR, DieToPolarBearGoal.class);
+        INSTANCE.register(GoalType.DIE_TO_POLAR_BEAR, DieToPolarBearGoal.class, new GoalRequirementsProvider() {
+            @Override
+            public List<RegistryKey<Biome>> getRequiredBiomes() {
+                return List.of(BiomeKeys.SNOWY_PLAINS, BiomeKeys.ICE_SPIKES, BiomeKeys.FROZEN_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN);
+            }
+        });
         INSTANCE.register(GoalType.DIE_BY_MAGIC, DieByMagicGoal.class, GoalRequirementsProvider.MONUMENT);
         INSTANCE.register(GoalType.DIE_BY_TNT_MINECART, DieToTNTMinecartGoal.class);
         INSTANCE.register(GoalType.GET_A_TERRIBLE_FORTRESS_ADVANCEMENT, GetATerribleFortressAdvancementGoal.class);

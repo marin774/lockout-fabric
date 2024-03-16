@@ -3,7 +3,7 @@ Lockout Bingo with over 200 goals, inspired by Smallant's Lockout Bingo mod.
 
 Supports up to 16 different teams, Lockout and Blackout modes, and the ability to create your own boards.
 
-![image](https://github.com/marin774/lockout-fabric/assets/87690741/fd1a3617-f6a0-499b-90c3-247dc4b4282e)
+![image](https://cdn.modrinth.com/data/cached_images/6633be32057318a43ba0b52fd91f458c9cd31035.png)
 
 ## Client side installation
 Make a 1.20.1 instance with Fabric Loader, add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to your mods folder.

@@ -69,7 +69,7 @@ public class LockoutClient implements ClientModInitializer {
                 for (int j = 0; j < teamSize; j++) {
                     String playerName = buf.readString();
                     playerNames.add(playerName);
-                    amIPlaying |= playerName.equals(client.player.getName().getString());
+                    amIPlaying |= playerName.equals(MinecraftClient.getInstance().getSession().getUsername());
                 }
                 teams.add(new LockoutTeam(playerNames, color));
             }

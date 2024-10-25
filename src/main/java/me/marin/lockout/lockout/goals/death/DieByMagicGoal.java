@@ -25,7 +25,7 @@ public class DieByMagicGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.MAGIC, DamageTypes.INDIRECT_MAGIC);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_magic.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_magic.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

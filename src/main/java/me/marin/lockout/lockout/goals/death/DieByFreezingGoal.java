@@ -25,7 +25,7 @@ public class DieByFreezingGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.FREEZE);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_freezing.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_freezing.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

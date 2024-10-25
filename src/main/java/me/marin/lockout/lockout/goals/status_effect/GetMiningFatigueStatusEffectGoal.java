@@ -26,10 +26,10 @@ public class GetMiningFatigueStatusEffectGoal extends StatusEffectGoal implement
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.MINING_FATIGUE;
+        return StatusEffects.MINING_FATIGUE.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/mining_fatigue.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/mining_fatigue.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

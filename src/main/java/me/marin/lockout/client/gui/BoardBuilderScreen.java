@@ -18,6 +18,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
@@ -228,7 +229,7 @@ public class BoardBuilderScreen extends Screen {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
                         .withFormatting(Formatting.WHITE)
         );
-        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved custom board as " + boardName + BoardBuilderIO.FILE_EXTENSION + "!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved custom board as " + boardName + BoardBuilderIO.FILE_EXTENSION + "!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory), false);
         close();
     }
 
@@ -247,7 +248,8 @@ public class BoardBuilderScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
 
         drawCenterBoard(context, mouseX, mouseY);
 
@@ -255,8 +257,6 @@ public class BoardBuilderScreen extends Screen {
         if (displaySearch) {
             searchTextField.setSuggestion(searchTextField.getText().isEmpty() ? "Search goals.." : null);
         }
-
-        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -324,11 +324,6 @@ public class BoardBuilderScreen extends Screen {
     }
 
     @Override
-    public void tick() {
-        titleTextField.tick();
-    }
-
-    @Override
     public boolean shouldCloseOnEsc() {
         return false;
     }
@@ -339,7 +334,7 @@ public class BoardBuilderScreen extends Screen {
         int x = width / 2 - Constants.GUI_CENTER_WIDTH / 2 - CENTER_OFFSET;
         int y = height / 2 - Constants.GUI_CENTER_HEIGHT / 2;
 
-        context.drawTexture(GUI_CENTER_IDENTIFIER, x, y, 0, 0, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, GUI_CENTER_IDENTIFIER, x, y, 0, 0, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT);
 
         x += GUI_CENTER_FIRST_ITEM_OFFSET_X;
         y += GUI_CENTER_FIRST_ITEM_OFFSET_Y;
@@ -359,7 +354,7 @@ public class BoardBuilderScreen extends Screen {
                     }
                     if (!success) {
                         context.drawItem(goal.getTextureItemStack(), x, y);
-                        context.drawItemInSlot(textRenderer, goal.getTextureItemStack(), x, y);
+                        context.drawStackOverlay(textRenderer, goal.getTextureItemStack(), x, y);
                     }
                 }
 

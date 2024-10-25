@@ -22,7 +22,7 @@ public class FillChiseledBookshelfGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/fill_chiseled_bookshelf.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/fill_chiseled_bookshelf.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -25,9 +25,9 @@ public class DieToFallingOffVinesGoal extends Goal implements CycleTexturesProvi
     }
 
     private static final List<Identifier> TEXTURES = List.of(
-            new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_vines.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_twisting_vines.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_weeping_vines.png")
+            Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_vines.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_twisting_vines.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_weeping_vines.png")
     );
 
     @Override

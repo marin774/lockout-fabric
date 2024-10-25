@@ -51,7 +51,7 @@ public class Obtain6UniqueBucketsGoal extends ObtainSomeOfTheItemsGoal {
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         super.renderTexture(context, x, y, tick);
-        context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, ITEM_STACK, x, y);
+        context.drawStackOverlay(MinecraftClient.getInstance().textRenderer, ITEM_STACK, x, y);
         return true;
     }
 

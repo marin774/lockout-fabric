@@ -23,11 +23,11 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
         ITEM_STACK.setCount(20);
     }
     private static final List<Identifier> TEXTURES = List.of(
-            new Identifier(Constants.NAMESPACE, "textures/custom/arthropod/kill_spider.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/arthropod/kill_bee.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/arthropod/kill_cave_spider.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/arthropod/kill_endermite.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/arthropod/kill_silverfish.png")
+            Identifier.of(Constants.NAMESPACE, "textures/custom/arthropod/kill_spider.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/arthropod/kill_bee.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/arthropod/kill_cave_spider.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/arthropod/kill_endermite.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/arthropod/kill_silverfish.png")
     );
     // arthropods: bee, cave spider, spider, endermite, silverfish
     private static final List<EntityType<?>> ARTHROPOD_MOBS = List.of(
@@ -75,7 +75,7 @@ public class Kill20ArthropodMobsGoal extends KillSpecificMobsGoal implements Cyc
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         CycleTexturesProvider.super.renderTexture(context, x, y, tick);
-        context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, ITEM_STACK, x, y);
+        context.drawStackOverlay(MinecraftClient.getInstance().textRenderer, ITEM_STACK, x, y);
         return true;
     }
 

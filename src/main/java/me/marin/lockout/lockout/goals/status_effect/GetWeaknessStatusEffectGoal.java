@@ -26,10 +26,10 @@ public class GetWeaknessStatusEffectGoal extends StatusEffectGoal implements Tex
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.WEAKNESS;
+        return StatusEffects.WEAKNESS.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/weakness.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/weakness.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

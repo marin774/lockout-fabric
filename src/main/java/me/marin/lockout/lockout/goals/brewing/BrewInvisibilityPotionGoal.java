@@ -3,6 +3,7 @@ package me.marin.lockout.lockout.goals.brewing;
 import me.marin.lockout.lockout.interfaces.ObtainPotionItemGoal;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.List;
 
@@ -12,9 +13,9 @@ public class BrewInvisibilityPotionGoal extends ObtainPotionItemGoal {
         super(id, data);
     }
 
-    private static final List<Potion> POTION_LIST = List.of(Potions.INVISIBILITY, Potions.LONG_INVISIBILITY);
+    private static final List<RegistryEntry<Potion>> POTION_LIST = List.of(Potions.INVISIBILITY, Potions.LONG_INVISIBILITY);
     @Override
-    public List<Potion> getPotions() {
+    public List<RegistryEntry<Potion>> getPotions() {
         return POTION_LIST;
     }
 

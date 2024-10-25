@@ -22,7 +22,7 @@ public class DieToTNTMinecartGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_tnt_minecart.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_tnt_minecart.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -26,10 +26,10 @@ public class GetLevitationStatusEffectGoal extends StatusEffectGoal implements T
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.LEVITATION;
+        return StatusEffects.LEVITATION.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/levitation.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/levitation.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

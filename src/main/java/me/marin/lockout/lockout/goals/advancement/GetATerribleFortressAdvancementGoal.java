@@ -10,7 +10,7 @@ import java.util.List;
 public class GetATerribleFortressAdvancementGoal extends AdvancementGoal {
 
     private static final ItemStack ITEM_STACK = Items.NETHER_BRICKS.getDefaultStack();
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/find_fortress"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/find_fortress"));
 
     public GetATerribleFortressAdvancementGoal(String id, String data) {
         super(id, data);

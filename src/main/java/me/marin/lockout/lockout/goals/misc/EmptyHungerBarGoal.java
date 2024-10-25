@@ -22,7 +22,7 @@ public class EmptyHungerBarGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/starve.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/starve.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

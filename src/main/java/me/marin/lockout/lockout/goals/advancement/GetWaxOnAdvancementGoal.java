@@ -16,7 +16,7 @@ public class GetWaxOnAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "husbandry/wax_on"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "husbandry/wax_on"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

@@ -22,7 +22,7 @@ public class Get30UniqueAdvancementsGoal extends GetUniqueAdvancementsGoal imple
         return 30;
     }
 
-    private static final Identifier TEXTURE = new Identifier(NAMESPACE, "textures/custom/30_advancements.png");
+    private static final Identifier TEXTURE = Identifier.of(NAMESPACE, "textures/custom/30_advancements.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

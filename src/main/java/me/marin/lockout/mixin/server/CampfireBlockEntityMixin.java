@@ -5,9 +5,10 @@ import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.FillCampfireWithFoodGoal;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.block.entity.CampfireBlockEntity;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,11 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class CampfireBlockEntityMixin {
 
     @Inject(method = "addItem", at = @At("RETURN"))
-    public void addItem(Entity user, ItemStack stack, int cookTime, CallbackInfoReturnable<Boolean> cir) {
-        if (user.getWorld().isClient) return;
+    public void addItem(ServerWorld world, LivingEntity entity, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        if (world.isClient) return;
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
-        if (!(user instanceof PlayerEntity player) || !cir.getReturnValueZ()) return;
+        if (!(entity instanceof PlayerEntity player) || !cir.getReturnValueZ()) return;
 
         CampfireBlockEntity campfire = (CampfireBlockEntity) (Object) this;
 

@@ -25,7 +25,7 @@ public class DieToFireworkGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.FIREWORKS);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_firework.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_firework.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

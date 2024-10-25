@@ -40,7 +40,7 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
 
         tooltip.add(" ");
         tooltip.add("Advancements: " + advancements.size() + "/" + getAmount());
-        tooltip.addAll(HasTooltipInfo.commaSeparatedList(advancements.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).getDisplay().getTitle().getString()).toList()));
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(advancements.stream().map(id -> LockoutServer.server.getAdvancementLoader().get(id).value().display().get().getTitle().getString()).toList()));
         tooltip.add(" ");
 
         return tooltip;

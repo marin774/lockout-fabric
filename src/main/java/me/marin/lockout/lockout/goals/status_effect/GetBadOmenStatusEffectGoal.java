@@ -26,10 +26,10 @@ public class GetBadOmenStatusEffectGoal extends StatusEffectGoal implements Text
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.BAD_OMEN;
+        return StatusEffects.BAD_OMEN.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/bad_omen.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/bad_omen.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -10,7 +10,7 @@ import java.util.List;
 public class GetWhatADealAdvancementGoal extends AdvancementGoal {
 
     private static final ItemStack ITEM_STACK = Items.EMERALD.getDefaultStack();
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "adventure/trade"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "adventure/trade"));
 
     public GetWhatADealAdvancementGoal(String id, String data) {
         super(id, data);

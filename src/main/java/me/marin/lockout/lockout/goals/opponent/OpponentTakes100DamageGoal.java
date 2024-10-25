@@ -5,6 +5,7 @@ import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -29,7 +30,7 @@ public class OpponentTakes100DamageGoal extends Goal implements TextureProvider 
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/opponent/opponent_takes_100_damage.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/opponent/opponent_takes_100_damage.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;
@@ -37,8 +38,8 @@ public class OpponentTakes100DamageGoal extends Goal implements TextureProvider 
 
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
-        context.drawTexture(TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
-        context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, DISPLAY_ITEM_STACK, x, y, "100");
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
+        context.drawStackOverlay(MinecraftClient.getInstance().textRenderer, DISPLAY_ITEM_STACK, x, y, "100");
         return true;
     }
 

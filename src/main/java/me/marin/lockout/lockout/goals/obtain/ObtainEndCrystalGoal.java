@@ -28,7 +28,7 @@ public class ObtainEndCrystalGoal extends ObtainAllItemsGoal implements TextureP
         return "Obtain End Crystal";
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/end_crystal.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/end_crystal.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

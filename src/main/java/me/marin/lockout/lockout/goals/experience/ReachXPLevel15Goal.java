@@ -20,7 +20,7 @@ public class ReachXPLevel15Goal extends ReachXPLevelGoal {
         return 15;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/experience/level_15.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/experience/level_15.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

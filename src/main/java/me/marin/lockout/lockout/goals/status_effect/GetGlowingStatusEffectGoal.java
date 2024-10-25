@@ -26,10 +26,10 @@ public class GetGlowingStatusEffectGoal extends StatusEffectGoal implements Text
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.GLOWING;
+        return StatusEffects.GLOWING.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/glowing.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/glowing.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

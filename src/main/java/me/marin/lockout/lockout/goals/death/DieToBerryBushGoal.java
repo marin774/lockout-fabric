@@ -25,7 +25,7 @@ public class DieToBerryBushGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.SWEET_BERRY_BUSH);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_sweet_berries.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_sweet_berries.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

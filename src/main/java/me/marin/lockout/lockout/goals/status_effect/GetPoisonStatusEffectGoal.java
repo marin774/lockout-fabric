@@ -26,10 +26,10 @@ public class GetPoisonStatusEffectGoal extends StatusEffectGoal implements Textu
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.POISON;
+        return StatusEffects.POISON.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/poison.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/poison.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

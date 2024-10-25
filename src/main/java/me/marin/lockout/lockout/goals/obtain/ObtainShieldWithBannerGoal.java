@@ -5,9 +5,11 @@ import me.marin.lockout.lockout.interfaces.ObtainItemsGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
@@ -34,16 +36,13 @@ public class ObtainShieldWithBannerGoal extends ObtainItemsGoal implements Textu
             for (ItemStack item : defaultedList) {
                 if (item == null) continue;
                 if (item.isEmpty()) continue;
-                if (item.getItem().equals(Items.SHIELD)) {
-                    NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(item);
-                    if (nbtCompound != null && nbtCompound.contains("Base")) return true;
-                }
+                return item.getItem().equals(Items.SHIELD) && item.get(DataComponentTypes.BANNER_PATTERNS) != null;
             }
         }
         return false;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/apply_banner_shield.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/apply_banner_shield.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

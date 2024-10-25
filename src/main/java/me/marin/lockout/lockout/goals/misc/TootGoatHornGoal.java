@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 public class TootGoatHornGoal extends Goal implements TextureProvider {
 
     private static final ItemStack ITEM_STACK = Items.GOAT_HORN.getDefaultStack();
-    private static final Identifier TEXTURE = new Identifier("minecraft", "textures/item/goat_horn.png");
+    private static final Identifier TEXTURE = Identifier.of("minecraft", "textures/item/goat_horn.png");
 
     public TootGoatHornGoal(String id, String data) {
         super(id, data);

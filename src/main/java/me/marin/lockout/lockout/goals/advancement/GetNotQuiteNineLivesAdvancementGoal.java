@@ -16,7 +16,7 @@ public class GetNotQuiteNineLivesAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/charge_respawn_anchor"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/charge_respawn_anchor"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

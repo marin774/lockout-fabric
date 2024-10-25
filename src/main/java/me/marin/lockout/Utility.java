@@ -6,6 +6,7 @@ import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.OrderedText;
@@ -24,7 +25,7 @@ public class Utility {
     public static void drawBingoBoard(DrawContext context, int x, int y) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        context.drawTexture(Constants.GUI_IDENTIFIER, x, y, 0, 0, GUI_WIDTH, GUI_HEIGHT, GUI_WIDTH, GUI_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, Constants.GUI_IDENTIFIER, x, y, 0, 0, GUI_WIDTH, GUI_HEIGHT, GUI_WIDTH, GUI_HEIGHT);
 
         x += GUI_FIRST_ITEM_OFFSET;
         y += GUI_FIRST_ITEM_OFFSET;
@@ -85,7 +86,7 @@ public class Utility {
         int x = width / 2 - Constants.GUI_CENTER_WIDTH / 2;
         int y = height / 2 - Constants.GUI_CENTER_HEIGHT / 2;
 
-        context.drawTexture(GUI_CENTER_IDENTIFIER, x, y, 0, 0, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, GUI_CENTER_IDENTIFIER, x, y, 0, 0, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT);
 
         x += GUI_CENTER_FIRST_ITEM_OFFSET_X;
         y += GUI_CENTER_FIRST_ITEM_OFFSET_Y;

@@ -90,10 +90,8 @@ public abstract class DebugHudMixin {
         if (worldChunk.isEmpty()) {
             text.add("Waiting for chunk...");
         } else {
-            if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
-                RegistryEntry<Biome> var27 = this.client.world.getBiome(blockPos);
-                text.add("Biome: " + getBiomeString(var27));
-            }
+            RegistryEntry<Biome> var27 = this.client.world.getBiome(blockPos);
+            text.add("Biome: " + getBiomeString(var27));
         }
 
         Map.Entry<Property<?>, Comparable<?>> entry;

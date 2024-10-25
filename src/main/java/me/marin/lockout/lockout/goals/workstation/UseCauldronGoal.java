@@ -33,7 +33,7 @@ public class UseCauldronGoal extends IncrementStatGoal implements TextureProvide
         return ITEM_STACK;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/use_cauldron.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/use_cauldron.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -33,7 +33,7 @@ public class OpponentObtainsObsidianGoal extends OpponentObtainsItemGoal impleme
         return ITEMS;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/opponent/no_obsidian.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/opponent/no_obsidian.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -22,7 +22,7 @@ public class DieToPolarBearGoal extends DieToEntityGoal implements TextureProvid
         return EntityType.POLAR_BEAR;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_polar_bear.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_polar_bear.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

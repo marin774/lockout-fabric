@@ -25,7 +25,7 @@ public class DieToBeeStingGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.STING);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_bee.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_bee.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -26,10 +26,10 @@ public class GetAbsorptionStatusEffectGoal extends StatusEffectGoal implements T
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.ABSORPTION;
+        return StatusEffects.ABSORPTION.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/absorption.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/absorption.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -23,7 +23,7 @@ public class KillWitchGoal extends KillMobGoal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/kill/kill_witch.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/kill/kill_witch.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

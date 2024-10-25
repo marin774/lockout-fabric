@@ -26,10 +26,10 @@ public class GetNauseaStatusEffectGoal extends StatusEffectGoal implements Textu
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.NAUSEA;
+        return StatusEffects.NAUSEA.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/nausea.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/nausea.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

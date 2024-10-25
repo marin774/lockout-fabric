@@ -1,5 +1,7 @@
 package me.marin.lockout;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -11,7 +13,9 @@ import java.util.*;
 public class CompassItemHandler {
 
     public static boolean isCompass(ItemStack item) {
-        return item != null && item.getItem() == Items.COMPASS && item.hasNbt() && item.getNbt().contains("PlayerTracker");
+        return item != null &&
+                item.getItem() == Items.COMPASS &&
+                Optional.ofNullable(item.get(DataComponentTypes.CUSTOM_DATA)).map(customData -> customData.contains("PlayerTracker")).orElse(false);
     }
 
     public final List<UUID> players = new ArrayList<>();
@@ -40,9 +44,9 @@ public class CompassItemHandler {
 
     public ItemStack newCompass() {
         ItemStack compass = Items.COMPASS.getDefaultStack();
-        NbtCompound compound = compass.getOrCreateNbt();
+        NbtCompound compound = new NbtCompound();
         compound.putUuid("PlayerTracker", UUID.randomUUID());
-        compass.setNbt(compound);
+        compass.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(compound));
         return compass;
     }
 

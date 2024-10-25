@@ -10,7 +10,7 @@ import java.util.List;
 public class GetCityAtTheEndOfTheGameAdvancementGoal extends AdvancementGoal {
 
     private static final ItemStack ITEM_STACK = Items.END_STONE_BRICKS.getDefaultStack();
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "end/find_end_city"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "end/find_end_city"));
 
     public GetCityAtTheEndOfTheGameAdvancementGoal(String id, String data) {
         super(id, data);

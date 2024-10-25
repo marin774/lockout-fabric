@@ -6,7 +6,6 @@ import me.marin.lockout.lockout.goals.status_effect.GetXStatusEffectsGoal;
 import me.marin.lockout.lockout.interfaces.StatusEffectGoal;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(StatusEffect.class)
 public class StatusEffectMixin {
 
-    @Inject(method = "onApplied", at = @At("HEAD"))
-    public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier, CallbackInfo ci) {
+    @Inject(method = "onApplied(Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"))
+    public void onApplied(LivingEntity entity, int amplifier, CallbackInfo ci) {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
         if (!(entity instanceof PlayerEntity player)) return;

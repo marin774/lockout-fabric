@@ -3,7 +3,6 @@ package me.marin.lockout.server;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.util.Either;
 import me.marin.lockout.*;
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.generator.BoardGenerator;
@@ -25,13 +24,15 @@ import me.marin.lockout.lockout.goals.opponent.OpponentDies3TimesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentTouchesWaterGoal;
 import me.marin.lockout.lockout.interfaces.*;
+import me.marin.lockout.network.CustomBoardPayload;
+import me.marin.lockout.network.StartLockoutPayload;
+import me.marin.lockout.network.UpdateTooltipPayload;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
@@ -47,12 +48,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -75,10 +74,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.structure.Structure;
-import oshi.util.tuples.Pair;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class LockoutServer {
 
@@ -157,7 +154,7 @@ public class LockoutServer {
                 if (!(goal instanceof EnterDimensionGoal enterDimensionGoal)) continue;
                 if (goal.isCompleted()) continue;
 
-                if (destination.getDimensionKey().equals(enterDimensionGoal.getDimensionTypeKey())) {
+                if (destination.getDimensionEntry().equals(enterDimensionGoal.getDimensionTypeKey())) {
                     lockout.completeGoal(goal, player);
                 }
             }
@@ -174,30 +171,24 @@ public class LockoutServer {
                 LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
                 for (Goal goal : lockout.getBoard().getGoals()) {
                     if (goal instanceof HasTooltipInfo hasTooltipInfo) {
-                        PacketByteBuf buf = PacketByteBufs.create();
-                        buf.writeString(goal.getId());
-                        buf.writeString(String.join("\n", hasTooltipInfo.getTooltip(team)));
-                        ServerPlayNetworking.send(player, Constants.UPDATE_TOOLTIP, buf);
+                        ServerPlayNetworking.send(player, new UpdateTooltipPayload(goal.getId(), String.join("\n", hasTooltipInfo.getTooltip(team))));
                     }
                 }
                 player.changeGameMode(GameMode.SURVIVAL);
             } else {
                 for (Goal goal : lockout.getBoard().getGoals()) {
                     if (goal instanceof HasTooltipInfo hasTooltipInfo) {
-                        PacketByteBuf buf = PacketByteBufs.create();
-                        buf.writeString(goal.getId());
-                        buf.writeString(String.join("\n", hasTooltipInfo.getSpectatorTooltip()));
-                        ServerPlayNetworking.send(player, Constants.UPDATE_TOOLTIP, buf);
+                        ServerPlayNetworking.send(player, new UpdateTooltipPayload(goal.getId(), String.join("\n", hasTooltipInfo.getSpectatorTooltip())));
                     }
                 }
                 player.changeGameMode(GameMode.SPECTATOR);
                 player.sendMessage(Text.literal("You are spectating this match.").formatted(Formatting.GRAY, Formatting.ITALIC));
             }
 
-            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
-            ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
+            ServerPlayNetworking.send(player, lockout.getTeamsGoalsPacket());
+            ServerPlayNetworking.send(player, lockout.getUpdateTimerPacket());
             if (lockout.hasStarted()) {
-                ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, PacketByteBufs.empty());
+                ServerPlayNetworking.send(player, StartLockoutPayload.INSTANCE);
             }
         });
 
@@ -265,12 +256,12 @@ public class LockoutServer {
                         }
                     }
                     if (goal instanceof ReachHeightLimitGoal) {
-                        if (player.getY() >= 320 && player.getWorld().getDimensionKey().equals(DimensionTypes.OVERWORLD)) {
+                        if (player.getY() >= 320 && player.getWorld().getDimensionEntry().equals(DimensionTypes.OVERWORLD)) {
                             lockout.completeGoal(goal, player);
                         }
                     }
                     if (goal instanceof ReachNetherRoofGoal) {
-                        if (player.getY() >= 128 && player.getWorld().getDimensionKey().equals(DimensionTypes.THE_NETHER)) {
+                        if (player.getY() >= 128 && player.getWorld().getDimensionEntry().equals(DimensionTypes.THE_NETHER)) {
                             lockout.completeGoal(goal, player);
                         }
                     }
@@ -290,7 +281,7 @@ public class LockoutServer {
             lockout.tick();
             if (lockout.getTicks() % 20 == 0) {
                 for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                    ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
+                    ServerPlayNetworking.send(player, lockout.getUpdateTimerPacket());
                 }
             }
         });
@@ -320,7 +311,7 @@ public class LockoutServer {
                         if (killMobGoal.getEntity().equals(entity.getType())) {
                             boolean allow = true;
                             if (killMobGoal instanceof KillSnowGolemInNetherGoal)  {
-                                allow = (attackerPlayer.getWorld().getDimensionKey().equals(DimensionTypes.THE_NETHER));
+                                allow = (attackerPlayer.getWorld().getDimensionEntry().equals(DimensionTypes.THE_NETHER));
                             }
                             if (allow) {
                                 lockout.completeGoal(goal, attackerPlayer);
@@ -495,7 +486,9 @@ public class LockoutServer {
             });
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(Constants.CUSTOM_BOARD_PACKET, (server, player, handler, buf, responseSender) -> {
+        ServerPlayNetworking.registerGlobalReceiver(CustomBoardPayload.ID, (payload, context) -> {
+            ServerPlayerEntity player = context.player();
+
             if (!server.isSingleplayer()) {
                 if (!player.hasPermissionLevel(2)) {
                     player.sendMessage(Text.literal("You do not have the permission for this command!").formatted(Formatting.RED));
@@ -503,31 +496,15 @@ public class LockoutServer {
                 }
             }
 
-            try {
-                boolean clearBoard = buf.readBoolean();
-                if (clearBoard) {
-                    CUSTOM_BOARD = null;
-                    player.sendMessage(Text.literal("Removed custom board."));
-                } else {
-                    List<Pair<String, String>> goals = new ArrayList<>();
-                    for (int i = 0; i < 25; i++) {
-                        String goalId = buf.readString();
-                        if (!GoalRegistry.INSTANCE.isRegistered(goalId)) {
-                            player.sendMessage(Text.literal("Invalid goal id: " + goalId + "."));
-                            return;
-                        }
-                        goals.add(new Pair<>(goalId, buf.readString()));
-                    }
-                    CUSTOM_BOARD = new LockoutBoard(goals);
-                    player.sendMessage(Text.literal("Set custom board."));
-                }
-            } catch (Exception e) {
-                Lockout.error(e);
-                player.sendMessage(Text.of("There was an error trying to set custom board. Check server logs."));
+            boolean clearBoard = payload.boardOrClear().isEmpty();
+            if (clearBoard) {
+                CUSTOM_BOARD = null;
+                player.sendMessage(Text.literal("Removed custom board."));
+            } else {
+                CUSTOM_BOARD = new LockoutBoard(payload.boardOrClear().get());
+                player.sendMessage(Text.literal("Set custom board."));
             }
-
         });
-
     }
 
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
@@ -561,11 +538,8 @@ public class LockoutServer {
         var source = server.getCommandSource();
         var currentPos = BlockPos.ofFloored(source.getPosition());
 
-        // All of this was taken from `/locate` command logic.
-        Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE);
-        Either<RegistryKey<Structure>, TagKey<Structure>> either = Either.left(structure);
-        Function<RegistryKey<Structure>, Optional<RegistryEntryList<Structure>>> function = (key) -> registry.getEntry(key).map(RegistryEntryList::of);
-        RegistryEntryList<Structure> structureList = either.map(function, registry::getEntryList).get();
+        Registry<Structure> registry = source.getWorld().getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
+        RegistryEntryList<Structure> structureList = RegistryEntryList.of(registry.getOrThrow(structure));
 
         var pair = source.getWorld().getChunkManager().getChunkGenerator().locateStructure(
                 source.getWorld(),
@@ -626,9 +600,9 @@ public class LockoutServer {
             serverPlayer.getInventory().clear();
             serverPlayer.setHealth(serverPlayer.getMaxHealth());
             serverPlayer.clearStatusEffects();
-            serverPlayer.getHungerManager().setExhaustion(0);
             serverPlayer.getHungerManager().setSaturationLevel(5);
             serverPlayer.getHungerManager().setFoodLevel(20);
+            serverPlayer.getHungerManager().exhaustion = 0.0f;
             serverPlayer.setExperienceLevel(0);
             serverPlayer.setExperiencePoints(0);
             serverPlayer.setOnFire(false);
@@ -677,18 +651,16 @@ public class LockoutServer {
             }
             // Update spectator tooltip
             if (!allSpectatorPlayers.isEmpty()) {
-                PacketByteBuf specBuf = PacketByteBufs.create();
-                specBuf.writeString(goal.getId());
-                specBuf.writeString(String.join("\n", ((HasTooltipInfo) goal).getSpectatorTooltip()));
+                var payload = new UpdateTooltipPayload(goal.getId(), String.join("\n", ((HasTooltipInfo) goal).getSpectatorTooltip()));
                 for (UUID spectator : allSpectatorPlayers) {
-                    ServerPlayNetworking.send(playerManager.getPlayer(spectator), Constants.UPDATE_TOOLTIP, specBuf);
+                    ServerPlayNetworking.send(playerManager.getPlayer(spectator), payload);
                 }
             }
         }
 
         for (ServerPlayerEntity player : allServerPlayers) {
-            ServerPlayNetworking.send(player, Constants.LOCKOUT_GOALS_TEAMS_PACKET, lockout.getTeamsGoalsPacket());
-            ServerPlayNetworking.send(player, Constants.UPDATE_TIMER_PACKET, lockout.getUpdateTimerPacket());
+            ServerPlayNetworking.send(player, lockout.getTeamsGoalsPacket());
+            ServerPlayNetworking.send(player, lockout.getUpdateTimerPacket());
 
             if (!lockout.isSoloBlackout() && allLockoutPlayers.contains(player.getUuid())) {
                 player.giveItemStack(compassHandler.newCompass());
@@ -710,7 +682,7 @@ public class LockoutServer {
 
                     for (ServerPlayerEntity player : allServerPlayers) {
                         if (player == null) continue;
-                        ServerPlayNetworking.send(player, Constants.START_LOCKOUT_PACKET, lockout.getUpdateTimerPacket());
+                        ServerPlayNetworking.send(player, StartLockoutPayload.INSTANCE);
                         if (allLockoutPlayers.contains(player.getUuid())) {
                             player.changeGameMode(GameMode.SURVIVAL);
                         }

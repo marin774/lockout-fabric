@@ -15,7 +15,7 @@ public class GetThisBoatHasLegsAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/ride_strider"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/ride_strider"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

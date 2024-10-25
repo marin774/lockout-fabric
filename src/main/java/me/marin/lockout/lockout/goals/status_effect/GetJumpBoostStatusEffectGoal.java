@@ -26,10 +26,10 @@ public class GetJumpBoostStatusEffectGoal extends StatusEffectGoal implements Te
 
     @Override
     public StatusEffect getStatusEffect() {
-        return StatusEffects.JUMP_BOOST;
+        return StatusEffects.JUMP_BOOST.value();
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/jump_boost.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/jump_boost.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

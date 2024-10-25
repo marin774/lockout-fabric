@@ -3,19 +3,22 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LodestoneTrackerComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(CompassItem.class)
@@ -38,19 +41,17 @@ public class CompassItemMixin {
         PlayerEntity selectedPlayer = world.getServer().getPlayerManager().getPlayer(selectedId);
         if (selectedPlayer != null) {
             if (selectedPlayer.getWorld().equals(player.getWorld())) {
-                item.writeNbt(world.getRegistryKey(), selectedPlayer.getBlockPos(), stack.getOrCreateNbt());
+                stack.set(DataComponentTypes.LODESTONE_TRACKER, new LodestoneTrackerComponent(Optional.of(GlobalPos.create(world.getRegistryKey(), selectedPlayer.getBlockPos())), true));
                 ci.cancel();
             }
         } else {
-            NbtCompound compound = stack.getOrCreateNbt();
-            compound.remove(CompassItem.LODESTONE_DIMENSION_KEY);
-            compound.remove(CompassItem.LODESTONE_TRACKED_KEY);
+            stack.remove(DataComponentTypes.LODESTONE_TRACKER);
         }
 
         CompassItemHandler cih = LockoutServer.compassHandler;
         String trackingPlayerName = cih.playerNames.get(cih.players.get(cih.currentSelection.get(player.getUuid())));
 
-        stack.setCustomName(Text.of(Formatting.RESET + "Tracking: " +  trackingPlayerName));
+        stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(Formatting.RESET + "Tracking: " +  trackingPlayerName));
     }
 
 }

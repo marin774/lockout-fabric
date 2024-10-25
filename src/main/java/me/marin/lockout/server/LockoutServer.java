@@ -136,16 +136,16 @@ public class LockoutServer {
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (!Lockout.exists(lockout)) return;
+            if (!Lockout.isLockoutRunning(lockout)) return;
             if (lockout.isSoloBlackout()) return;
-            if (lockout.isLockoutPlayer(newPlayer.getUuid())) {
-                int slot = LockoutServer.compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
-                if (slot == 40) {
-                    newPlayer.getInventory().offHand.set(0, compassHandler.newCompass());
-                }
-                if (slot >= 0 && slot <= 35) {
-                    newPlayer.getInventory().setStack(slot, compassHandler.newCompass());
-                }
+            if (!lockout.isLockoutPlayer(newPlayer.getUuid())) return;
+
+            int slot = LockoutServer.compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
+            if (slot == 40) {
+                newPlayer.getInventory().offHand.set(0, compassHandler.newCompass());
+            }
+            if (slot >= 0 && slot <= 35) {
+                newPlayer.getInventory().setStack(slot, compassHandler.newCompass());
             }
         });
 

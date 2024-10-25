@@ -1,12 +1,10 @@
 # Lockout
 Lockout Bingo with over 200 goals, inspired by Smallant's Lockout Bingo mod.
 
-Supports up to 16 different teams, Lockout and Blackout modes, and the ability to create your own boards.
-
-![image](https://cdn.modrinth.com/data/cached_images/6633be32057318a43ba0b52fd91f458c9cd31035.png)
+![image](https://github.com/marin774/lockout-fabric/assets/87690741/fd1a3617-f6a0-499b-90c3-247dc4b4282e)
 
 ## Client side installation
-Make a 1.20.1 instance with Fabric Loader, add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to your mods folder.
+Make a  1.20.1 instance, add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to your mods folder.
 
 I also recommend you install QoL mods:
 - [Sodium](https://modrinth.com/mod/sodium/versions)
@@ -16,7 +14,7 @@ I also recommend you install QoL mods:
 - [Boosted Brightness](https://modrinth.com/mod/boosted-brightness/versions) - has clashes with the default `Open Board` hotkey (you can change this in your options)
 
 ## Server side installation
-> Note: You can host the server from your own computer using NGROK (or a similar service such as ZROK, playit, or even the Essentials mod), you don't need to buy an overpriced server. Create a new singeplayer world, open to LAN, and share the IP to your friends.
+> Note: You can host the server from your own computer using NGROK, you don't need to buy an overpriced server. Create a new singeplayer world, open to LAN, and share the NGROK IP to your friends.
 
 If you do decide to run this on a dedicated server, make sure to install Fabric on it.
 Add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to server's mods folder.

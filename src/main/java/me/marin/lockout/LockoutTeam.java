@@ -1,7 +1,7 @@
 package me.marin.lockout;
 
 import net.minecraft.util.Formatting;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class LockoutTeam {
     }
 
     public static String formattingToString(Formatting formatting) {
-        return WordUtils.capitalize(formatting.asString().replace("_", " "));
+        return StringUtils.capitalize(formatting.asString().replace("_", " "));
     }
 
 }

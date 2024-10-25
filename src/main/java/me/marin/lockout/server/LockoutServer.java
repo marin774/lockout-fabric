@@ -522,7 +522,7 @@ public class LockoutServer {
                     player.sendMessage(Text.literal("Set custom board."));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Lockout.error(e);
                 player.sendMessage(Text.of("There was an error trying to set custom board. Check server logs."));
             }
 
@@ -809,7 +809,7 @@ public class LockoutServer {
                     scoreboardTeams.add(team);
                 }
                 for (Team team : scoreboardTeams) {
-                    if (team.getPlayerList().size() == 0) {
+                    if (team.getPlayerList().isEmpty()) {
                         context.getSource().sendError(Text.literal("Team " + team.getName() + " doesn't have any players."));
                         return 0;
                     }

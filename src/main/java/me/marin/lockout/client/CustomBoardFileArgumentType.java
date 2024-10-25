@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import me.marin.lockout.Lockout;
 import me.marin.lockout.client.gui.BoardBuilderIO;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
@@ -33,7 +34,7 @@ public class CustomBoardFileArgumentType implements ArgumentType<String> {
                 throw new SimpleCommandExceptionType(Text.of("Invalid board name.")).createWithContext(reader);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Lockout.error(e);
         }
         return s;
     }
@@ -44,7 +45,7 @@ public class CustomBoardFileArgumentType implements ArgumentType<String> {
             List<String> boardNames = BoardBuilderIO.INSTANCE.getSavedBoards();
             return CommandSource.suggestMatching(boardNames, builder);
         } catch (IOException e) {
-            e.printStackTrace();
+            Lockout.error(e);
             return Suggestions.empty();
         }
     }

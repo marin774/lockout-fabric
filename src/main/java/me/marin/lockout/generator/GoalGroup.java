@@ -9,7 +9,6 @@ public class GoalGroup {
 
     private final static List<GoalGroup> GOAL_GROUPS = new ArrayList<>();
 
-    //TODO: init list with all of these values.
     public static final GoalGroup END = new GoalGroup(List.of(
             ENTER_END, KILL_ENDER_DRAGON, EAT_CHORUS_FRUIT, OBTAIN_DRAGON_EGG, OBTAIN_END_ROD, GET_LEVITATION_STATUS_EFFECT, GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT, BREW_LINGERING_POTION
     ), 2);
@@ -156,6 +155,50 @@ public class GoalGroup {
         EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_25_UNIQUE_FOOD);
     }
 
+    static {
+        GOAL_GROUPS.add(END);
+        GOAL_GROUPS.add(KILL_DRAGON);
+        GOAL_GROUPS.add(END_STRUCTURE);
+        GOAL_GROUPS.add(TOOLS);
+        GOAL_GROUPS.add(DIAMOND);
+        GOAL_GROUPS.add(ARMOR);
+        GOAL_GROUPS.add(ARMOR_SPECIAL);
+        GOAL_GROUPS.add(KILL_MOB);
+        GOAL_GROUPS.add(SNOWMAN);
+        GOAL_GROUPS.add(KILL_UNIQUE_HOSTILES);
+        GOAL_GROUPS.add(KILL_HOSTILES_OF_TYPE);
+        GOAL_GROUPS.add(FORTRESS);
+        GOAL_GROUPS.add(BREW_POTION);
+        GOAL_GROUPS.add(HORSE);
+        GOAL_GROUPS.add(BREED);
+        GOAL_GROUPS.add(BREED_X_UNIQUE);
+        GOAL_GROUPS.add(RIDE);
+        GOAL_GROUPS.add(EAT_FOOD);
+        GOAL_GROUPS.add(EAT_X_UNIQUE_FOOD);
+        GOAL_GROUPS.add(EFFECT);
+        GOAL_GROUPS.add(EFFECT_X);
+        GOAL_GROUPS.add(DEATH);
+        GOAL_GROUPS.add(BIOME);
+        GOAL_GROUPS.add(OPPONENT_HARD);
+        GOAL_GROUPS.add(OPPONENT_TAKES_DAMAGE);
+        GOAL_GROUPS.add(OPPONENT_GOALS);
+        GOAL_GROUPS.add(OPPONENT_DEATH);
+        GOAL_GROUPS.add(OPPONENT_HIT_BY);
+        GOAL_GROUPS.add(DAMAGE);
+        GOAL_GROUPS.add(ADVANCEMENT);
+        GOAL_GROUPS.add(VILLAGE);
+        GOAL_GROUPS.add(MONUMENT);
+        GOAL_GROUPS.add(REDSTONE);
+        GOAL_GROUPS.add(TNT);
+        GOAL_GROUPS.add(STRIDER);
+        GOAL_GROUPS.add(SHEEP);
+        GOAL_GROUPS.add(OBTAIN_ALL);
+        GOAL_GROUPS.add(OBTAIN_SEEDS);
+        GOAL_GROUPS.add(HONEY);
+        GOAL_GROUPS.add(IRON_HEAVY);
+        GOAL_GROUPS.add(LEATHER_HEAVY);
+    }
+
 
     private final List<String> goals;
     private final int limit;
@@ -164,7 +207,6 @@ public class GoalGroup {
     private GoalGroup(List<String> goals, int limit) {
         this.goals = goals;
         this.limit = limit;
-        GOAL_GROUPS.add(this);
     }
 
     public List<String> getGoals() {

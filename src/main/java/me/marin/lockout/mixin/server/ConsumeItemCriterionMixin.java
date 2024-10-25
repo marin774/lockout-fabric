@@ -25,7 +25,7 @@ public class ConsumeItemCriterionMixin {
             if (goal.isCompleted()) continue;
 
             if (goal instanceof RemoveStatusEffectUsingMilkGoal) {
-                if (player.getStatusEffects().size() > 0 && stack.getItem().equals(Items.MILK_BUCKET)) {
+                if (!player.getStatusEffects().isEmpty() && stack.getItem().equals(Items.MILK_BUCKET)) {
                     lockout.completeGoal(goal, player);
                     return;
                 }

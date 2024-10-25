@@ -44,7 +44,7 @@ public class GoalRegistry {
         try {
             return ConstructorUtils.invokeConstructor(registry.get(id), id, data);
         } catch (Exception e) {
-            e.printStackTrace();
+            Lockout.error(e);
             return null;
         }
     }

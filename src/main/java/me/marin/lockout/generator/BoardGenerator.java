@@ -43,7 +43,7 @@ public class BoardGenerator {
                 continue;
             }
 
-            GoalRequirementsProvider goalRequirements = GoalRegistry.INSTANCE.getGoalGenerator(goal);
+            GoalRequirements goalRequirements = GoalRegistry.INSTANCE.getGoalGenerator(goal);
             if (goalRequirements != null) {
                 if (!goalRequirements.isTeamsSizeOk(teams.size())) {
                     continue;

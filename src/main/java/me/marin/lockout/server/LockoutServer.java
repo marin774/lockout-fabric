@@ -7,7 +7,7 @@ import com.mojang.datafixers.util.Either;
 import me.marin.lockout.*;
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.generator.BoardGenerator;
-import me.marin.lockout.generator.GoalRequirementsProvider;
+import me.marin.lockout.generator.GoalRequirements;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.death.DieToFallingOffVinesGoal;
@@ -477,15 +477,15 @@ public class LockoutServer {
                 }
 
                 for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-                    GoalRequirementsProvider goalRequirementsProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);
-                    if (goalRequirementsProvider == null) continue;
+                    GoalRequirements goalRequirements = GoalRegistry.INSTANCE.getGoalGenerator(id);
+                    if (goalRequirements == null) continue;
 
-                    for (RegistryKey<Biome> biome : goalRequirementsProvider.getRequiredBiomes()) {
+                    for (RegistryKey<Biome> biome : goalRequirements.getRequiredBiomes()) {
                         locateBiome(server, biome);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
 
-                    for (RegistryKey<Structure> structure : goalRequirementsProvider.getRequiredStructures()) {
+                    for (RegistryKey<Structure> structure : goalRequirements.getRequiredStructures()) {
                         locateStructure(server, structure);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
@@ -527,6 +527,7 @@ public class LockoutServer {
             }
 
         });
+
     }
 
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {

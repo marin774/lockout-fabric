@@ -84,14 +84,17 @@ loom {
     accessWidenerPath = file("src/main/resources/lockout.accesswidener")
 }
 
-task copyJarToClient1(type: Copy) {
+/*
+If you want to test the mod in an instance and have it update every time you build the project, create a symlink in your mods folder.
+For Windows:
+1. Open mods folder
+2. In the file path bar, type 'cmd'.
+3. Type 'mklink "lockout-dev.jar" "<absolute path to the lockout-dev.jar file in build/libs folder>"'
+    For example: 'mklink "lockout-dev.jar" "C:\Users\Marin\IdeaProjects\lockout-fabric\build\libs\lockout-dev.jar"'
+ */
+tasks.register('createDevJarName', Copy) {
     from remapJar
-    into "C:\\Games\\MultiMC\\instances\\1.20.1\\.minecraft\\mods"
+    into "${rootProject.layout.buildDirectory.orNull}\\libs"
+    rename '.*', 'lockout-dev.jar'
 }
-build.dependsOn copyJarToClient1
-
-task copyJarToClient2(type: Copy) {
-    from remapJar
-    into "C:\\Games\\MultiMC\\instances\\1.20.1 lockout 2\\.minecraft\\mods"
-}
-build.dependsOn copyJarToClient2
+build.dependsOn createDevJarName

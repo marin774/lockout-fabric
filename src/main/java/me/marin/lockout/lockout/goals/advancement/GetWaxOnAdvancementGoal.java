@@ -24,7 +24,7 @@ public class GetWaxOnAdvancementGoal extends AdvancementGoal {
 
     @Override
     public String getGoalName() {
-        return "Apply Honeycomb to a Copper Block";
+        return "Wax a Copper Block";
     }
 
     @Override

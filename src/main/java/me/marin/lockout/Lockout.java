@@ -66,6 +66,10 @@ public class Lockout {
         logger.log(Level.INFO, message);
     }
 
+    public static void error(Throwable t) {
+        logger.error("Lockout error:\n", t);
+    }
+
     public static boolean exists(Lockout lockout) {
         return lockout != null;
     }

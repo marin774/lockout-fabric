@@ -7,7 +7,7 @@ import com.mojang.datafixers.util.Either;
 import me.marin.lockout.*;
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.generator.BoardGenerator;
-import me.marin.lockout.generator.GoalRequirementsProvider;
+import me.marin.lockout.generator.GoalRequirements;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.death.DieToFallingOffVinesGoal;
@@ -136,16 +136,16 @@ public class LockoutServer {
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (!Lockout.exists(lockout)) return;
+            if (!Lockout.isLockoutRunning(lockout)) return;
             if (lockout.isSoloBlackout()) return;
-            if (lockout.isLockoutPlayer(newPlayer.getUuid())) {
-                int slot = LockoutServer.compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
-                if (slot == 40) {
-                    newPlayer.getInventory().offHand.set(0, compassHandler.newCompass());
-                }
-                if (slot >= 0 && slot <= 35) {
-                    newPlayer.getInventory().setStack(slot, compassHandler.newCompass());
-                }
+            if (!lockout.isLockoutPlayer(newPlayer.getUuid())) return;
+
+            int slot = LockoutServer.compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
+            if (slot == 40) {
+                newPlayer.getInventory().offHand.set(0, compassHandler.newCompass());
+            }
+            if (slot >= 0 && slot <= 35) {
+                newPlayer.getInventory().setStack(slot, compassHandler.newCompass());
             }
         });
 
@@ -477,15 +477,15 @@ public class LockoutServer {
                 }
 
                 for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-                    GoalRequirementsProvider goalRequirementsProvider = GoalRegistry.INSTANCE.getGoalGenerator(id);
-                    if (goalRequirementsProvider == null) continue;
+                    GoalRequirements goalRequirements = GoalRegistry.INSTANCE.getGoalGenerator(id);
+                    if (goalRequirements == null) continue;
 
-                    for (RegistryKey<Biome> biome : goalRequirementsProvider.getRequiredBiomes()) {
+                    for (RegistryKey<Biome> biome : goalRequirements.getRequiredBiomes()) {
                         locateBiome(server, biome);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
 
-                    for (RegistryKey<Structure> structure : goalRequirementsProvider.getRequiredStructures()) {
+                    for (RegistryKey<Structure> structure : goalRequirements.getRequiredStructures()) {
                         locateStructure(server, structure);
                         // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
@@ -522,11 +522,12 @@ public class LockoutServer {
                     player.sendMessage(Text.literal("Set custom board."));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Lockout.error(e);
                 player.sendMessage(Text.of("There was an error trying to set custom board. Check server logs."));
             }
 
         });
+
     }
 
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
@@ -808,7 +809,7 @@ public class LockoutServer {
                     scoreboardTeams.add(team);
                 }
                 for (Team team : scoreboardTeams) {
-                    if (team.getPlayerList().size() == 0) {
+                    if (team.getPlayerList().isEmpty()) {
                         context.getSource().sendError(Text.literal("Team " + team.getName() + " doesn't have any players."));
                         return 0;
                     }

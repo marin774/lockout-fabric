@@ -2,7 +2,7 @@ package me.marin.lockout.lockout;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.generator.GoalDataGenerator;
-import me.marin.lockout.generator.GoalRequirementsProvider;
+import me.marin.lockout.generator.GoalRequirements;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.util.*;
@@ -16,23 +16,23 @@ public class GoalRegistry {
 
     private final Map<String, Class<? extends Goal>> registry = new LinkedHashMap<>();
     private final Map<String, GoalDataGenerator> goalDataGenerators = new HashMap<>();
-    private final Map<String, GoalRequirementsProvider> goalGeneratorProviders = new HashMap<>();
+    private final Map<String, GoalRequirements> goalGeneratorProviders = new HashMap<>();
 
     private GoalRegistry() {}
 
     public void register(String id, Class<? extends Goal> goalClass) {
         register(id, goalClass, null);
     }
-    public void register(String id, Class<? extends Goal> goalClass, GoalRequirementsProvider goalRequirementsProvider) {
-        register(id, goalClass, goalRequirementsProvider, null);
+    public void register(String id, Class<? extends Goal> goalClass, GoalRequirements goalRequirements) {
+        register(id, goalClass, goalRequirements, null);
     }
-    public void register(String id, Class<? extends Goal> goalClass, GoalRequirementsProvider goalRequirementsProvider, GoalDataGenerator goalDataGenerator) {
+    public void register(String id, Class<? extends Goal> goalClass, GoalRequirements goalRequirements, GoalDataGenerator goalDataGenerator) {
         if (registry.containsKey(id)) {
             Lockout.log("Goal with id " + id + " has already been registered.");
             return;
         }
         registry.put(id, goalClass);
-        goalGeneratorProviders.put(id, goalRequirementsProvider);
+        goalGeneratorProviders.put(id, goalRequirements);
         goalDataGenerators.put(id, goalDataGenerator);
     }
 
@@ -44,7 +44,7 @@ public class GoalRegistry {
         try {
             return ConstructorUtils.invokeConstructor(registry.get(id), id, data);
         } catch (Exception e) {
-            e.printStackTrace();
+            Lockout.error(e);
             return null;
         }
     }
@@ -53,7 +53,7 @@ public class GoalRegistry {
         return goalDataGenerators.get(id);
     }
 
-    public GoalRequirementsProvider getGoalGenerator(String id) {
+    public GoalRequirements getGoalGenerator(String id) {
         return goalGeneratorProviders.get(id);
     }
 

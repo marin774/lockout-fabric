@@ -1,6 +1,7 @@
 package me.marin.lockout.client.gui;
 
 import me.marin.lockout.Constants;
+import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
 import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.generator.GoalDataGenerator;
@@ -212,7 +213,7 @@ public class BoardBuilderScreen extends Screen {
             BoardBuilderIO.INSTANCE.saveBoard(boardName, jsonBoard);
         } catch (IOException e) {
             showError("Error while saving board. Check logs.", errorX, errorY);
-            e.printStackTrace();
+            Lockout.error(e);
             return;
         }
 

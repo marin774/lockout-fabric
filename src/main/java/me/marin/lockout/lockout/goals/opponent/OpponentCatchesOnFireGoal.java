@@ -22,7 +22,7 @@ public class OpponentCatchesOnFireGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/opponent/no_fire.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/opponent/no_fire.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

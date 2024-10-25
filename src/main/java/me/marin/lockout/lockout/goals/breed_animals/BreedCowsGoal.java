@@ -22,7 +22,7 @@ public class BreedCowsGoal extends BreedAnimalGoal implements TextureProvider {
         return EntityType.COW;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_cow.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/breed/breed_cow.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

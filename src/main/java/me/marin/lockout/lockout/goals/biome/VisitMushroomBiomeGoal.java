@@ -25,7 +25,7 @@ public class VisitMushroomBiomeGoal extends VisitBiomeGoal {
         return ITEM_STACK;
     }
 
-    private static final List<Identifier> BIOME_LIST = List.of(new Identifier("minecraft", "mushroom_fields"));
+    private static final List<Identifier> BIOME_LIST = List.of(Identifier.of("minecraft", "mushroom_fields"));
     @Override
     public List<Identifier> getBiomes() {
         return BIOME_LIST;

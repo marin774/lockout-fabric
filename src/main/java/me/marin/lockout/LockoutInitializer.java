@@ -3,12 +3,13 @@ package me.marin.lockout;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.marin.lockout.lockout.DefaultGoalRegister;
+import me.marin.lockout.network.CustomBoardPayload;
+import me.marin.lockout.network.Networking;
 import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Items;
@@ -18,14 +19,15 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class LockoutInitializer implements ModInitializer {
@@ -34,6 +36,8 @@ public class LockoutInitializer implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        Networking.registerPayloads();
+
         DefaultGoalRegister.registerGoals();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -109,20 +113,15 @@ public class LockoutInitializer implements ModInitializer {
                 // RemoveCustomBoard command (SetCustomBoard is registered in LockoutClient, and server listens for a packet)
 
                 dispatcher.getRoot().addChild(CommandManager.literal("RemoveCustomBoard").requires(PERMISSIONS).executes((context) -> {
-                    PacketByteBuf buf = PacketByteBufs.create();
-                    buf.writeBoolean(true); // whether board should be cleared
-                    ClientPlayNetworking.send(Constants.CUSTOM_BOARD_PACKET, buf);
+                    ClientPlayNetworking.send(new CustomBoardPayload(Optional.empty()));
                     return 1;
                 }).build());
             }
 
         });
 
-        LootTableEvents.REPLACE.register(((resourceManager, lootManager, id, original, source) -> {
-            if (Objects.equals(id, LootTables.PIGLIN_BARTERING_GAMEPLAY)) {
-                NbtCompound fireRes = new NbtCompound();
-                fireRes.putString("Potion", "minecraft:fire_resistance");
-
+        LootTableEvents.REPLACE.register(((key, original, source, registries) -> {
+            if (Objects.equals(key, LootTables.PIGLIN_BARTERING_GAMEPLAY)) {
                 UniformLootNumberProvider ironNuggetsCount = UniformLootNumberProvider.create(9.0F, 36.0F);
                 UniformLootNumberProvider quartzCount = UniformLootNumberProvider.create(8.0F, 16.0F);
                 UniformLootNumberProvider glowstoneDustCount = UniformLootNumberProvider.create(5.0F, 12.0F);
@@ -137,10 +136,10 @@ public class LockoutInitializer implements ModInitializer {
                 UniformLootNumberProvider soulSandCount = UniformLootNumberProvider.create(4.0F, 16.0F);
 
                 LootPool pool = LootPool.builder()
-                        .with(ItemEntry.builder(Items.BOOK).apply(EnchantRandomlyLootFunction.create().add(Enchantments.SOUL_SPEED)).weight(5))
-                        .with(ItemEntry.builder(Items.IRON_BOOTS).apply(EnchantRandomlyLootFunction.create().add(Enchantments.SOUL_SPEED)).weight(8))
-                        .with(ItemEntry.builder(Items.POTION).apply(SetNbtLootFunction.builder(fireRes)).weight(10))
-                        .with(ItemEntry.builder(Items.SPLASH_POTION).apply(SetNbtLootFunction.builder(fireRes)).weight(10))
+                        .with(ItemEntry.builder(Items.BOOK).apply(EnchantRandomlyLootFunction.create().option(registries.getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.SOUL_SPEED))).weight(5))
+                        .with(ItemEntry.builder(Items.IRON_BOOTS).apply(EnchantRandomlyLootFunction.create().option(registries.getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.SOUL_SPEED))).weight(8))
+                        .with(ItemEntry.builder(Items.POTION).apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE)).weight(10))
+                        .with(ItemEntry.builder(Items.SPLASH_POTION).apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE)).weight(10))
                         .with(ItemEntry.builder(Items.IRON_NUGGET).apply(SetCountLootFunction.builder(ironNuggetsCount)).weight(10))
                         .with(ItemEntry.builder(Items.QUARTZ).apply(SetCountLootFunction.builder(quartzCount)).weight(20))
                         .with(ItemEntry.builder(Items.GLOWSTONE_DUST).apply(SetCountLootFunction.builder(glowstoneDustCount)).weight(20))

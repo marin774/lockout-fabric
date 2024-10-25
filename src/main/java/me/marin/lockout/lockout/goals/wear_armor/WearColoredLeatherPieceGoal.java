@@ -3,13 +3,15 @@ package me.marin.lockout.lockout.goals.wear_armor;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.interfaces.WearArmorPieceGoal;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
 
 import java.util.List;
+import java.util.Optional;
 
 public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
 
@@ -27,7 +29,7 @@ public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
         COLOR = GoalDataConstants.getDyeColorValue(DYE_COLOR);
 
         DISPLAY_ITEM_STACK = ITEM.getDefaultStack();
-        ((DyeableArmorItem) ITEM).setColor(DISPLAY_ITEM_STACK, COLOR);
+        DISPLAY_ITEM_STACK.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(COLOR, false));
 
         GOAL_NAME = "Wear " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " " + GoalDataConstants.getArmorPieceFormatted(parts[0]);
     }
@@ -57,7 +59,7 @@ public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
         for (ItemStack item : playerInventory.armor) {
             if (item == null) continue;
             if (item.getItem().equals(ITEM)) {
-                if (((DyeableArmorItem) ITEM).getColor(item) == COLOR) {
+                if (Optional.ofNullable(item.get(DataComponentTypes.DYED_COLOR)).map(dyed -> dyed.rgb() == COLOR).orElse(false)) {
                     return true;
                 }
             }

@@ -22,7 +22,7 @@ public class BreedGoatGoal extends BreedAnimalGoal implements TextureProvider {
         return EntityType.GOAT;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_goat.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/breed/breed_goat.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

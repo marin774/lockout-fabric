@@ -23,7 +23,7 @@ public class TameHorseGoal extends TameAnimalGoal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/tame/tame_horse.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/tame/tame_horse.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

@@ -16,7 +16,7 @@ public class GetFreeTheEndAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "end/kill_dragon"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "end/kill_dragon"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

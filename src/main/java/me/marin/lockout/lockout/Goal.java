@@ -14,7 +14,7 @@ public abstract class Goal {
     private final String id;
     private final String data;
     private boolean isCompleted = false;
-    private LockoutTeam completedTeam = null;
+    private LockoutTeam completedTeam;
 
     public Goal(String id, String data) {
         this.id = id;
@@ -29,9 +29,9 @@ public abstract class Goal {
      */
     public abstract ItemStack getTextureItemStack();
 
-    public void setCompleted(boolean isCompleted, LockoutTeam team) {
+    public void setCompleted(boolean isCompleted, LockoutTeam teamIndex) {
         this.isCompleted = isCompleted;
-        this.completedTeam = team;
+        this.completedTeam = teamIndex;
     }
     public boolean isCompleted() {
         return isCompleted;
@@ -56,7 +56,7 @@ public abstract class Goal {
         }
         if (!success) {
             context.drawItem(this.getTextureItemStack(), x, y);
-            context.drawItemInSlot(textRenderer, this.getTextureItemStack(), x, y);
+            context.drawStackOverlay(textRenderer, this.getTextureItemStack(), x, y);
         }
     }
 

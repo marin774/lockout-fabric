@@ -22,7 +22,7 @@ public class BreedStriderGoal extends BreedAnimalGoal implements TextureProvider
         return EntityType.STRIDER;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_strider.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/breed/breed_strider.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

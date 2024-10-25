@@ -31,7 +31,7 @@ public class EnterNetherGoal extends EnterDimensionGoal implements TextureProvid
         return DimensionTypes.THE_NETHER;
     }
 
-    private static final Identifier TEXTURE = new Identifier(NAMESPACE, "textures/custom/nether_portal.png");
+    private static final Identifier TEXTURE = Identifier.of(NAMESPACE, "textures/custom/nether_portal.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

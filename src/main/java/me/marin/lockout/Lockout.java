@@ -2,14 +2,16 @@ package me.marin.lockout;
 
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.network.CompleteTaskPayload;
+import me.marin.lockout.network.EndLockoutPayload;
+import me.marin.lockout.network.LockoutGoalsTeamsPayload;
+import me.marin.lockout.network.UpdateTimerPayload;
 import me.marin.lockout.server.LockoutServer;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -18,6 +20,7 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import oshi.util.tuples.Pair;
 
 import java.util.*;
 
@@ -137,7 +140,7 @@ public class Lockout {
         }
 
         sendGoalCompletedPacket(goal, team);
-        evaulateWinnerAndEndGame(team);
+        evaluateWinnerAndEndGame(team);
     }
 
     public void complete1v1Goal(Goal goal, PlayerEntity player, boolean isWinner, String message) {
@@ -171,7 +174,7 @@ public class Lockout {
         }
 
         sendGoalCompletedPacket(goal, winnerTeam);
-        evaulateWinnerAndEndGame(team);
+        evaluateWinnerAndEndGame(team);
     }
 
     public void updateGoalCompletion(Goal goal, UUID playerId) {
@@ -188,26 +191,21 @@ public class Lockout {
         goal.setCompleted(false, null);
 
         if (sendPacket) {
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeString(goal.getId());
-            buf.writeInt(-1);
+            var payload = new CompleteTaskPayload(goal.getId(), -1);
             for (ServerPlayerEntity serverPlayer : LockoutServer.server.getPlayerManager().getPlayerList()) {
-                ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
+                ServerPlayNetworking.send(serverPlayer, payload);
             }
         }
     }
 
     private void sendGoalCompletedPacket(Goal goal, LockoutTeam team) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeString(goal.getId());
-        buf.writeInt(teams.indexOf(team));
-
+        var payload = new CompleteTaskPayload(goal.getId(), teams.indexOf(team));
         for (ServerPlayerEntity serverPlayer : LockoutServer.server.getPlayerManager().getPlayerList()) {
-            ServerPlayNetworking.send(serverPlayer, Constants.COMPLETE_TASK_PACKET, buf);
+            ServerPlayNetworking.send(serverPlayer, payload);
         }
     }
 
-    private void evaulateWinnerAndEndGame(LockoutTeam team) {
+    private void evaluateWinnerAndEndGame(LockoutTeam team) {
         PlayerManager playerManager = LockoutServer.server.getPlayerManager();
 
         List<LockoutTeam> winners = new ArrayList<>();
@@ -226,15 +224,9 @@ public class Lockout {
         }
 
         if (!this.isRunning) {
-            PacketByteBuf bufEnd = PacketByteBufs.create();
-            bufEnd.writeInt(winners.size());
-            for (LockoutTeam winner : winners) {
-                bufEnd.writeInt(teams.indexOf(winner));
-            }
-            bufEnd.writeLong(System.currentTimeMillis());
-
+            var payload = new EndLockoutPayload(winners.stream().mapToInt(winner -> teams.indexOf(winner)).toArray(), System.currentTimeMillis());
             for (ServerPlayerEntity serverPlayer : LockoutServer.server.getPlayerManager().getPlayerList()) {
-                ServerPlayNetworking.send(serverPlayer, Constants.END_LOCKOUT_PACKET, bufEnd);
+                ServerPlayNetworking.send(serverPlayer, payload);
             }
         }
     }
@@ -332,37 +324,14 @@ public class Lockout {
         return sb.toString();
     }
 
-    public PacketByteBuf getUpdateTimerPacket() {
-        PacketByteBuf buf = PacketByteBufs.create();
-
-        buf.writeLong(ticks);
-
-        return buf;
+    public UpdateTimerPayload getUpdateTimerPacket() {
+        return new UpdateTimerPayload(ticks);
     }
 
-    public PacketByteBuf getTeamsGoalsPacket() {
-        PacketByteBuf buf = PacketByteBufs.create();
-
-        // Write teams
-        buf.writeInt(teams.size());
-        for (LockoutTeam team : teams) {
-            buf.writeInt(team.getPlayerNames().size());
-            buf.writeString(team.getColor().asString());
-            for (String playerName : team.getPlayerNames()) {
-                buf.writeString(playerName);
-            }
-        }
-
-        // Write goals
-        for (Goal goal : board.getGoals()) {
-            buf.writeString(goal.getId());
-            buf.writeString(goal.getData());
-            buf.writeInt(goal.isCompleted() ? teams.indexOf(goal.getCompletedTeam()) : -1);
-        }
-
-        buf.writeBoolean(this.isRunning);
-
-        return buf;
+    public LockoutGoalsTeamsPayload getTeamsGoalsPacket() {
+        return new LockoutGoalsTeamsPayload(teams.stream().map(team -> (LockoutTeam) team).toList(),
+                board.getGoals().stream().map(goal -> new Pair<>(new Pair<>(goal.getId(), goal.getData()), teams.indexOf(goal.getCompletedTeam()))).toList(),
+                isRunning);
     }
 
 

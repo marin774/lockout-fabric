@@ -22,7 +22,7 @@ public class KillOtherTeamPlayer extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/kill_player.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/kill_player.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

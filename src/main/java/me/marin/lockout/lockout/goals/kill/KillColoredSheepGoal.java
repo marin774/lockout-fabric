@@ -20,7 +20,7 @@ public class KillColoredSheepGoal extends Goal implements TextureProvider {
 
     public KillColoredSheepGoal(String id, String data) {
         super(id, data);
-        texture = new Identifier(Constants.NAMESPACE, "textures/custom/sheep/kill_" + data + "_sheep.png");
+        texture = Identifier.of(Constants.NAMESPACE, "textures/custom/sheep/kill_" + data + "_sheep.png");
         DYE_COLOR = GoalDataConstants.getDyeColor(data);
         GOAL_NAME = "Kill " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " Sheep";
     }

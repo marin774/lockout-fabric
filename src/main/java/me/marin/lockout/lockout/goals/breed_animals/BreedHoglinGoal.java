@@ -22,7 +22,7 @@ public class BreedHoglinGoal extends BreedAnimalGoal implements TextureProvider 
         return EntityType.HOGLIN;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/breed/breed_hoglin.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/breed/breed_hoglin.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

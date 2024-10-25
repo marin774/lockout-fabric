@@ -25,7 +25,7 @@ public class GetOhShinyAdvancementGoal extends AdvancementGoal {
         return ITEM_STACK;
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/distract_piglin"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/distract_piglin"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

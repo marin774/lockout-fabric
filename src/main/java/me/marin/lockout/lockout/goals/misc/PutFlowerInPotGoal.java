@@ -31,7 +31,7 @@ public class PutFlowerInPotGoal extends IncrementStatGoal implements TextureProv
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/flower_in_a_pot.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/flower_in_a_pot.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

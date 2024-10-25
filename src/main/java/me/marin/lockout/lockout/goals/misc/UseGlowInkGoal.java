@@ -22,7 +22,7 @@ public class UseGlowInkGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/glow_crimson_sign.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/glow_crimson_sign.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

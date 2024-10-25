@@ -22,7 +22,7 @@ public class HaveMostXPLevelsGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/more_level.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/more_level.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

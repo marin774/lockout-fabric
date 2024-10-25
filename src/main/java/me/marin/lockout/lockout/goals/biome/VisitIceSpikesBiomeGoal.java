@@ -25,7 +25,7 @@ public class VisitIceSpikesBiomeGoal extends VisitBiomeGoal {
         return ITEM_STACK;
     }
 
-    private static final List<Identifier> BIOME_LIST = List.of(new Identifier("minecraft", "ice_spikes"));
+    private static final List<Identifier> BIOME_LIST = List.of(Identifier.of("minecraft", "ice_spikes"));
     @Override
     public List<Identifier> getBiomes() {
         return BIOME_LIST;

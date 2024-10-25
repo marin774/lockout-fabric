@@ -9,7 +9,6 @@ import net.minecraft.block.ChiseledBookshelfBlock;
 import net.minecraft.block.entity.ChiseledBookshelfBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -22,13 +21,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ChiseledBookshelfBlockMixin {
 
     @Inject(method = "onUse", at = @At("RETURN"))
-    public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+    public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         if (world.isClient) return;
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
 
         ChiseledBookshelfBlockEntity blockEntity = (ChiseledBookshelfBlockEntity) world.getBlockEntity(pos);
-        if (blockEntity.getOpenSlotCount() < 6) return;
+        if (blockEntity == null || blockEntity.getFilledSlotCount() < 6) return;
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

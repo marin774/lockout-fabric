@@ -57,7 +57,7 @@ public class CraftingResultSlotMixin {
             if (goal instanceof HaveMostUniqueCraftsGoal) {
                 player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE.value(), 2, 2);
                 if (crafts.size() % 5 == 0) {
-                    player.sendMessage(Text.of(Formatting.GRAY + "" + Formatting.ITALIC + "You have crafted " + crafts.size() + " unique items."));
+                    player.sendMessage(Text.of(Formatting.GRAY + "" + Formatting.ITALIC + "You have crafted " + crafts.size() + " unique items."), false);
                 }
                 player.sendMessage(Text.of("Unique crafts: " + crafts.size()), true);
 

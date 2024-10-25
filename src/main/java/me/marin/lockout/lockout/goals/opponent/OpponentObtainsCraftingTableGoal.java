@@ -33,7 +33,7 @@ public class OpponentObtainsCraftingTableGoal extends OpponentObtainsItemGoal im
         return ITEMS;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/opponent/no_crafting_table.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/opponent/no_crafting_table.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

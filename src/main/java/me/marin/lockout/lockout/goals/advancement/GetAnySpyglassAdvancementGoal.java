@@ -11,9 +11,9 @@ public class GetAnySpyglassAdvancementGoal extends AdvancementGoal {
 
     private static final ItemStack ITEM_STACK = Items.SPYGLASS.getDefaultStack();
     private static final List<Identifier> ADVANCEMENTS = List.of(
-            new Identifier("minecraft", "adventure/spyglass_at_parrot"),
-            new Identifier("minecraft", "adventure/spyglass_at_ghast"),
-            new Identifier("minecraft", "adventure/spyglass_at_dragon")
+            Identifier.of("minecraft", "adventure/spyglass_at_parrot"),
+            Identifier.of("minecraft", "adventure/spyglass_at_ghast"),
+            Identifier.of("minecraft", "adventure/spyglass_at_dragon")
             );
 
     public GetAnySpyglassAdvancementGoal(String id, String data) {

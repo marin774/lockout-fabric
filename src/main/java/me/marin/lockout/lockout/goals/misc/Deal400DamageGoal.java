@@ -9,6 +9,7 @@ import me.marin.lockout.lockout.texture.TextureProvider;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Formatting;
@@ -37,7 +38,7 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
         return DISPLAY_ITEM_STACK;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/deal_400_damage.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/deal_400_damage.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;
@@ -45,8 +46,8 @@ public class Deal400DamageGoal extends Goal implements TextureProvider, CustomTe
 
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
-        context.drawTexture(TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
-        context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, DISPLAY_ITEM_STACK, x, y, "400");
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
+        context.drawStackOverlay(MinecraftClient.getInstance().textRenderer, DISPLAY_ITEM_STACK, x, y, "400");
         return true;
     }
 

@@ -26,9 +26,9 @@ public class VisitBadlandsBiomeGoal extends VisitBiomeGoal {
     }
 
     private static final List<Identifier> BIOME_LIST = List.of(
-            new Identifier("minecraft", "badlands"),
-            new Identifier("minecraft", "eroded_badlands"),
-            new Identifier("minecraft", "wooded_badlands")
+            Identifier.of("minecraft", "badlands"),
+            Identifier.of("minecraft", "eroded_badlands"),
+            Identifier.of("minecraft", "wooded_badlands")
     );
     @Override
     public List<Identifier> getBiomes() {

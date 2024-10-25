@@ -22,7 +22,7 @@ public class OpponentTakesFallDamageGoal extends Goal implements TextureProvider
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/opponent/no_fall_damage.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/opponent/no_fall_damage.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

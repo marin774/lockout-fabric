@@ -33,7 +33,7 @@ public class EatCakeGoal extends IncrementStatGoal implements TextureProvider {
         return ITEM_STACK;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/eat_cake.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/eat_cake.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

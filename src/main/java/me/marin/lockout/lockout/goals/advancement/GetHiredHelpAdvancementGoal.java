@@ -16,7 +16,7 @@ public class GetHiredHelpAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "adventure/summon_iron_golem"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "adventure/summon_iron_golem"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

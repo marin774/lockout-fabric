@@ -22,7 +22,7 @@ public class ItemFrameInItemFrameGoal extends Goal implements TextureProvider {
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/item_frame_in_item_frame.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/item_frame_in_item_frame.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

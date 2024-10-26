@@ -33,7 +33,7 @@ public class OpponentObtainsSeedsGoal extends OpponentObtainsItemGoal implements
         return ITEMS;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/opponent/no_seeds.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/opponent/no_seeds.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

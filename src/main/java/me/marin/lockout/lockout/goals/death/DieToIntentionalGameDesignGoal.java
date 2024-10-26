@@ -37,8 +37,8 @@ public class DieToIntentionalGameDesignGoal extends DieToDamageTypeGoal implemen
         return CycleTexturesProvider.super.renderTexture(context, x, y, tick);
     }
     private static final List<Identifier> TEXTURES = List.of(
-            new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_anchor.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_bed.png")
+            Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_anchor.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_bed.png")
     );
 
     @Override

@@ -8,7 +8,7 @@ import net.minecraft.item.Items;
 public class FillArmorStandGoal extends Goal {
 
     private static final Item ITEM = Items.ARMOR_STAND;
-    // private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/armor_stand.png");
+    // private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/armor_stand.png");
 
     public FillArmorStandGoal(String id, String data) {
         super(id, data);

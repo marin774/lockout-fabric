@@ -13,7 +13,7 @@ public class GetHotTouristDestinationsAdvancementGoal extends AdvancementGoal im
 
     private static final ItemStack ITEM_STACK = Items.CRIMSON_NYLIUM.getDefaultStack();
     private static final List<Item> ITEMS_TO_DISPLAY = List.of(Items.CRIMSON_NYLIUM, Items.WARPED_NYLIUM, Items.SOUL_SOIL, Items.NETHERRACK, Items.BASALT);
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/explore_nether"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/explore_nether"));
 
     public GetHotTouristDestinationsAdvancementGoal(String id, String data) {
         super(id, data);

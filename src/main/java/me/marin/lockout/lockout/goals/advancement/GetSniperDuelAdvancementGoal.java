@@ -16,7 +16,7 @@ public class GetSniperDuelAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "adventure/sniper_duel"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "adventure/sniper_duel"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

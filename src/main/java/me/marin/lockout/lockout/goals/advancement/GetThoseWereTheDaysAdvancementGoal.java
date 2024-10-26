@@ -10,7 +10,7 @@ import java.util.List;
 public class GetThoseWereTheDaysAdvancementGoal extends AdvancementGoal {
 
     private static final ItemStack ITEM_STACK = Items.POLISHED_BLACKSTONE_BRICKS.getDefaultStack();
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/find_bastion"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/find_bastion"));
 
     public GetThoseWereTheDaysAdvancementGoal(String id, String data) {
         super(id, data);

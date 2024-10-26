@@ -3,6 +3,7 @@ package me.marin.lockout.mixin.client;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.client.LockoutClient;
 import net.minecraft.client.input.KeyboardInput;
+import net.minecraft.util.PlayerInput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,14 +19,9 @@ public class InputMixin {
 
         KeyboardInput input = (KeyboardInput) (Object) this;
         if (!LockoutClient.lockout.hasStarted()) {
-            input.pressingForward = false;
-            input.pressingBack = false;
-            input.pressingLeft = false;
-            input.pressingRight = false;
+            input.playerInput = new PlayerInput(false, false, false, false, false, input.playerInput.sneak(), false);
             input.movementForward = 0;
             input.movementSideways = 0;
-            input.jumping = false;
-            // input.sneaking = false;
         }
     }
 

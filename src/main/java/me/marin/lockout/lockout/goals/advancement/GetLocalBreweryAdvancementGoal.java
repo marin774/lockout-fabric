@@ -25,7 +25,7 @@ public class GetLocalBreweryAdvancementGoal extends AdvancementGoal {
         return ITEM_STACK;
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "nether/brew_potion"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "nether/brew_potion"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

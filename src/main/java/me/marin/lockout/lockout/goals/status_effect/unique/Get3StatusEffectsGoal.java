@@ -26,7 +26,7 @@ public class Get3StatusEffectsGoal extends GetXStatusEffectsGoal {
         return 3;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/status_effect/3_status_effects.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/status_effect/3_status_effects.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

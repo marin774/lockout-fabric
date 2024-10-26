@@ -10,7 +10,7 @@ import java.util.List;
 public class GetEyeSpyAdvancementGoal extends AdvancementGoal {
 
     private static final ItemStack ITEM_STACK = Items.ENDER_EYE.getDefaultStack();
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "story/follow_ender_eye"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "story/follow_ender_eye"));
 
     public GetEyeSpyAdvancementGoal(String id, String data) {
         super(id, data);

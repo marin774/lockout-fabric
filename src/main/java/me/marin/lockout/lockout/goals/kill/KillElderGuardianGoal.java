@@ -23,7 +23,7 @@ public class KillElderGuardianGoal extends KillMobGoal implements TextureProvide
         return null;
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/kill/kill_elder_guardian.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/kill/kill_elder_guardian.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

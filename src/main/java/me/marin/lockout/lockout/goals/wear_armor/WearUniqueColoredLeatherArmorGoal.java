@@ -3,8 +3,12 @@ package me.marin.lockout.lockout.goals.wear_armor;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.interfaces.WearArmorGoal;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 import java.util.HashSet;
 import java.util.List;
@@ -34,10 +38,10 @@ public class WearUniqueColoredLeatherArmorGoal extends WearArmorGoal {
 
         Set<Integer> colors = new HashSet<>();
         for (ItemStack itemStack : playerInventory.armor) {
-            DyeableArmorItem armor = (DyeableArmorItem) itemStack.getItem();
-            int color = armor.getColor(itemStack);
-
-            if (color != DyeableItem.DEFAULT_COLOR) {
+            DyedColorComponent dyedColor = itemStack.get(DataComponentTypes.DYED_COLOR);
+            if (dyedColor == null) continue;
+            int color = dyedColor.rgb();
+            if (color != DyedColorComponent.DEFAULT_COLOR) {
                 colors.add(color);
             }
         }
@@ -51,7 +55,6 @@ public class WearUniqueColoredLeatherArmorGoal extends WearArmorGoal {
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         int mod = tick % (60 * getItemsToDisplay().size());
         ItemStack itemStack = getItemsToDisplay().get(mod / 60).getDefaultStack();
-        DyeableArmorItem dyeableArmorItem = (DyeableArmorItem) itemStack.getItem();
 
         int colorChange = tick / 60;
         if (lastTickColorChanged != colorChange) {
@@ -59,7 +62,7 @@ public class WearUniqueColoredLeatherArmorGoal extends WearArmorGoal {
             color = (Lockout.random.nextInt(0, 256) << 16) | (Lockout.random.nextInt(0, 256) << 8) | (Lockout.random.nextInt(0, 256));
         }
 
-        dyeableArmorItem.setColor(itemStack, color);
+        itemStack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color, false));
         context.drawItem(itemStack, x, y);
         return true;
     }

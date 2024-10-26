@@ -25,7 +25,7 @@ public class DieToFallingStalactiteGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.FALLING_STALACTITE);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_falling_stalactite.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_falling_stalactite.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

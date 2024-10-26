@@ -16,7 +16,7 @@ public class GetBullseyeAdvancementGoal extends AdvancementGoal {
         super(id, data);
     }
 
-    private static final List<Identifier> ADVANCEMENTS = List.of(new Identifier("minecraft", "adventure/bullseye"));
+    private static final List<Identifier> ADVANCEMENTS = List.of(Identifier.of("minecraft", "adventure/bullseye"));
     @Override
     public List<Identifier> getAdvancements() {
         return ADVANCEMENTS;

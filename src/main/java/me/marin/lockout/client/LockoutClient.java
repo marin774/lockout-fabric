@@ -9,6 +9,7 @@ import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
+import me.marin.lockout.network.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -17,26 +18,25 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 import oshi.util.tuples.Pair;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class LockoutClient implements ClientModInitializer {
 
@@ -51,82 +51,66 @@ public class LockoutClient implements ClientModInitializer {
     public static final ScreenHandlerType<BoardScreenHandler> BOARD_SCREEN_HANDLER;
 
     static {
-        BOARD_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(Constants.BOARD_SCREEN_ID, BoardScreenHandler::new);
+        BOARD_SCREEN_HANDLER = new ScreenHandlerType<>(BoardScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
     }
 
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(Constants.LOCKOUT_GOALS_TEAMS_PACKET, (client, handler, buf, responseSender) -> {
-            int teamsSize = buf.readInt();
-            List<LockoutTeam> teams = new ArrayList<>();
+        Registry.register(Registries.SCREEN_HANDLER, Constants.BOARD_SCREEN_ID, BOARD_SCREEN_HANDLER);
 
-            boolean amIPlaying = false;
+        ClientPlayNetworking.registerGlobalReceiver(LockoutGoalsTeamsPayload.ID, (payload, context) -> {
+            List<LockoutTeam> teams = payload.teams();
 
-            for (int i = 0; i < teamsSize; i++) {
-                int teamSize = buf.readInt();
-                Formatting color = Formatting.byName(buf.readString());
-                List<String> playerNames = new ArrayList<>();
-                for (int j = 0; j < teamSize; j++) {
-                    String playerName = buf.readString();
-                    playerNames.add(playerName);
-                    amIPlaying |= playerName.equals(MinecraftClient.getInstance().getSession().getUsername());
-                }
-                teams.add(new LockoutTeam(playerNames, color));
-            }
-            LockoutClient.amIPlayingLockout = amIPlaying;
+            LockoutClient.amIPlayingLockout = teams.stream().map(LockoutTeam::getPlayerNames)
+                    .anyMatch(players -> players.stream().anyMatch(player -> player.equals(MinecraftClient.getInstance().getSession().getUsername())));
 
-            List<Pair<String, String>> goals = new ArrayList<>();
-            List<Integer> completedByTeam = new ArrayList<>();
-            for (int i = 0; i < 25; i++) {
-                goals.add(new Pair<>(buf.readString(), buf.readString()));
-                completedByTeam.add(buf.readInt()); // index of team that completed the goal, -1 otherwise
-            }
+            int[] completedByTeam = payload.goals().stream().mapToInt(Pair::getB).toArray();
 
-            lockout = new Lockout(new LockoutBoard(goals), teams);
-            lockout.setRunning(buf.readBoolean());
+            lockout = new Lockout(new LockoutBoard(payload.goals().stream().map(Pair::getA).toList()), teams);
+            lockout.setRunning(payload.isRunning());
 
             List<Goal> goalList = lockout.getBoard().getGoals();
             for (int i = 0; i < goalList.size(); i++) {
-                if (completedByTeam.get(i) != -1) {
-                    LockoutTeam team = lockout.getTeams().get(completedByTeam.get(i));
+                if (completedByTeam[i] != -1) {
+                    LockoutTeam team = lockout.getTeams().get(completedByTeam[i]);
                     goalList.get(i).setCompleted(true, team);
                     team.addPoint();
                 }
             }
 
+            MinecraftClient client = context.client();
             client.execute(() -> {
                 if (client.player != null) {
                     client.setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
                 }
             });
         });
-        ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_TOOLTIP, (client, handler, buf, responseSender) -> {
-            goalTooltipMap.put(buf.readString(), buf.readString());
+        ClientPlayNetworking.registerGlobalReceiver(UpdateTooltipPayload.ID, (payload, context) -> {
+            goalTooltipMap.put(payload.goal(), payload.tooltip());
         });
-        ClientPlayNetworking.registerGlobalReceiver(Constants.START_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(StartLockoutPayload.ID, (payload, context) -> {
+            Lockout.log("STARTED");
             lockout.setStarted(true);
-            client.execute(() -> {
+            context.client().execute(() -> {
                 if (MinecraftClient.getInstance().currentScreen != null) {
                     MinecraftClient.getInstance().currentScreen.close();
                 }
             });
         });
-        ClientPlayNetworking.registerGlobalReceiver(Constants.UPDATE_TIMER_PACKET, (client, handler, buf, responseSender) -> {
-            lockout.setTicks(buf.readLong());
+        ClientPlayNetworking.registerGlobalReceiver(UpdateTimerPayload.ID, (payload, context) -> {
+            lockout.setTicks(payload.ticks());
         });
-        ClientPlayNetworking.registerGlobalReceiver(Constants.COMPLETE_TASK_PACKET, (client, handler, buf, responseSender) -> {
-            String goalId = buf.readString();
-            int teamIndex = buf.readInt();
-
+        ClientPlayNetworking.registerGlobalReceiver(CompleteTaskPayload.ID, (payload, context) -> {
+            MinecraftClient client = context.client();
             client.execute(() -> {
-                Goal goal = lockout.getBoard().getGoals().stream().filter(g -> g.getId().equals(goalId)).findFirst().get();
-                if (goal.isCompleted() || teamIndex == -1) {
+                Goal goal = lockout.getBoard().getGoals().stream().filter(g -> g.getId().equals(payload.goal())).findFirst().get();
+                if (goal.isCompleted() || payload.teamIndex() == -1) {
                     lockout.clearGoalCompletion(goal, false);
                 }
-                if (teamIndex != -1) {
-                    LockoutTeam team = lockout.getTeams().get(teamIndex);
+                if (payload.teamIndex() != -1) {
+                    LockoutTeam team = lockout.getTeams().get(payload.teamIndex());
                     team.addPoint();
-                    goal.setCompleted(true, lockout.getTeams().get(teamIndex));
+                    goal.setCompleted(true, lockout.getTeams().get(payload.teamIndex()));
 
                     if (client.player != null && amIPlayingLockout) {
                         if (team.getPlayerNames().contains(client.player.getName().getString())) {
@@ -140,19 +124,13 @@ public class LockoutClient implements ClientModInitializer {
 
             });
         });
-        ClientPlayNetworking.registerGlobalReceiver(Constants.END_LOCKOUT_PACKET, (client, handler, buf, responseSender) -> {
-            int winnerTeamsSize = buf.readInt();
-            List<Integer> winners = new ArrayList<>();
-            for (int i = 0; i < winnerTeamsSize; i++) {
-                winners.add(buf.readInt());
-            }
-
+        ClientPlayNetworking.registerGlobalReceiver(EndLockoutPayload.ID, (payload, context) -> {
             lockout.setRunning(false);
-            buf.readLong();
+            MinecraftClient client = context.client();
             client.execute(() -> {
                 if (client.player != null) {
                     boolean didIWin = false;
-                    for (Integer winner : winners) {
+                    for (int winner : payload.winners()) {
                         LockoutTeam team = lockout.getTeams().get(winner);
 
                         if (team.getPlayerNames().contains(client.player.getName().getString())) {
@@ -204,14 +182,8 @@ public class LockoutClient implements ClientModInitializer {
                         return 0;
                     }
 
-                    PacketByteBuf buf = PacketByteBufs.create();
-                    buf.writeBoolean(false); // whether board should be cleared
-                    for (JSONBoard.JSONGoal goal : jsonBoard.goals) {
-                        buf.writeString(goal.id);
-                        buf.writeString(goal.data == null ? GoalDataConstants.DATA_NONE : goal.data);
-                    }
-
-                    ClientPlayNetworking.send(Constants.CUSTOM_BOARD_PACKET, buf);
+                    ClientPlayNetworking.send(new CustomBoardPayload(Optional.of(jsonBoard.goals.stream()
+                            .map(goal -> new Pair<>(goal.id, goal.data != null ? goal.data : GoalDataConstants.DATA_NONE)).toList())));
                     return 1;
                 }).build();
 

@@ -25,7 +25,7 @@ public class DieToCactusGoal extends DieToDamageTypeGoal {
         return List.of(DamageTypes.CACTUS);
     }
 
-    private static final Identifier TEXTURE = new Identifier(Constants.NAMESPACE, "textures/custom/death/die_to_cactus.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/death/die_to_cactus.png");
     @Override
     public Identifier getTextureIdentifier() {
         return TEXTURE;

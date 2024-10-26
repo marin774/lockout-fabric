@@ -6,6 +6,7 @@ import me.marin.lockout.lockout.interfaces.ObtainPotionItemGoal;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.potion.Potion;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class BrewedPotionCriterionMixin {
 
     @Inject(method = "trigger", at = @At("HEAD"))
-    public void onTrigger(ServerPlayerEntity player, Potion potion, CallbackInfo ci) {
+    public void onTrigger(ServerPlayerEntity player, RegistryEntry<Potion> potion, CallbackInfo ci) {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
 
@@ -25,7 +26,7 @@ public class BrewedPotionCriterionMixin {
             if (goal.isCompleted()) continue;
 
             if (goal instanceof ObtainPotionItemGoal obtainPotionItemGoal) {
-                if (obtainPotionItemGoal.getPotions().contains((potion))) {
+                if (obtainPotionItemGoal.getPotions().contains(potion)) {
                     lockout.completeGoal(obtainPotionItemGoal, player);
                 }
             }

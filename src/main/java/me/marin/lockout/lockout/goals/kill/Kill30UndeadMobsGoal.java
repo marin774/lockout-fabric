@@ -23,13 +23,13 @@ public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleT
         ITEM_STACK.setCount(30);
     }
     private static final List<Identifier> TEXTURES = List.of(
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_zombie.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_wither_skeleton.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_zombie_villager.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_drowned.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_husk.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_stray.png"),
-            new Identifier(Constants.NAMESPACE, "textures/custom/undead/kill_zoglin.png")
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_zombie.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_wither_skeleton.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_zombie_villager.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_drowned.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_husk.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_stray.png"),
+            Identifier.of(Constants.NAMESPACE, "textures/custom/undead/kill_zoglin.png")
     );
     // undead: drowned, husk, phantom, skeleton, skeletonhorse, stray, wither, wither skeleton, zoglin, zombie, zombie horse, zombie villager, zombiefied piglin
     private static final List<EntityType<?>> UNDEAD_MOBS = List.of(
@@ -84,7 +84,7 @@ public class Kill30UndeadMobsGoal extends KillSpecificMobsGoal implements CycleT
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         CycleTexturesProvider.super.renderTexture(context, x, y, tick);
-        context.drawItemInSlot(MinecraftClient.getInstance().textRenderer, ITEM_STACK, x, y);
+        context.drawStackOverlay(MinecraftClient.getInstance().textRenderer, ITEM_STACK, x, y);
         return true;
     }
 

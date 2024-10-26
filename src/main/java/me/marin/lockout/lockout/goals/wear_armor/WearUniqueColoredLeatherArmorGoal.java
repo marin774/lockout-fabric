@@ -62,7 +62,7 @@ public class WearUniqueColoredLeatherArmorGoal extends WearArmorGoal {
             color = (Lockout.random.nextInt(0, 256) << 16) | (Lockout.random.nextInt(0, 256) << 8) | (Lockout.random.nextInt(0, 256));
         }
 
-        itemStack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color, true));
+        itemStack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color, false));
         context.drawItem(itemStack, x, y);
         return true;
     }

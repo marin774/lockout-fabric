@@ -29,9 +29,9 @@ public abstract class Goal {
      */
     public abstract ItemStack getTextureItemStack();
 
-    public void setCompleted(boolean isCompleted, LockoutTeam teamIndex) {
+    public void setCompleted(boolean isCompleted, LockoutTeam team) {
         this.isCompleted = isCompleted;
-        this.completedTeam = teamIndex;
+        this.completedTeam = team;
     }
     public boolean isCompleted() {
         return isCompleted;

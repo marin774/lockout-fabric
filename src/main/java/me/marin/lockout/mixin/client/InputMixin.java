@@ -19,7 +19,7 @@ public class InputMixin {
 
         KeyboardInput input = (KeyboardInput) (Object) this;
         if (!LockoutClient.lockout.hasStarted()) {
-            input.playerInput = PlayerInput.DEFAULT;
+            input.playerInput = new PlayerInput(false, false, false, false, false, input.playerInput.sneak(), false);
             input.movementForward = 0;
             input.movementSideways = 0;
         }

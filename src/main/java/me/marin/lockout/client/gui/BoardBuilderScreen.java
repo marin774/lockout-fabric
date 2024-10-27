@@ -1,6 +1,5 @@
 package me.marin.lockout.client.gui;
 
-import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
 import me.marin.lockout.client.LockoutClient;
@@ -48,6 +47,8 @@ public class BoardBuilderScreen extends Screen {
     private ButtonWidget clearBoardButton;
     private ButtonWidget closeButton;
     private ButtonWidget closeSearchButton;
+    private ButtonWidget increaseSizeButton;
+    private ButtonWidget decreaseSizeButton;
     private TextFieldWidget searchTextField;
     private BoardBuilderSearchWidget boardBuilderSearchWidget;
     private ButtonWidget saveDataButton;
@@ -67,7 +68,9 @@ public class BoardBuilderScreen extends Screen {
         int centerX = width / 2;
         int centerY = height / 2;
 
-        titleTextField = new TextFieldWidget(textRenderer, centerX - 60 - CENTER_OFFSET, centerY - 80, 120, 18, Text.empty());
+        int boardHalfSize = GUI_PADDING + (BoardBuilderData.INSTANCE.size() * GUI_SLOT_SIZE) / 2;
+
+        titleTextField = new TextFieldWidget(textRenderer, centerX - 60 - CENTER_OFFSET, centerY - boardHalfSize - 18 - 8, 120, 18, Text.empty());
         titleTextField.setChangedListener(BoardBuilderData.INSTANCE::setTitle);
         titleTextField.setText(BoardBuilderData.INSTANCE.getTitle());
         this.addDrawableChild(titleTextField);
@@ -89,10 +92,26 @@ public class BoardBuilderScreen extends Screen {
         }).width(85).position(closeButton.getX() - 85 - 10, saveButton.getY()).build();
         this.addDrawableChild(clearBoardButton);
 
+        increaseSizeButton = ButtonWidget.builder(Text.literal("+"), b -> {
+            b.active = BoardBuilderData.INSTANCE.incrementSize();
+            decreaseSizeButton.active = true;
+            clearAndInit();
+        }).tooltip(Tooltip.of(Text.literal("Increase board size"))).width(20).position(centerX + boardHalfSize - CENTER_OFFSET + 8, centerY - 10).build();
+        increaseSizeButton.active = BoardBuilderData.INSTANCE.size() != MAX_BOARD_SIZE;
+        this.addDrawableChild(increaseSizeButton);
+
+        decreaseSizeButton = ButtonWidget.builder(Text.literal("-"), b -> {
+            b.active = BoardBuilderData.INSTANCE.decrementSize();
+            increaseSizeButton.active = true;
+            clearAndInit();
+        }).tooltip(Tooltip.of(Text.literal("Decrease board size"))).width(20).position(centerX - boardHalfSize - CENTER_OFFSET - 20 - 8, centerY - 10).build();
+        decreaseSizeButton.active = BoardBuilderData.INSTANCE.size() != MIN_BOARD_SIZE;
+        this.addDrawableChild(decreaseSizeButton);
+
         if (displaySearch) {
             double scrollY = boardBuilderSearchWidget == null ? 0 : boardBuilderSearchWidget.getScrollY();
             boardBuilderSearchWidget = new BoardBuilderSearchWidget(
-                    centerX + 90 - CENTER_OFFSET,
+                    centerX + boardHalfSize + 35 - CENTER_OFFSET,
                     40,
                     width / 2 - 125 + CENTER_OFFSET,
                     height - 40 * 2, Text.empty());
@@ -261,7 +280,7 @@ public class BoardBuilderScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(width, height, (int) mouseX, (int) mouseY);
+        Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(BoardBuilderData.INSTANCE.size(), width, height, (int) mouseX, (int) mouseY);
         if ((button == 0 || button == 1) && hoveredIdx.isPresent()) {
             Goal goal = BoardBuilderData.INSTANCE.getGoals().get(hoveredIdx.get());
             if (button == 1 && goal != null && goal.getData() != null) {
@@ -331,21 +350,25 @@ public class BoardBuilderScreen extends Screen {
     public void drawCenterBoard(DrawContext context, int mouseX, int mouseY) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        int x = width / 2 - Constants.GUI_CENTER_WIDTH / 2 - CENTER_OFFSET;
-        int y = height / 2 - Constants.GUI_CENTER_HEIGHT / 2;
+        int size = BoardBuilderData.INSTANCE.size();
 
-        context.drawTexture(RenderLayer::getGuiTextured, GUI_CENTER_IDENTIFIER, x, y, 0, 0, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT, GUI_CENTER_WIDTH, GUI_CENTER_HEIGHT);
+        int boardWidth = 2 * GUI_CENTER_PADDING + size * GUI_CENTER_SLOT_SIZE;
+        int boardHeight = 2 * GUI_CENTER_PADDING + size * GUI_CENTER_SLOT_SIZE;
+        int x = width / 2 - boardWidth / 2 - CENTER_OFFSET;
+        int y = height / 2 - boardHeight / 2;
 
-        x += GUI_CENTER_FIRST_ITEM_OFFSET_X;
-        y += GUI_CENTER_FIRST_ITEM_OFFSET_Y;
+        context.drawGuiTexture(RenderLayer::getGuiTextured, GUI_CENTER_IDENTIFIER, x, y, boardWidth, boardHeight);
+
+        x += GUI_CENTER_PADDING + 1;
+        y += GUI_CENTER_PADDING + 1;
         final int startX = x;
 
-        Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(width, height, mouseX, mouseY);
+        Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(BoardBuilderData.INSTANCE.size(), width, height, mouseX, mouseY);
         Integer editingIdx = BoardBuilderData.INSTANCE.getEditingIdx();
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                int idx = j + 5 * i;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int idx = j + size * i;
                 Goal goal = BoardBuilderData.INSTANCE.getGoals().get(idx);
                 if (goal != null) {
                     boolean success = false;
@@ -362,7 +385,7 @@ public class BoardBuilderScreen extends Screen {
                     context.fill(x, y, x + 16, y + 16, 400, -2130706433);
                 }
                 if (editingIdx != null && editingIdx == idx) {
-                    drawBorder(context, x - 1, y - 1, 18, 18, Color.RED.getRGB());
+                    drawBorder(context, x - 1, y - 1, GUI_SLOT_SIZE, GUI_SLOT_SIZE, Color.RED.getRGB());
                 }
                 if (hoveredIdx.isPresent() && hoveredIdx.get() == idx) {
                     if (goal != null) {
@@ -375,9 +398,9 @@ public class BoardBuilderScreen extends Screen {
                     }
                 }
 
-                x += GUI_CENTER_ITEM_SLOT_SIZE;
+                x += GUI_CENTER_SLOT_SIZE;
             }
-            y += GUI_CENTER_ITEM_SLOT_SIZE;
+            y += GUI_CENTER_SLOT_SIZE;
             x = startX;
         }
     }
@@ -388,6 +411,5 @@ public class BoardBuilderScreen extends Screen {
         context.fill(x, y + 1, x + 1, y + height - 1, color);
         context.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
     }
-
 
 }

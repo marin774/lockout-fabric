@@ -33,8 +33,9 @@ public record LockoutGoalsTeamsPayload(List<LockoutTeam> teams, List<Pair<Pair<S
             }
 
             // Read goals
-            List<Pair<Pair<String, String>, Integer>> goals = new ArrayList<>();
-            for (int i = 0; i < 25; i++) {
+            int size = buf.readInt();
+            List<Pair<Pair<String, String>, Integer>> goals = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
                 goals.add(new Pair<>(new Pair<>(buf.readString(), buf.readString()), buf.readInt()));
             }
 
@@ -56,6 +57,7 @@ public record LockoutGoalsTeamsPayload(List<LockoutTeam> teams, List<Pair<Pair<S
             }
 
             // Write goals
+            buf.writeInt(payload.goals().size());
             for (Pair<Pair<String, String>, Integer> goal : payload.goals()) {
                 buf.writeString(goal.getA().getA());
                 buf.writeString(goal.getA().getB());

@@ -9,6 +9,9 @@ import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.enchantment.Enchantments;
@@ -25,14 +28,22 @@ import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.GameRules;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static me.marin.lockout.Constants.*;
+
 public class LockoutInitializer implements ModInitializer {
 
     private static final Predicate<ServerCommandSource> PERMISSIONS = (ssc) -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer();
+
+    public static final CustomGameRuleCategory CATEGORY = new CustomGameRuleCategory(Identifier.of(NAMESPACE, "gamerule"), Text.translatable("gamerule.category.lockout"));
+    public static final GameRules.Key<GameRules.IntRule> BOARD_SIZE = GameRuleRegistry.register("lockoutBoardSize", CATEGORY, GameRuleFactory.createIntRule(5, MIN_BOARD_SIZE, MAX_BOARD_SIZE));
 
     @Override
     public void onInitialize() {
@@ -93,7 +104,7 @@ public class LockoutInitializer implements ModInitializer {
                 // GiveGoal command
                 var giveGoalRoot = CommandManager.literal("GiveGoal").requires(PERMISSIONS).build();
                 var playerName = CommandManager.argument("player name", GameProfileArgumentType.gameProfile()).build();
-                var goalIndex = CommandManager.argument("goal number", IntegerArgumentType.integer(1, 25)).executes(LockoutServer::giveGoal).build();
+                var goalIndex = CommandManager.argument("goal number", IntegerArgumentType.integer(1, MAX_BOARD_SIZE * MAX_BOARD_SIZE)).executes(LockoutServer::giveGoal).build();
 
                 dispatcher.getRoot().addChild(giveGoalRoot);
                 giveGoalRoot.addChild(playerName);

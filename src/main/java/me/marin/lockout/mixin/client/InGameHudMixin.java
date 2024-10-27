@@ -1,5 +1,6 @@
 package me.marin.lockout.mixin.client;
 
+import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
 import me.marin.lockout.client.LockoutClient;
@@ -12,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.marin.lockout.Constants.GUI_WIDTH;
+import static me.marin.lockout.Constants.GUI_PADDING;
+import static me.marin.lockout.Constants.GUI_SLOT_SIZE;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
@@ -28,7 +30,7 @@ public abstract class InGameHudMixin {
 
         int width = context.getScaledWindowWidth();
 
-        Utility.drawBingoBoard(context, width - GUI_WIDTH, 0);
+        Utility.drawBingoBoard(context);
     }
 
     // If lockout board is visible, render effects to the left of it.
@@ -38,7 +40,7 @@ public abstract class InGameHudMixin {
             return width;
         }
 
-        return width - GUI_WIDTH;
+        return width - 2 * GUI_PADDING - LockoutClient.lockout.getBoard().size() * GUI_SLOT_SIZE;
     }
     @ModifyArg(method="method_18620", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawSpriteStretched(Ljava/util/function/Function;Lnet/minecraft/client/texture/Sprite;IIIII)V"), index = 2)
     private static int renderStatusEffectOverlay_drawSpriteStretched(int width) {
@@ -46,7 +48,7 @@ public abstract class InGameHudMixin {
             return width;
         }
 
-        return width - GUI_WIDTH;
+        return width - 2 * GUI_PADDING - LockoutClient.lockout.getBoard().size() * GUI_SLOT_SIZE;
     }
 
 

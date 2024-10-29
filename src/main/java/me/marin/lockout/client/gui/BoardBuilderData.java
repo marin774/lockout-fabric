@@ -1,6 +1,8 @@
 package me.marin.lockout.client.gui;
 
-import me.marin.lockout.Lockout;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import me.marin.lockout.lockout.Goal;
 
 import java.util.ArrayList;
@@ -10,15 +12,31 @@ import java.util.List;
 import static me.marin.lockout.Constants.MAX_BOARD_SIZE;
 import static me.marin.lockout.Constants.MIN_BOARD_SIZE;
 
+/**
+ * Stores information about BoardBuilderScreen independently of the GUI.
+ * All important states are saved here (including filled goals, search query in the search bar etc.)
+ */
 public class BoardBuilderData {
 
     public static final BoardBuilderData INSTANCE = new BoardBuilderData();
 
-    private int size = 5;
-    private final List<Goal> goals = new ArrayList<>();
+    private final List<Goal> goals;
+
+    @Getter @Setter
     private String title = "";
-    private Integer editingIdx = null;
+
+    /**
+     * Index of the goal that is currently being modified (searching goal or editing data)
+     */
+    @Setter @Getter
+    private Integer modifyingIdx = null;
+
+    @Setter @Getter
     private String search = "";
+
+    @Accessors(fluent = true) // size() instead of getSize()
+    @Getter
+    private int size = 5;
 
     private BoardBuilderData() {
         goals = new ArrayList<>(Collections.nCopies(size * size, null));
@@ -29,8 +47,8 @@ public class BoardBuilderData {
         modifyingIdx = null;
     }
 
-    public Goal getEditingGoal() {
-        return goals.get(editingIdx);
+    public Goal getModifyingGoal() {
+        return goals.get(modifyingIdx);
     }
 
     /**
@@ -38,8 +56,9 @@ public class BoardBuilderData {
      * @return true if maximum size has been reached, false otherwise
      */
     public boolean incrementSize() {
-        if (size == MAX_BOARD_SIZE)
+        if (size == MAX_BOARD_SIZE) {
             throw new IllegalStateException("Cannot increment at maximum size");
+        }
         goals.addAll(Collections.nCopies(2 * size + 1, null));
         size = Math.min(size + 1, MAX_BOARD_SIZE);
         return size == MAX_BOARD_SIZE;
@@ -57,8 +76,9 @@ public class BoardBuilderData {
         }
         goals.subList(goals.size() - 2 * size + 1, goals.size()).clear();
         size = Math.max(size - 1, MIN_BOARD_SIZE);
-        if (editingIdx != null && editingIdx > goals.size())
-            editingIdx = goals.size();
+        if (modifyingIdx != null && modifyingIdx > goals.size()) {
+            modifyingIdx = goals.size(); // TODO: set this to null (requires more work)
+        }
         return size == MIN_BOARD_SIZE;
     }
 
@@ -70,7 +90,7 @@ public class BoardBuilderData {
     }
 
     public void setGoal(Goal goal) {
-        goals.set(editingIdx, goal);
+        goals.set(modifyingIdx, goal);
     }
 
 }

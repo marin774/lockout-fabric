@@ -136,7 +136,7 @@ public class BoardBuilderScreen extends Screen {
             this.addDrawableChild(searchTextField);
         }
         if (displayEditData) {
-            Goal goal = BoardBuilderData.INSTANCE.getEditingGoal();
+            Goal goal = BoardBuilderData.INSTANCE.getModifyingGoal();
             var generators = GoalRegistry.INSTANCE.getDataGenerator(goal.getId()).getGenerators();
             List<String> dataList = new ArrayList<>(List.of(goal.getData().split(GoalDataConstants.DATA_SEPARATOR)));
             int x = centerX + 100 - CENTER_OFFSET;
@@ -303,7 +303,7 @@ public class BoardBuilderScreen extends Screen {
         displayEditData = false;
         displaySearch = true;
 
-        BoardBuilderData.INSTANCE.setEditingIdx(hoveredIdx);
+        BoardBuilderData.INSTANCE.setModifyingIdx(hoveredIdx);
         CENTER_OFFSET = 100;
 
         MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
@@ -313,7 +313,7 @@ public class BoardBuilderScreen extends Screen {
     public void closeSearch() {
         displaySearch = false;
 
-        BoardBuilderData.INSTANCE.setEditingIdx(null);
+        BoardBuilderData.INSTANCE.setModifyingIdx(null);
         CENTER_OFFSET = 0;
 
         this.boardBuilderSearchWidget = null;
@@ -327,7 +327,7 @@ public class BoardBuilderScreen extends Screen {
         displaySearch = false;
         displayEditData = true;
 
-        BoardBuilderData.INSTANCE.setEditingIdx(hoveredIdx);
+        BoardBuilderData.INSTANCE.setModifyingIdx(hoveredIdx);
         CENTER_OFFSET = 50;
 
         MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
@@ -337,7 +337,7 @@ public class BoardBuilderScreen extends Screen {
     public void closeEditData() {
         displayEditData = false;
 
-        BoardBuilderData.INSTANCE.setEditingIdx(null);
+        BoardBuilderData.INSTANCE.setModifyingIdx(null);
         CENTER_OFFSET = 0;
 
         this.saveDataButton = null;
@@ -369,7 +369,7 @@ public class BoardBuilderScreen extends Screen {
         final int startX = x;
 
         Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(BoardBuilderData.INSTANCE.size(), width, height, mouseX, mouseY);
-        Integer editingIdx = BoardBuilderData.INSTANCE.getEditingIdx();
+        Integer editingIdx = BoardBuilderData.INSTANCE.getModifyingIdx();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {

@@ -30,7 +30,7 @@ public class HaveMostUniqueCraftsGoal extends Goal implements CustomTextureRende
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         context.drawItem(ITEM_STACK, x, y);
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y, 400,0, 0, 16, 16, 16, 16);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, TEXTURE, x, y, 0,0, 16, 16, 16, 16);
         return true;
     }
 

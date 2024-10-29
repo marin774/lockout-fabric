@@ -31,4 +31,7 @@ public class Constants {
     public static final Identifier GUI_CENTER_IDENTIFIER = Identifier.of(NAMESPACE, "gui_center");
     public static final int GUI_CENTER_PADDING = 7;
     public static final int GUI_CENTER_SLOT_SIZE = 18; // both x and y
+
+    public static final int GUI_CENTER_HOVERED_COLOR = -2130706433;
+
 }

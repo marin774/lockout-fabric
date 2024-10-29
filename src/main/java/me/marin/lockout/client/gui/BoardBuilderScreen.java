@@ -75,21 +75,23 @@ public class BoardBuilderScreen extends Screen {
         titleTextField.setText(BoardBuilderData.INSTANCE.getTitle());
         this.addDrawableChild(titleTextField);
 
+        final int BOTTOM_BUTTONS_Y = height - 30;
+
         saveButton = ButtonWidget.builder(Text.of("Save Board"), (b) -> {
             saveGoals(10, height - 45);
-        }).width(85).position(10, height - 30).build();
+        }).width(85).position(10, BOTTOM_BUTTONS_Y).build();
         this.addDrawableChild(saveButton);
 
         closeButton = ButtonWidget.builder(Text.of("Close"), (b) -> {
             close();
-        }).width(50).position(width - 50 - 10, saveButton.getY()).build();
+        }).width(50).position(width - 50 - 10, BOTTOM_BUTTONS_Y).build();
         this.addDrawableChild(closeButton);
 
         clearBoardButton = ButtonWidget.builder(Text.of("Clear Board"), (b) -> {
             BoardBuilderData.INSTANCE.clear();
             closeEditData();
             closeSearch();
-        }).width(85).position(closeButton.getX() - 85 - 10, saveButton.getY()).build();
+        }).width(85).position(closeButton.getX() - 85 - 10, BOTTOM_BUTTONS_Y).build();
         this.addDrawableChild(clearBoardButton);
 
         increaseSizeButton = ButtonWidget.builder(Text.literal("+"), b -> {
@@ -278,12 +280,15 @@ public class BoardBuilderScreen extends Screen {
         }
     }
 
+    private static final int LEFT_MOUSE_BUTTON = 0;
+    private static final int RIGHT_MOUSE_BUTTON = 1;
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(BoardBuilderData.INSTANCE.size(), width, height, (int) mouseX, (int) mouseY);
-        if ((button == 0 || button == 1) && hoveredIdx.isPresent()) {
+        if ((button == LEFT_MOUSE_BUTTON || button == RIGHT_MOUSE_BUTTON) && hoveredIdx.isPresent()) {
             Goal goal = BoardBuilderData.INSTANCE.getGoals().get(hoveredIdx.get());
-            if (button == 1 && goal != null && goal.getData() != null) {
+            if (button == RIGHT_MOUSE_BUTTON && goal != null && goal.getData() != null) {
                 openEditData(hoveredIdx.get());
             } else {
                 openSearch(hoveredIdx.get());
@@ -382,7 +387,7 @@ public class BoardBuilderScreen extends Screen {
                 }
 
                 if (hoveredIdx.isPresent() && hoveredIdx.get() == idx) {
-                    context.fill(x, y, x + 16, y + 16, 400, -2130706433);
+                    context.fill(x, y, x + 16, y + 16, 400, GUI_CENTER_HOVERED_COLOR);
                 }
                 if (editingIdx != null && editingIdx == idx) {
                     drawBorder(context, x - 1, y - 1, GUI_SLOT_SIZE, GUI_SLOT_SIZE, Color.RED.getRGB());

@@ -70,7 +70,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
@@ -78,7 +77,7 @@ import net.minecraft.world.gen.structure.Structure;
 
 import java.util.*;
 
-import static me.marin.lockout.LockoutInitializer.*;
+import static me.marin.lockout.LockoutInitializer.BOARD_SIZE;
 
 public class LockoutServer {
 
@@ -885,7 +884,7 @@ public class LockoutServer {
             lockout.updateGoalCompletion(goal, gp.getId());
             return 1;
         } catch (RuntimeException e) {
-            Lockout.log(e.getMessage() + "\n" + e.getCause());
+            Lockout.error(e);
             return 0;
         }
     }

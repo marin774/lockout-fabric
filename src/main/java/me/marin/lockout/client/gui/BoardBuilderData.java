@@ -12,10 +12,7 @@ import static me.marin.lockout.Constants.MIN_BOARD_SIZE;
 
 public class BoardBuilderData {
 
-    public static final BoardBuilderData INSTANCE;
-    static {
-        INSTANCE = new BoardBuilderData();
-    }
+    public static final BoardBuilderData INSTANCE = new BoardBuilderData();
 
     private int size = 5;
     private final List<Goal> goals = new ArrayList<>();
@@ -24,50 +21,22 @@ public class BoardBuilderData {
     private String search = "";
 
     private BoardBuilderData() {
-        for (int i = 0; i < size * size; i++) {
-            goals.add(null);
-        }
+        goals = new ArrayList<>(Collections.nCopies(size * size, null));
     }
 
     public void clear() {
-        for (int i = 0; i < size * size; i++) {
-            goals.set(i, null);
-        }
-        editingIdx = null;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getEditingIdx() {
-        return editingIdx;
+        Collections.fill(goals, null);
+        modifyingIdx = null;
     }
 
     public Goal getEditingGoal() {
         return goals.get(editingIdx);
     }
 
-    public void setEditingIdx(Integer editingIdx) {
-        this.editingIdx = editingIdx;
-    }
-
-    public String getSearch() {
-        return search;
-    }
-
-    public void setSearch(String search) {
-        this.search = search;
-    }
-
-    public int size() {
-        return size;
-    }
-
+    /**
+     * Increases the board size by 1 by adding a column to the right and a row to the bottom of the board.
+     * @return true if maximum size has been reached, false otherwise
+     */
     public boolean incrementSize() {
         if (size == MAX_BOARD_SIZE)
             throw new IllegalStateException("Cannot increment at maximum size");
@@ -76,9 +45,16 @@ public class BoardBuilderData {
         return size == MAX_BOARD_SIZE;
     }
 
+    /**
+     * Decreases the board size by 1 by removing the rightmost column and the bottommost row.
+     * Any goals in the removed slots are voided.
+     *
+     * @return true if minimum size has been reached, false otherwise
+     */
     public boolean decrementSize() {
-        if (size == MIN_BOARD_SIZE)
+        if (size == MIN_BOARD_SIZE) {
             throw new IllegalStateException("Cannot decrement at minimum size");
+        }
         goals.subList(goals.size() - 2 * size + 1, goals.size()).clear();
         size = Math.max(size - 1, MIN_BOARD_SIZE);
         if (editingIdx != null && editingIdx > goals.size())
@@ -86,6 +62,9 @@ public class BoardBuilderData {
         return size == MIN_BOARD_SIZE;
     }
 
+    /**
+     * Returns an unmodifiable view of the goals list.
+     */
     public List<Goal> getGoals() {
         return Collections.unmodifiableList(goals);
     }

@@ -2,6 +2,7 @@ package me.marin.lockout;
 
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.client.LockoutClient;
+import me.marin.lockout.client.gui.BoardBuilderScreen;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import net.minecraft.client.MinecraftClient;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static me.marin.lockout.Constants.*;
-import static me.marin.lockout.client.gui.BoardBuilderScreen.CENTER_OFFSET;
 
 public class Utility {
 
@@ -93,8 +93,9 @@ public class Utility {
         LockoutBoard board = LockoutClient.lockout.getBoard();
 
         int boardWidth = 2 * GUI_CENTER_PADDING + board.size() * GUI_CENTER_SLOT_SIZE;
-        int boardHeight = 2 * GUI_CENTER_PADDING + board.size() * GUI_CENTER_SLOT_SIZE;
         int x = width / 2 - boardWidth / 2;
+
+        int boardHeight = 2 * GUI_CENTER_PADDING + board.size() * GUI_CENTER_SLOT_SIZE;
         int y = height / 2 - boardHeight / 2;
 
         context.drawGuiTexture(RenderLayer::getGuiTextured, GUI_CENTER_IDENTIFIER, x, y, boardWidth, boardHeight);
@@ -116,7 +117,7 @@ public class Utility {
                     goal.render(context, textRenderer, x, y);
 
                     if (goal == hoveredGoal) {
-                        context.fill(x, y, x + 16, y + 16, 400, -2130706433);
+                        context.fill(x, y, x + 16, y + 16, 400, GUI_CENTER_HOVERED_COLOR);
                     }
                 }
                 x += GUI_CENTER_SLOT_SIZE;
@@ -127,7 +128,7 @@ public class Utility {
     }
 
     public static Optional<Integer> getBoardHoveredIndex(int size, int width, int height, int mouseX, int mouseY) {
-        int x = width / 2 - (2 * GUI_CENTER_PADDING + size * GUI_CENTER_SLOT_SIZE) / 2 + GUI_CENTER_PADDING - CENTER_OFFSET;
+        int x = width / 2 - (2 * GUI_CENTER_PADDING + size * GUI_CENTER_SLOT_SIZE) / 2 + GUI_CENTER_PADDING - BoardBuilderScreen.CENTER_OFFSET;
         int y = height / 2 - (2 * GUI_CENTER_PADDING + size * GUI_CENTER_SLOT_SIZE) / 2 + GUI_CENTER_PADDING;
         final int startX = x;
 

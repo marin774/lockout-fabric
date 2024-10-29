@@ -212,7 +212,6 @@ public class LockoutClient implements ClientModInitializer {
                 wasPressed = true;
             }
             if (wasPressed) {
-
                 if (client.currentScreen != null || client.player == null) {
                     return;
                 }

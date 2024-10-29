@@ -58,11 +58,18 @@ public class BoardBuilderData {
         if (size == MAX_BOARD_SIZE) {
             throw new IllegalStateException("Cannot increment at maximum size");
         }
+        int modifyingRow = modifyingIdx == null ? 0 : modifyingIdx / size;
+        int modifyingColumn = modifyingIdx == null ? 0 : modifyingIdx % size;
+
         size += 1;
 
         // add column to the right (without bottom right corner)
         for (int i = 0; i < size - 1; i++) {
-            goals.add(size - 1 + size * i, null);
+            goals.add((size * i) + (size - 1), null);
+        }
+
+        if (modifyingIdx != null) {
+            modifyingIdx = modifyingRow * size + modifyingColumn;
         }
 
         // add row to the bottom (including bottom right corner)
@@ -77,6 +84,9 @@ public class BoardBuilderData {
         if (size == MIN_BOARD_SIZE) {
             throw new IllegalStateException("Cannot decrement at minimum size");
         }
+        int modifyingRow = modifyingIdx == null ? 0 : modifyingIdx / size;
+        int modifyingColumn = modifyingIdx == null ? 0 : modifyingIdx % size;
+
         size -= 1;
 
         // remove the bottommost row
@@ -89,8 +99,14 @@ public class BoardBuilderData {
             goals.remove((size + 1) * i + size);
         }
 
-        if (modifyingIdx != null && modifyingIdx >= goals.size()) {
-            modifyingIdx = goals.size() - 1;
+        if (modifyingIdx != null) {
+            if (modifyingRow >= size) {
+                modifyingRow -= 1;
+            }
+            if (modifyingColumn >= size) {
+                modifyingColumn -= 1;
+            }
+            modifyingIdx = modifyingRow * size + modifyingColumn;
         }
     }
 

@@ -88,6 +88,10 @@ public class BoardBuilderData {
         for (int i = size - 1; i >= 0; i--) {
             goals.remove((size + 1) * i + size);
         }
+
+        if (modifyingIdx != null && modifyingIdx >= goals.size()) {
+            modifyingIdx = goals.size();
+        }
     }
 
     /**

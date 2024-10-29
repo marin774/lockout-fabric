@@ -90,7 +90,7 @@ public class BoardBuilderData {
         }
 
         if (modifyingIdx != null && modifyingIdx >= goals.size()) {
-            modifyingIdx = goals.size();
+            modifyingIdx = goals.size() - 1;
         }
     }
 

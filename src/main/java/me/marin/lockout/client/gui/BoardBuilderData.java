@@ -53,33 +53,41 @@ public class BoardBuilderData {
 
     /**
      * Increases the board size by 1 by adding a column to the right and a row to the bottom of the board.
-     * @return true if maximum size has been reached, false otherwise
      */
-    public boolean incrementSize() {
+    public void incrementSize() {
         if (size == MAX_BOARD_SIZE) {
             throw new IllegalStateException("Cannot increment at maximum size");
         }
-        goals.addAll(Collections.nCopies(2 * size + 1, null));
-        size = Math.min(size + 1, MAX_BOARD_SIZE);
-        return size == MAX_BOARD_SIZE;
+        size += 1;
+
+        // add column to the right (without bottom right corner)
+        for (int i = 0; i < size - 1; i++) {
+            goals.add(size - 1 + size * i, null);
+        }
+
+        // add row to the bottom (including bottom right corner)
+        goals.addAll(Collections.nCopies(size, null));
     }
 
     /**
      * Decreases the board size by 1 by removing the rightmost column and the bottommost row.
      * Any goals in the removed slots are voided.
-     *
-     * @return true if minimum size has been reached, false otherwise
      */
-    public boolean decrementSize() {
+    public void decrementSize() {
         if (size == MIN_BOARD_SIZE) {
             throw new IllegalStateException("Cannot decrement at minimum size");
         }
-        goals.subList(goals.size() - 2 * size + 1, goals.size()).clear();
-        size = Math.max(size - 1, MIN_BOARD_SIZE);
-        if (modifyingIdx != null && modifyingIdx > goals.size()) {
-            modifyingIdx = goals.size(); // TODO: set this to null (requires more work)
+        size -= 1;
+
+        // remove the bottommost row
+        for (int i = 0; i < size + 1; i++) {
+            goals.removeLast();
         }
-        return size == MIN_BOARD_SIZE;
+
+        // remove the rightmost column
+        for (int i = size - 1; i >= 0; i--) {
+            goals.remove((size + 1) * i + size);
+        }
     }
 
     /**

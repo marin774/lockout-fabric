@@ -95,16 +95,14 @@ public class BoardBuilderScreen extends Screen {
         this.addDrawableChild(clearBoardButton);
 
         increaseSizeButton = ButtonWidget.builder(Text.literal("+"), b -> {
-            b.active = BoardBuilderData.INSTANCE.incrementSize();
-            decreaseSizeButton.active = true;
+            BoardBuilderData.INSTANCE.incrementSize();
             clearAndInit();
         }).tooltip(Tooltip.of(Text.literal("Increase board size"))).width(20).position(centerX + boardHalfSize - CENTER_OFFSET + 8, centerY - 10).build();
         increaseSizeButton.active = BoardBuilderData.INSTANCE.size() != MAX_BOARD_SIZE;
         this.addDrawableChild(increaseSizeButton);
 
         decreaseSizeButton = ButtonWidget.builder(Text.literal("-"), b -> {
-            b.active = BoardBuilderData.INSTANCE.decrementSize();
-            increaseSizeButton.active = true;
+            BoardBuilderData.INSTANCE.decrementSize();
             clearAndInit();
         }).tooltip(Tooltip.of(Text.literal("Decrease board size"))).width(20).position(centerX - boardHalfSize - CENTER_OFFSET - 20 - 8, centerY - 10).build();
         decreaseSizeButton.active = BoardBuilderData.INSTANCE.size() != MIN_BOARD_SIZE;

@@ -33,7 +33,7 @@ public class UseBrushOnSuspiciousBlock extends Goal implements CustomTextureRend
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         int mod = tick % (60 * SUSPICIOUS_BLOCKS.size());
         context.drawItem(SUSPICIOUS_BLOCKS.get(mod / 60), x, y);
-        context.drawTexture(RenderLayer::getGuiTexturedOverlay, TEXTURE, x, y, 0,0, 16, 16, 16, 16);
+        context.drawTexture(RenderLayer::getGuiTexturedOverlay, TEXTURE, x, y, 0, 0, 16, 16, 16, 16);
         return true;
     }
 

@@ -51,7 +51,7 @@ public class FoodComponentMixin {
                 FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
                 if (foodComponent != null) {
                     eatUniqueFoodsGoal.getTrackerMap().putIfAbsent(team, new LinkedHashSet<>());
-                    eatUniqueFoodsGoal.getTrackerMap().get(team).add(foodComponent);
+                    eatUniqueFoodsGoal.getTrackerMap().get(team).add(itemStack.getItem());
 
                     int size = eatUniqueFoodsGoal.getTrackerMap().get(team).size();
 

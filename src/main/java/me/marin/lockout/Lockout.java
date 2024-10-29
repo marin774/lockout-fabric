@@ -8,7 +8,6 @@ import me.marin.lockout.network.LockoutGoalsTeamsPayload;
 import me.marin.lockout.network.UpdateTimerPayload;
 import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -35,7 +34,7 @@ public class Lockout {
     public final Map<LockoutTeam, LinkedHashSet<EntityType<?>>> killedRaidMobs = new HashMap<>();
     public final Map<LockoutTeam, Integer> killedUndeadMobs = new HashMap<>();
     public final Map<LockoutTeam, Integer> killedArthropods = new HashMap<>();
-    public final Map<LockoutTeam, LinkedHashSet<FoodComponent>> foodTypesEaten = new HashMap<>();
+    public final Map<LockoutTeam, LinkedHashSet<Item>> foodTypesEaten = new HashMap<>();
     public final Map<LockoutTeam, LinkedHashSet<Identifier>> uniqueAdvancements = new HashMap<>();
     public final Map<UUID, Long> pumpkinWearStart = new HashMap<>();
     public final Map<LockoutTeam, Double> damageTaken = new HashMap<>();

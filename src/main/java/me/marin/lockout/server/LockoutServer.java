@@ -394,7 +394,7 @@ public class LockoutServer {
                         }
                     }
                     if (goal instanceof DieToEntityGoal dieToEntityGoal) {
-                        if (source.getAttacker().getType() == dieToEntityGoal.getEntityType()) {
+                        if (source.getAttacker() != null && source.getAttacker().getType() == dieToEntityGoal.getEntityType()) {
                             lockout.completeGoal(goal, player);
                         }
                     }

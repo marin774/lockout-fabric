@@ -7,6 +7,8 @@ import me.marin.lockout.server.LockoutServer;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GlowInkSacItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +24,11 @@ public class GlowInkSacItemMixin {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
         if (!cir.getReturnValue()) return;
+
+        Item signItem = world.getBlockState(signBlockEntity.getPos()).getBlock().asItem();
+        if (signItem != Items.CRIMSON_SIGN && signItem != Items.CRIMSON_HANGING_SIGN) {
+            return;
+        }
 
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;

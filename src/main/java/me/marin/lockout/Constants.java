@@ -15,6 +15,7 @@ public class Constants {
     public static final Identifier COMPLETE_TASK_PACKET = Identifier.of(NAMESPACE, "complete_task");
     public static final Identifier END_LOCKOUT_PACKET = Identifier.of(NAMESPACE, "end_lockout");
     public static final Identifier UPDATE_TIMER_PACKET = Identifier.of(NAMESPACE, "update_timer");
+    public static final Identifier LOCKOUT_VERSION_PACKET = Identifier.of(NAMESPACE, "lockout_version");
 
     public static final Identifier CUSTOM_BOARD_PACKET = Identifier.of(NAMESPACE, "set_custom_board");
 

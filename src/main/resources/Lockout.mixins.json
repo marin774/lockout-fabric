@@ -36,7 +36,8 @@
     "server.StatusEffectMixin",
     "server.TameAnimalCriterionMixin",
     "server.ZombieEntityMixin",
-    "server.ZombifiedPiglinEntityMixin"
+    "server.ZombifiedPiglinEntityMixin",
+    "server.network.ServerCommonNetworkHandlerMixin"
   ],
   "client": [
     "client.ChatScreenMixin",

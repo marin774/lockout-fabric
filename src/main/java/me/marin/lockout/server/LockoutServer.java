@@ -25,6 +25,7 @@ import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentTouchesWaterGoal;
 import me.marin.lockout.lockout.interfaces.*;
 import me.marin.lockout.network.CustomBoardPayload;
+import me.marin.lockout.network.LockoutVersionPayload;
 import me.marin.lockout.network.StartLockoutPayload;
 import me.marin.lockout.network.UpdateTooltipPayload;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
@@ -48,6 +49,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -97,6 +99,8 @@ public class LockoutServer {
     private static LockoutBoard CUSTOM_BOARD = null;
 
     private static boolean isInitialized = false;
+
+    public static Map<ServerPlayerEntity, Integer> waitingForVersionPacketPlayersMap = new HashMap<>();
 
     public static void initializeServer() {
         lockout = null;
@@ -162,12 +166,39 @@ public class LockoutServer {
             }
         });
 
-
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, minecraftServer) -> {
+            waitingForVersionPacketPlayersMap.remove(handler.getPlayer());
+        });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            if (!Lockout.isLockoutRunning(lockout)) return;
+            // Check if the client has the correct mod version:
+            // 1. Send the Lockout version packet
+            // 2. Follow it with a Minecraft ping packet (id is hash of 'username + version' string)
+            // 3. Wait for the packets.
+            // 4. If ping response is received before the version response, they don't have the mod
+            // 5. Otherwise, compare the versions, and kick them if needed.
 
             ServerPlayerEntity player = handler.getPlayer();
+            int id = (player.getName().getString() + LockoutInitializer.MOD_VERSION.getFriendlyString()).hashCode();
+
+            ServerPlayNetworking.send(player, new LockoutVersionPayload(LockoutInitializer.MOD_VERSION.getFriendlyString()));
+            player.networkHandler.sendPacket(new CommonPingS2CPacket(id));
+
+            waitingForVersionPacketPlayersMap.put(player, id);
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(LockoutVersionPayload.ID, (payload, context) -> {
+            // Client has Lockout mod, compare versions, then kick or initialize
+            ServerPlayerEntity player = context.player();
+            waitingForVersionPacketPlayersMap.remove(player);
+
+            String version = payload.version();
+            if (!version.equals(LockoutInitializer.MOD_VERSION.getFriendlyString())) {
+                player.networkHandler.disconnect(Text.of("Wrong Lockout version: v" + version + ".\nServer is using Lockout v" + LockoutInitializer.MOD_VERSION.getFriendlyString() + "."));
+                return;
+            }
+
+            if (!Lockout.isLockoutRunning(lockout)) return;
 
             if (lockout.isLockoutPlayer(player.getUuid())) {
                 LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());

@@ -2,6 +2,7 @@ package me.marin.lockout.client;
 
 import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
+import me.marin.lockout.LockoutInitializer;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.client.gui.BoardBuilderIO;
 import me.marin.lockout.client.gui.BoardBuilderScreen;
@@ -197,6 +198,11 @@ public class LockoutClient implements ClientModInitializer {
             }
         });
 
+        ClientPlayNetworking.registerGlobalReceiver(LockoutVersionPayload.ID, (payload, context) -> {
+            // just respond with version, it will be compared on server
+            ClientPlayNetworking.send(new LockoutVersionPayload(LockoutInitializer.MOD_VERSION.getFriendlyString()));
+        });
+
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.lockout.open_board", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -232,7 +238,6 @@ public class LockoutClient implements ClientModInitializer {
         }));
 
         HandledScreens.register(BOARD_SCREEN_HANDLER, BoardScreen::new);
-
     }
 
 }

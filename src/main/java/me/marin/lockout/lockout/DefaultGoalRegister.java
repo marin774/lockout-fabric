@@ -72,7 +72,6 @@ public class DefaultGoalRegister {
         );
         INSTANCE.register(GoalType.ENTER_NETHER, EnterNetherGoal.class);
         INSTANCE.register(GoalType.ENTER_END, EnterEndGoal.class);
-        INSTANCE.register(GoalType.KILL_ENDER_DRAGON, GetFreeTheEndAdvancementGoal.class);
         INSTANCE.register(GoalType.FILL_ARMOR_STAND, FillArmorStandGoal.class);
         INSTANCE.register(GoalType.WEAR_LEATHER_ARMOR, WearLeatherArmorGoal.class);
         INSTANCE.register(GoalType.WEAR_GOLDEN_ARMOR, WearGoldenArmorGoal.class);

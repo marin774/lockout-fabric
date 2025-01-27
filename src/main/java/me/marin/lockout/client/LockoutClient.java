@@ -4,6 +4,7 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.client.gui.BoardBuilderIO;
+import me.marin.lockout.client.gui.BoardBuilderScreen;
 import me.marin.lockout.client.gui.BoardScreen;
 import me.marin.lockout.client.gui.BoardScreenHandler;
 import me.marin.lockout.json.JSONBoard;
@@ -37,6 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static me.marin.lockout.Constants.MAX_BOARD_SIZE;
+import static me.marin.lockout.Constants.MIN_BOARD_SIZE;
 
 public class LockoutClient implements ClientModInitializer {
 
@@ -177,8 +181,9 @@ public class LockoutClient implements ClientModInitializer {
                         return 0;
                     }
 
-                    if (jsonBoard.goals.size() != 25) {
-                        context.getSource().sendError(Text.literal("Board doesn't have 25 goals!"));
+                    int size = (int) Math.sqrt(jsonBoard.goals.size());
+                    if (size * size != jsonBoard.goals.size() || size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
+                        context.getSource().sendError(Text.literal("Board doesn't have a valid number of goals!"));
                         return 0;
                     }
 
@@ -207,8 +212,13 @@ public class LockoutClient implements ClientModInitializer {
                 wasPressed = true;
             }
             if (wasPressed) {
+                if (client.currentScreen != null || client.player == null) {
+                    return;
+                }
 
-                if (!Lockout.exists(lockout) || client.currentScreen != null || client.player == null) {
+                // If the game hasn't started, open board builder instead
+                if (!Lockout.exists(lockout)) {
+                    client.setScreen(new BoardBuilderScreen());
                     return;
                 }
 

@@ -14,7 +14,7 @@ public record CustomBoardPayload(Optional<List<Pair<String, String>>> boardOrCle
     public static final CustomPayload.Id<CustomBoardPayload> ID = new CustomPayload.Id<>(Constants.CUSTOM_BOARD_PACKET);
     public static final PacketCodec<RegistryByteBuf, CustomBoardPayload> CODEC = PacketCodec.tuple(PacketCodec.of(
             (boardOrClear, buf) -> {
-                buf.writeBoolean(boardOrClear.isEmpty());
+                buf.writeInt(boardOrClear.map(pairs -> (int) Math.sqrt(pairs.size())).orElse(0));
                 if (boardOrClear.isEmpty()) return;
                 var board = boardOrClear.get();
                 for (var goal : board) {
@@ -23,12 +23,10 @@ public record CustomBoardPayload(Optional<List<Pair<String, String>>> boardOrCle
                 }
             },
             (buf) -> {
-                boolean clearBoard = buf.readBoolean();
-                if (clearBoard) {
-                    return Optional.empty();
-                }
+                int size = buf.readInt();
+                if (size == 0) return Optional.empty();
                 List<Pair<String, String>> goals = new ArrayList<>();
-                for (int i = 0; i < 25; i++) {
+                for (int i = 0; i < size * size; i++) {
                     String goalId = buf.readString();
                     goals.add(new Pair<>(goalId, buf.readString()));
                 }

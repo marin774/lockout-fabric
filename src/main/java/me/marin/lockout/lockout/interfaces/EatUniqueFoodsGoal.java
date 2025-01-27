@@ -8,9 +8,10 @@ import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.component.type.FoodComponent;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -19,9 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import static net.minecraft.component.type.FoodComponents.*;
-
-public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount, Trackable<LockoutTeam, LinkedHashSet<FoodComponent>>, CustomTextureRenderer, HasTooltipInfo {
+public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount, Trackable<LockoutTeam, LinkedHashSet<Item>>, CustomTextureRenderer, HasTooltipInfo {
 
     private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/eat_unique.png");
     private final ItemStack DISPLAY_ITEM_STACK = Items.APPLE.getDefaultStack();
@@ -44,7 +43,7 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
     }
 
     @Override
-    public Map<LockoutTeam, LinkedHashSet<FoodComponent>> getTrackerMap() {
+    public Map<LockoutTeam, LinkedHashSet<Item>> getTrackerMap() {
         return LockoutServer.lockout.foodTypesEaten;
     }
 
@@ -55,7 +54,7 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
 
         tooltip.add(" ");
         tooltip.add("Unique Food types: " + foods.size() + "/" + getAmount());
-        tooltip.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(EatUniqueFoodsGoal::foodComponentToString).toList()));
+        tooltip.addAll(HasTooltipInfo.commaSeparatedList(foods.stream().map(Item::getName).map(Text::getString).toList()));
         tooltip.add(" ");
 
         return tooltip;
@@ -73,50 +72,6 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
         tooltip.add(" ");
 
         return tooltip;
-    }
-
-    private static String foodComponentToString(FoodComponent foodComponent) {
-        if (foodComponent == APPLE) return "Apple";
-        if (foodComponent == BAKED_POTATO) return "Baked Potato";
-        if (foodComponent == BEEF) return "Beef";
-        if (foodComponent == BEETROOT) return "Beetroot";
-        if (foodComponent == BEETROOT_SOUP) return "Beetroot Soup";
-        if (foodComponent == BREAD) return "Bread";
-        if (foodComponent == CARROT) return "Carrot";
-        if (foodComponent == CHICKEN) return "Chicken";
-        if (foodComponent == CHORUS_FRUIT) return "Chorus Fruit";
-        if (foodComponent == COD) return "Cod";
-        if (foodComponent == COOKED_BEEF) return "Steak";
-        if (foodComponent == COOKED_CHICKEN) return "Cooked Chicken";
-        if (foodComponent == COOKED_COD) return "Cooked Cod";
-        if (foodComponent == COOKED_MUTTON) return "Cooked Mutton";
-        if (foodComponent == COOKED_PORKCHOP) return "Cooked Porkchop";
-        if (foodComponent == COOKED_RABBIT) return "Cooked Rabbit";
-        if (foodComponent == COOKED_SALMON) return "Cooked Salmon";
-        if (foodComponent == COOKIE) return "Cookie";
-        if (foodComponent == DRIED_KELP) return "Dried Kelp";
-        if (foodComponent == ENCHANTED_GOLDEN_APPLE) return "Enchanted Golden Apple";
-        if (foodComponent == GOLDEN_APPLE) return "Golden Apple";
-        if (foodComponent == GOLDEN_CARROT) return "Golden Carrot";
-        if (foodComponent == HONEY_BOTTLE) return "Honey Bottle";
-        if (foodComponent == MELON_SLICE) return "Melon Slice";
-        if (foodComponent == MUSHROOM_STEW) return "Mushroom Stew";
-        if (foodComponent == MUTTON) return "Mutton";
-        if (foodComponent == POISONOUS_POTATO) return "Poisonous Potato";
-        if (foodComponent == PORKCHOP) return "Porkchop";
-        if (foodComponent == POTATO) return "Potato";
-        if (foodComponent == PUFFERFISH) return "Pufferfish";
-        if (foodComponent == PUMPKIN_PIE) return "Pumpkin Pie";
-        if (foodComponent == RABBIT) return "Rabbit";
-        if (foodComponent == RABBIT_STEW) return "Rabbit Stew";
-        if (foodComponent == ROTTEN_FLESH) return "Rotten Flesh";
-        if (foodComponent == SALMON) return "Salmon";
-        if (foodComponent == SPIDER_EYE) return "Spider Eye";
-        if (foodComponent == SUSPICIOUS_STEW) return "Suspicious Stew";
-        if (foodComponent == SWEET_BERRIES) return "Sweet Berries";
-        if (foodComponent == GLOW_BERRIES) return "Glow Berries";
-        if (foodComponent == TROPICAL_FISH) return "Tropical Fish";
-        return "Unknown";
     }
 
 }

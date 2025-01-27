@@ -258,12 +258,12 @@ public class LockoutServer {
                         }
                     }
                     if (goal instanceof ReachHeightLimitGoal) {
-                        if (player.getY() >= 320 && player.getWorld().getDimensionEntry().equals(DimensionTypes.OVERWORLD)) {
+                        if (player.getY() >= 320 && player.getWorld().getRegistryKey() == ServerWorld.OVERWORLD) {
                             lockout.completeGoal(goal, player);
                         }
                     }
                     if (goal instanceof ReachNetherRoofGoal) {
-                        if (player.getY() >= 128 && player.getWorld().getDimensionEntry().equals(DimensionTypes.THE_NETHER)) {
+                        if (player.getY() >= 128 && player.getWorld().getRegistryKey() == ServerWorld.NETHER) {
                             lockout.completeGoal(goal, player);
                         }
                     }

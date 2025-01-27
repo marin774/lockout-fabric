@@ -34,7 +34,7 @@ public class ArmorStandMixin {
             if (!(goal instanceof FillArmorStandGoal fillArmorStandGoal)) continue;
             if (goal.isCompleted()) continue;
 
-            if (serverPlayer.interactionManager.getGameMode() != GameMode.SPECTATOR && cir.getReturnValue() == ActionResult.SUCCESS) {
+            if (serverPlayer.interactionManager.getGameMode() != GameMode.SPECTATOR && cir.getReturnValue() == ActionResult.SUCCESS_SERVER) {
                 for (ItemStack armorItem : armorStand.getArmorItems()) {
                     if (armorItem == null || armorItem.isEmpty()) return;
                 }

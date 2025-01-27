@@ -29,14 +29,14 @@ public class BoardGenerator {
         this.structures = structures;
     }
 
-    public LockoutBoard generateBoard() {
+    public LockoutBoard generateBoard(int size) {
         Collections.shuffle(registeredGoals);
 
         List<Pair<String, String>> goals = new ArrayList<>();
         List<String> goalTypes = new ArrayList<>();
 
         ListIterator<String> it = registeredGoals.listIterator();
-        while (goals.size() < 25 && it.hasNext()) {
+        while (goals.size() < size * size && it.hasNext()) {
             String goal = it.next();
 
             if (!GoalGroup.canAdd(goal, goalTypes)) {
@@ -63,8 +63,8 @@ public class BoardGenerator {
             goalTypes.add(goal);
         }
 
-        if (goals.size() < 25) {
-            return generateBoard();
+        if (goals.size() < size * size) {
+            return generateBoard(size);
         }
 
         // Shuffle the board again. Some goals will always be after some other goals (GoalGroup#requirePredecessor),

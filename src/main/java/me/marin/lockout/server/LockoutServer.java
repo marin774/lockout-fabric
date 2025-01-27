@@ -77,6 +77,8 @@ import net.minecraft.world.gen.structure.Structure;
 
 import java.util.*;
 
+import static me.marin.lockout.LockoutInitializer.BOARD_SIZE;
+
 public class LockoutServer {
 
     public static final int LOCATE_SEARCH = 1500;
@@ -116,7 +118,7 @@ public class LockoutServer {
                     LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(sender.getUuid());
                     team.sendMessage(team.getColor() + m);
                 } else {
-                    Team team = (Team) sender.getScoreboardTeam();
+                    Team team = sender.getScoreboardTeam();
                     if (team == null) {
                         return true;
                     }
@@ -392,7 +394,7 @@ public class LockoutServer {
                         }
                     }
                     if (goal instanceof DieToEntityGoal dieToEntityGoal) {
-                        if (source.getAttacker().getType() == dieToEntityGoal.getEntityType()) {
+                        if (source.getAttacker() != null && source.getAttacker().getType() == dieToEntityGoal.getEntityType()) {
                             lockout.completeGoal(goal, player);
                         }
                     }
@@ -625,11 +627,14 @@ public class LockoutServer {
             }
         }
 
+        ServerWorld world = server.getCommandSource().getWorld();
+        int lockoutBoardSize = world.getGameRules().getInt(BOARD_SIZE);
+
         // Generate & set board
         LockoutBoard lockoutBoard;
         if (CUSTOM_BOARD == null) {
             BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, AVAILABLE_DYE_COLORS, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
-            lockoutBoard = boardGenerator.generateBoard();
+            lockoutBoard = boardGenerator.generateBoard(lockoutBoardSize);
         } else {
             // Reset custom board (TODO: do this somewhere else)
             for (Goal goal : CUSTOM_BOARD.getGoals()) {
@@ -667,7 +672,6 @@ public class LockoutServer {
             }
         }
 
-        ServerWorld world = server.getCommandSource().getWorld();
         world.setTimeOfDay(0);
 
         for (int i = 3; i >= 0; i--) {
@@ -844,36 +848,45 @@ public class LockoutServer {
     }
 
     public static int giveGoal(CommandContext<ServerCommandSource> context) {
-        if (!Lockout.isLockoutRunning(lockout)) {
-            context.getSource().sendError(Text.literal("There's no active lockout match."));
-            return 0;
-        }
-
-        int idx = context.getArgument("goal number", Integer.class);
-
-        Collection<GameProfile> gps;
         try {
-            gps = GameProfileArgumentType.getProfileArgument(context, "player name");
-        } catch (CommandSyntaxException e) {
-            context.getSource().sendError(Text.literal("Invalid target."));
+            if (!Lockout.isLockoutRunning(lockout)) {
+                context.getSource().sendError(Text.literal("There's no active lockout match."));
+                return 0;
+            }
+
+            int idx = context.getArgument("goal number", Integer.class);
+
+            Collection<GameProfile> gps;
+            try {
+                gps = GameProfileArgumentType.getProfileArgument(context, "player name");
+            } catch (CommandSyntaxException e) {
+                context.getSource().sendError(Text.literal("Invalid target."));
+                return 0;
+            }
+
+            if (gps.size() != 1) {
+                context.getSource().sendError(Text.literal("Invalid number of targets."));
+                return 0;
+            }
+            GameProfile gp = gps.stream().findFirst().get();
+            if (!lockout.isLockoutPlayer(gp.getId())) {
+                context.getSource().sendError(Text.literal("Player " + gp.getName() + " is not playing Lockout."));
+                return 0;
+            }
+
+            if (idx > lockout.getBoard().getGoals().size()) {
+                context.getSource().sendError(Text.literal("Goal number does not exist on the board."));
+                return 0;
+            }
+            Goal goal = lockout.getBoard().getGoals().get(idx - 1);
+
+            context.getSource().sendMessage(Text.of("Gave " + gp.getName() + " goal \"" + goal.getGoalName() + "\"."));
+            lockout.updateGoalCompletion(goal, gp.getId());
+            return 1;
+        } catch (RuntimeException e) {
+            Lockout.error(e);
             return 0;
         }
-
-        if (gps.size() != 1) {
-            context.getSource().sendError(Text.literal("Invalid number of targets."));
-            return 0;
-        }
-        GameProfile gp = gps.stream().findFirst().get();
-        if (!lockout.isLockoutPlayer(gp.getId())) {
-            context.getSource().sendError(Text.literal("Player " + gp.getName() + " is not playing Lockout."));
-            return 0;
-        }
-
-        Goal goal = lockout.getBoard().getGoals().get(idx - 1);
-
-        context.getSource().sendMessage(Text.of("Gave " + gp.getName() + " goal \"" + goal.getGoalName() + "\"."));
-        lockout.updateGoalCompletion(goal, gp.getId());
-        return 1;
     }
 
     public static int setStartTime(CommandContext<ServerCommandSource> context) {
@@ -883,7 +896,5 @@ public class LockoutServer {
         context.getSource().sendMessage(Text.of("Updated start time to " + seconds + "s."));
         return 1;
     }
-
-
 
 }

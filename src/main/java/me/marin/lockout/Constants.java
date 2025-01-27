@@ -6,6 +6,9 @@ public class Constants {
 
     public static final String NAMESPACE = "lockout";
 
+    public static final int MIN_BOARD_SIZE = 3;
+    public static final int MAX_BOARD_SIZE = 9;
+
     public static final Identifier LOCKOUT_GOALS_TEAMS_PACKET = Identifier.of(NAMESPACE, "lockout_goals_teams");
     public static final Identifier START_LOCKOUT_PACKET = Identifier.of(NAMESPACE, "start_lockout");
     public static final Identifier UPDATE_TOOLTIP = Identifier.of(NAMESPACE, "update_tooltip");
@@ -19,18 +22,16 @@ public class Constants {
 
     public static final Identifier BOARD_FILE_ARGUMENT_TYPE = Identifier.of(NAMESPACE, "board_file");
 
-    public static final Identifier GUI_IDENTIFIER = Identifier.of(NAMESPACE, "textures/guis/gui.png");
+    public static final Identifier GUI_IDENTIFIER = Identifier.of(NAMESPACE, "gui");
 
-    public static final int GUI_WIDTH = 94;
-    public static final int GUI_HEIGHT = 105;
-    public static final int GUI_FIRST_ITEM_OFFSET = 3; // both x and y
-    public static final int GUI_ITEM_SLOT_SIZE = 18; // both x and y
+    public static final int GUI_PADDING = 2; // both x and y
+    public static final int GUI_PADDING_BOTTOM = 13; // both x and y
+    public static final int GUI_SLOT_SIZE = 18; // both x and y
 
-    public static final Identifier GUI_CENTER_IDENTIFIER = Identifier.of(NAMESPACE, "textures/guis/gui_center.png");
-    public static final int GUI_CENTER_WIDTH = 104;
-    public static final int GUI_CENTER_HEIGHT = 105;
-    public static final int GUI_CENTER_FIRST_ITEM_OFFSET_X = 8;
-    public static final int GUI_CENTER_FIRST_ITEM_OFFSET_Y = 9;
-    public static final int GUI_CENTER_ITEM_SLOT_SIZE = 18; // both x and y
+    public static final Identifier GUI_CENTER_IDENTIFIER = Identifier.of(NAMESPACE, "gui_center");
+    public static final int GUI_CENTER_PADDING = 7;
+    public static final int GUI_CENTER_SLOT_SIZE = 18; // both x and y
+
+    public static final int GUI_CENTER_HOVERED_COLOR = -2130706433;
 
 }

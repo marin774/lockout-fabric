@@ -11,27 +11,46 @@ public interface HasTooltipInfo {
     List<String> getTooltip(LockoutTeam team);
     List<String> getSpectatorTooltip();
 
-    int MAX_LINE_SIZE = 40;
+    int MAX_LINE_SIZE = 45;
+
+    /**
+     * Concatenates the values with commas, and splits them into multiple (shorter) lines.
+     *
+     * @param values list of strings to concatenate
+     * @return concatenated and separated list
+     */
     static List<String> commaSeparatedList(List<String> values) {
         List<String> lines = new ArrayList<>();
 
         StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < values.size(); i++) {
-            String part = values.get(i);
+            String val = values.get(i);
             boolean isLast = i + 1 == values.size();
 
-            sb.append(part);
-            if (!isLast) {
-                sb.append(", ");
-            }
+            String[] words = val.split(" ");
+            for (int j = 0; j < words.length; j++) {
+                String word = words[j];
+                boolean isLastWord = j + 1 == words.length;
 
-            if (sb.length() + part.length() + (isLast ? 0 : 2) > MAX_LINE_SIZE) {
-                lines.add(Formatting.GRAY + " " + Formatting.ITALIC + sb);
-                sb = new StringBuilder();
+                boolean canFit = sb.length() + word.length() + (isLastWord && !isLast ? 1 : 0) <= MAX_LINE_SIZE;
+
+                if (!canFit) {
+                    lines.add(Formatting.GRAY + " " + Formatting.ITALIC + sb.toString().trim());
+                    sb.setLength(0);
+                }
+
+                sb.append(word);
+                if (!isLastWord) {
+                    sb.append(" ");
+                } else {
+                    sb.append(", ");
+                }
             }
         }
+
         if (!sb.isEmpty()) {
-            lines.add(Formatting.GRAY + " " + Formatting.ITALIC + sb);
+            lines.add(Formatting.GRAY + " " + Formatting.ITALIC + sb.toString().trim());
         }
         return lines;
     }

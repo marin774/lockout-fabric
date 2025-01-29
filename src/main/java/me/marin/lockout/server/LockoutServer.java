@@ -160,7 +160,7 @@ public class LockoutServer {
                 if (!(goal instanceof EnterDimensionGoal enterDimensionGoal)) continue;
                 if (goal.isCompleted()) continue;
 
-                if (destination.getDimensionEntry().equals(enterDimensionGoal.getDimensionTypeKey())) {
+                if (destination.getRegistryKey() == enterDimensionGoal.getWorldRegistryKey()) {
                     lockout.completeGoal(goal, player);
                 }
             }

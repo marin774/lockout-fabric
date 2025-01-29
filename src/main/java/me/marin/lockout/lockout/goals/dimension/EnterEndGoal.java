@@ -5,8 +5,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 
 public class EnterEndGoal extends EnterDimensionGoal {
 
@@ -27,8 +27,8 @@ public class EnterEndGoal extends EnterDimensionGoal {
     }
 
     @Override
-    public RegistryKey<DimensionType> getDimensionTypeKey() {
-        return DimensionTypes.THE_END;
+    public RegistryKey<World> getWorldRegistryKey() {
+        return ServerWorld.END;
     }
 
 

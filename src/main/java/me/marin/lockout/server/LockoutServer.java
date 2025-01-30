@@ -735,7 +735,7 @@ public class LockoutServer {
 
         try {
             argument = context.getArgument("player names", String.class);
-            String[] players = argument.split("\s+");
+            String[] players = argument.split(" +");
             if (isBlackout) {
                 if (players.length == 0) {
                     context.getSource().sendError(Text.literal("Not enough players listed."));
@@ -779,7 +779,7 @@ public class LockoutServer {
                 ServerScoreboard scoreboard = server.getScoreboard();
 
                 argument = context.getArgument(isBlackout ? "team name" : "team names", String.class);
-                String[] teamNames = argument.split("\s+");
+                String[] teamNames = argument.split(" +");
                 if (isBlackout) {
                     if (teamNames.length == 0) {
                         context.getSource().sendError(Text.literal("Not enough teams listed."));

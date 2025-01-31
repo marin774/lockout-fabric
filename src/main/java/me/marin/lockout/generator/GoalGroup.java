@@ -106,6 +106,9 @@ public class GoalGroup {
             GET_THIS_BOAT_HAS_LEGS_ADVANCEMENT, GET_THOSE_WERE_THE_DAYS_ADVANCEMENT, GET_WHAT_A_DEAL_ADVANCEMENT,
             GET_HIRED_HELP_ADVANCEMENT, GET_WAX_ON_ADVANCEMENT, GET_WAX_OFF_ADVANCEMENT
     ), 4);
+    public static final GoalGroup X_ADVANCEMENTS = new GoalGroup(List.of(
+            GET_10_ADVANCEMENTS, GET_20_ADVANCEMENTS, GET_30_ADVANCEMENTS
+    ), 2);
     public static final GoalGroup VILLAGE = new GoalGroup(List.of(
             EAT_PUMPKIN_PIE, EAT_COOKIE, GET_WHAT_A_DEAL_ADVANCEMENT, OBTAIN_BELL, DIE_BY_IRON_GOLEM, EAT_RABBIT_STEW,
             WEAR_CHAIN_ARMOR_PIECE
@@ -150,6 +153,7 @@ public class GoalGroup {
         BREED_X_UNIQUE.requirePredecessor.add(BREED_8_UNIQUE_ANIMALS);
         EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_20_UNIQUE_FOOD);
         EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_25_UNIQUE_FOOD);
+        X_ADVANCEMENTS.requirePredecessor.add(GET_30_ADVANCEMENTS);
     }
 
     static {
@@ -182,6 +186,7 @@ public class GoalGroup {
         GOAL_GROUPS.add(OPPONENT_HIT_BY);
         GOAL_GROUPS.add(DAMAGE);
         GOAL_GROUPS.add(ADVANCEMENT);
+        GOAL_GROUPS.add(X_ADVANCEMENTS);
         GOAL_GROUPS.add(VILLAGE);
         GOAL_GROUPS.add(MONUMENT);
         GOAL_GROUPS.add(REDSTONE);

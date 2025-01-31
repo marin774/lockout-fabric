@@ -84,7 +84,7 @@ import static me.marin.lockout.LockoutInitializer.BOARD_SIZE;
 
 public class LockoutServer {
 
-    public static final int LOCATE_SEARCH = 1500;
+    public static final int LOCATE_SEARCH = 1000;
     public static final Map<RegistryKey<Biome>, LocateData> BIOME_LOCATE_DATA = new HashMap<>();
     public static final Map<RegistryKey<Structure>, LocateData> STRUCTURE_LOCATE_DATA = new HashMap<>();
     public static final List<DyeColor> AVAILABLE_DYE_COLORS = new ArrayList<>();

@@ -41,11 +41,10 @@ public interface HasTooltipInfo {
                 }
 
                 sb.append(word);
-                if (!isLastWord) {
-                    sb.append(" ");
-                } else {
-                    sb.append(", ");
+                if (!isLast && isLastWord) {
+                    sb.append(",");
                 }
+                sb.append(" ");
             }
         }
 

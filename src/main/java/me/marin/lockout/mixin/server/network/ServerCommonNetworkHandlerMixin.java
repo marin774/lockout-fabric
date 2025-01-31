@@ -30,7 +30,7 @@ public abstract class ServerCommonNetworkHandlerMixin {
 
             if (LockoutServer.waitingForVersionPacketPlayersMap.containsKey(player)) {
                 if (LockoutServer.waitingForVersionPacketPlayersMap.get(player) == id) {
-                    player.networkHandler.disconnect(Text.of("Missing Lockout mod. Server is using Lockout v" + LockoutInitializer.MOD_VERSION.getFriendlyString() + "."));
+                    player.networkHandler.disconnect(Text.of("Missing Lockout mod.\nServer is using Lockout v" + LockoutInitializer.MOD_VERSION.getFriendlyString() + "."));
                 }
             }
         });

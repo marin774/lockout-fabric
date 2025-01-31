@@ -76,6 +76,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.structure.Structure;
+import oshi.util.tuples.Pair;
 
 import java.util.*;
 
@@ -534,6 +535,17 @@ public class LockoutServer {
                 CUSTOM_BOARD = null;
                 player.sendMessage(Text.literal("Removed custom board."));
             } else {
+                // validate board
+                List<String> invalidGoals = new ArrayList<>();
+                for (Pair<String, String> goal : payload.boardOrClear().get()) {
+                    if (!GoalRegistry.INSTANCE.isGoalValid(goal.getA(), goal.getB())) {
+                        invalidGoals.add(" - '" + goal.getA() + "'" + ("null".equals(goal.getB()) ? "" : (" with data: '" + goal.getB() + "'")));
+                    }
+                }
+                if (!invalidGoals.isEmpty()) {
+                    player.sendMessage(Text.literal("Invalid board. Could not create goals:\n" + String.join("\n", invalidGoals)));
+                    return;
+                }
                 CUSTOM_BOARD = new LockoutBoard(payload.boardOrClear().get());
                 player.sendMessage(Text.literal("Set custom board."));
             }

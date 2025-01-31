@@ -49,6 +49,16 @@ public class GoalRegistry {
         }
     }
 
+    public boolean isGoalValid(String id, String data) {
+        try {
+            ConstructorUtils.invokeConstructor(registry.get(id), id, data);
+            // goal class was constructed -> goal is valid for the board
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public GoalDataGenerator getDataGenerator(String id) {
         return goalDataGenerators.get(id);
     }

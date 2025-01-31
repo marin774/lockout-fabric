@@ -199,7 +199,14 @@ public class LockoutClient implements ClientModInitializer {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(LockoutVersionPayload.ID, (payload, context) -> {
-            // just respond with version, it will be compared on server
+            // Compare Lockout versions, disconnect if invalid.
+            String version = payload.version();
+            if (!version.equals(LockoutInitializer.MOD_VERSION.getFriendlyString())) {
+                MinecraftClient.getInstance().player.networkHandler.getConnection().disconnect(Text.of("Wrong Lockout version: v" + LockoutInitializer.MOD_VERSION.getFriendlyString() + ".\nServer is using Lockout v" + version + "."));
+                return;
+            }
+
+            // Respond with version, it will be compared on server as well
             ClientPlayNetworking.send(new LockoutVersionPayload(LockoutInitializer.MOD_VERSION.getFriendlyString()));
         });
 

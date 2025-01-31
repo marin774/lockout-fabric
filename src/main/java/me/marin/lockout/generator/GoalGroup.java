@@ -45,7 +45,7 @@ public class GoalGroup {
     ), 3);
     public static final GoalGroup BREW_POTION = new GoalGroup(List.of(
             BREW_HEALING_POTION, BREW_INVISIBILITY_POTION, BREW_LINGERING_POTION, BREW_POISON_POTION, BREW_SWIFTNESS_POTION, BREW_WATER_BREATHING_POTION, BREW_WEAKNESS_POTION
-    ), 2);
+    ), 1);
     public static final GoalGroup HORSE = new GoalGroup(List.of(
             TAME_HORSE, RIDE_HORSE, OBTAIN_ALL_HORSE_ARMOR
     ), 1);

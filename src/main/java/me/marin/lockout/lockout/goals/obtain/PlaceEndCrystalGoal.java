@@ -1,31 +1,27 @@
 package me.marin.lockout.lockout.goals.obtain;
 
 import me.marin.lockout.Constants;
-import me.marin.lockout.lockout.interfaces.ObtainAllItemsGoal;
+import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
 
-public class ObtainEndCrystalGoal extends ObtainAllItemsGoal implements TextureProvider {
+public class PlaceEndCrystalGoal extends Goal implements TextureProvider {
 
-    private static final List<Item> ITEMS = List.of(Items.END_CRYSTAL);
-
-    public ObtainEndCrystalGoal(String id, String data) {
+    public PlaceEndCrystalGoal(String id, String data) {
         super(id, data);
     }
 
     @Override
-    public List<Item> getItems() {
-        return ITEMS;
+    public String getGoalName() {
+        return "Place End Crystal";
     }
 
     @Override
-    public String getGoalName() {
-        return "Obtain End Crystal";
+    public ItemStack getTextureItemStack() {
+        return null;
     }
 
     private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/end_crystal.png");

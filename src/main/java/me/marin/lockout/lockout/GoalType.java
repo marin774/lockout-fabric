@@ -63,7 +63,7 @@ public class GoalType {
     public static final String OBTAIN_MOSSY_STONE_BRICK_WALL = "OBTAIN_MOSSY_STONE_BRICK_WALL";
     public static final String OBTAIN_FLOWERING_AZALEA = "OBTAIN_FLOWERING_AZALEA";
     public static final String OBTAIN_SCAFFOLDING = "OBTAIN_SCAFFOLDING";
-    public static final String OBTAIN_END_CRYSTAL = "OBTAIN_END_CRYSTAL";
+    public static final String PLACE_END_CRYSTAL = "PLACE_END_CRYSTAL";
     public static final String OBTAIN_BELL = "OBTAIN_BELL";
     public static final String OBTAIN_ENCHANT_BOTTLE = "OBTAIN_ENCHANT_BOTTLE";
     public static final String OBTAIN_POWDER_SNOW_BUCKET = "OBTAIN_POWDER_SNOW_BUCKET";

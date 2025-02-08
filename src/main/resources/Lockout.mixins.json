@@ -41,7 +41,6 @@
     "server.network.ServerCommonNetworkHandlerMixin"
   ],
   "client": [
-    "client.ChatScreenMixin",
     "client.DebugHudMixin",
     "client.InGameHudMixin",
     "client.InputMixin",

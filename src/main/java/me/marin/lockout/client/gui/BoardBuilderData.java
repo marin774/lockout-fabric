@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.GoalRegistry;
+import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +22,7 @@ public class BoardBuilderData {
 
     public static final BoardBuilderData INSTANCE = new BoardBuilderData();
 
-    private final List<Goal> goals;
+    private List<Goal> goals;
 
     @Getter @Setter
     private String title = "";
@@ -119,6 +121,22 @@ public class BoardBuilderData {
 
     public void setGoal(Goal goal) {
         goals.set(modifyingIdx, goal);
+    }
+
+    public void setBoard(int size, List<Pair<String, String>> goals) {
+        this.size = size;
+        this.modifyingIdx = null;
+        this.title = "";
+
+        this.goals.clear();
+
+        for (Pair<String, String> pair : goals) {
+            Goal goal = null;
+            if (GoalRegistry.INSTANCE.isGoalValid(pair.getA(), pair.getB())) {
+                goal = GoalRegistry.INSTANCE.newGoal(pair.getA(), pair.getB());
+            }
+            this.goals.add(goal);
+        }
     }
 
 }

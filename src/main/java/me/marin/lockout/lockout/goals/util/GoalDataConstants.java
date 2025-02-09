@@ -3,7 +3,7 @@ package me.marin.lockout.lockout.goals.util;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.DyeColor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.List;
 
@@ -111,11 +111,11 @@ public class GoalDataConstants {
     }
 
     public static String getDyeColorFormatted(DyeColor dyeColor) {
-        return StringUtils.capitalize(dyeColor.toString().replaceAll("_", " "));
+        return WordUtils.capitalize(dyeColor.toString().replaceAll("_", " "), ' ');
     }
 
     public static String getArmorPieceFormatted(String leatherArmorString) {
-        return StringUtils.capitalize(leatherArmorString.replaceAll("_", " "));
+        return WordUtils.capitalize(leatherArmorString.replaceAll("_", " "), ' ');
     }
 
 }

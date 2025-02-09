@@ -185,7 +185,7 @@ public class LockoutClient implements ClientModInitializer {
                     MinecraftClient client = MinecraftClient.getInstance();
                     client.send(() -> {
                         if (client.player != null) {
-                            BoardBuilderData.INSTANCE.setBoard(size, goals);
+                            BoardBuilderData.INSTANCE.setBoard(boardName, size, goals);
                             client.setScreen(new BoardBuilderScreen());
                         }
                     });

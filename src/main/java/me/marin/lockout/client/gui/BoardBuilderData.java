@@ -113,7 +113,7 @@ public class BoardBuilderData {
     }
 
     /**
-     * Returns an unmodifiable view of the goals list.
+     * @return unmodifiable view of goals list
      */
     public List<Goal> getGoals() {
         return Collections.unmodifiableList(goals);
@@ -123,10 +123,10 @@ public class BoardBuilderData {
         goals.set(modifyingIdx, goal);
     }
 
-    public void setBoard(int size, List<Pair<String, String>> goals) {
+    public void setBoard(String title, int size, List<Pair<String, String>> goals) {
+        this.title = title;
         this.size = size;
         this.modifyingIdx = null;
-        this.title = "";
 
         this.goals.clear();
 

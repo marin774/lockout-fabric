@@ -22,7 +22,7 @@ public class ObtainShieldWithBannerGoal extends ObtainItemsGoal implements Textu
 
     @Override
     public String getGoalName() {
-        return "Put a Banner on a Shield";
+        return "Decorate Shield with Banner";
     }
 
     @Override

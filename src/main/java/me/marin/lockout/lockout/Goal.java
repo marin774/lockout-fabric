@@ -55,6 +55,7 @@ public abstract class Goal {
             success = customTextureRenderer.renderTexture(context, x, y, LockoutClient.CURRENT_TICK);
         }
         if (!success) {
+            // TODO: handle null
             context.drawItem(this.getTextureItemStack(), x, y);
             context.drawStackOverlay(textRenderer, this.getTextureItemStack(), x, y);
         }

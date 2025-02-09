@@ -18,7 +18,7 @@ public class MineCrafterGoal extends MineBlockGoal {
 
     @Override
     public String getGoalName() {
-        return "Mine Diamond Ore";
+        return "Mine Crafter";
     }
 
     @Override

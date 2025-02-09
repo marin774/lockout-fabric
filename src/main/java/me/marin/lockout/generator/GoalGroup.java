@@ -71,9 +71,10 @@ public class GoalGroup {
     public static final GoalGroup EFFECT_X = new GoalGroup(List.of(
             GET_3_STATUS_EFFECTS_AT_ONCE, GET_4_STATUS_EFFECTS_AT_ONCE, GET_6_STATUS_EFFECTS_AT_ONCE
     ), 2);
-    public static final GoalGroup DEATH = new GoalGroup(List.of(
+    public static final GoalGroup DEATH_DAMAGE = new GoalGroup(List.of(
             DIE_BY_ANVIL, DIE_BY_BEE_STING, DIE_BY_BERRY_BUSH, DIE_BY_CACTUS, DIE_BY_FALLING_OFF_VINE, DIE_BY_FALLING_STALACTITE, DIE_BY_FIREWORK,
-            DIE_BY_INTENTIONAL_GAME_DESIGN, DIE_BY_IRON_GOLEM, DIE_BY_MAGIC, DIE_BY_TNT_MINECART, OPPONENT_DIES, OPPONENT_DIES_3_TIMES
+            DIE_BY_INTENTIONAL_GAME_DESIGN, DIE_BY_IRON_GOLEM, DIE_BY_MAGIC, DIE_BY_TNT_MINECART, OPPONENT_DIES, OPPONENT_DIES_3_TIMES,
+            DEAL_400_DAMAGE, OPPONENT_TAKES_100_DAMAGE, TAKE_200_DAMAGE
     ), 3);
     public static final GoalGroup BIOME = new GoalGroup(List.of(
             VISIT_BADLANDS_BIOME, VISIT_ICE_SPIKES_BIOME, VISIT_MUSHROOM_BIOME, GET_HOT_TOURIST_DESTINATIONS_ADVANCEMENT
@@ -89,8 +90,8 @@ public class GoalGroup {
             OPPONENT_OBTAINS_CRAFTING_TABLE, OPPONENT_JUMPS, OPPONENT_TOUCHES_WATER,
             OPPONENT_HIT_BY_EGG, OPPONENT_HIT_BY_SNOWBALL, OPPONENT_DIES, OPPONENT_DIES_3_TIMES
     ), 3);
-    public static final GoalGroup OPPONENT_DEATH = new GoalGroup(List.of(
-            OPPONENT_DIES, OPPONENT_DIES_3_TIMES
+    public static final GoalGroup OPPONENT_DEATH_DAMAGE = new GoalGroup(List.of(
+            OPPONENT_DIES, OPPONENT_DIES_3_TIMES, OPPONENT_TAKES_100_DAMAGE
     ), 1);
     public static final GoalGroup OPPONENT_HIT_BY = new GoalGroup(List.of(
             OPPONENT_HIT_BY_EGG, OPPONENT_HIT_BY_SNOWBALL
@@ -146,6 +147,9 @@ public class GoalGroup {
     public static final GoalGroup LEATHER_HEAVY = new GoalGroup(List.of(
             WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR
     ), 1);
+    public static final GoalGroup FIREWORKS = new GoalGroup(List.of(
+            DIE_BY_FIREWORK, SHOOT_FIREWORK_FROM_CROSSBOW
+    ), 1);
 
     static {
         KILL_UNIQUE_HOSTILES.requirePredecessor.add(KILL_13_UNIQUE_HOSTILE_MOBS);
@@ -177,12 +181,12 @@ public class GoalGroup {
         GOAL_GROUPS.add(EAT_X_UNIQUE_FOOD);
         GOAL_GROUPS.add(EFFECT);
         GOAL_GROUPS.add(EFFECT_X);
-        GOAL_GROUPS.add(DEATH);
+        GOAL_GROUPS.add(DEATH_DAMAGE);
         GOAL_GROUPS.add(BIOME);
         GOAL_GROUPS.add(OPPONENT_HARD);
         GOAL_GROUPS.add(OPPONENT_TAKES_DAMAGE);
         GOAL_GROUPS.add(OPPONENT_GOALS);
-        GOAL_GROUPS.add(OPPONENT_DEATH);
+        GOAL_GROUPS.add(OPPONENT_DEATH_DAMAGE);
         GOAL_GROUPS.add(OPPONENT_HIT_BY);
         GOAL_GROUPS.add(DAMAGE);
         GOAL_GROUPS.add(ADVANCEMENT);
@@ -198,6 +202,7 @@ public class GoalGroup {
         GOAL_GROUPS.add(HONEY);
         GOAL_GROUPS.add(IRON_HEAVY);
         GOAL_GROUPS.add(LEATHER_HEAVY);
+        GOAL_GROUPS.add(FIREWORKS);
     }
 
 

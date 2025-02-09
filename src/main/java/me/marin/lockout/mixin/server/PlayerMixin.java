@@ -4,7 +4,7 @@ import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
+import me.marin.lockout.lockout.goals.misc.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
 import me.marin.lockout.lockout.goals.opponent.*;

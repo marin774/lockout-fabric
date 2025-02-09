@@ -390,6 +390,7 @@ public class DefaultGoalRegister {
         );
 
         INSTANCE.register(GoalType.SHOOT_FIREWORK_FROM_CROSSBOW, ShootFireworkFromCrossbowGoal.class);
+        INSTANCE.register(GoalType.MINE_CRAFTER, MineCrafterGoal.class);
     }
 
 }

@@ -2,7 +2,7 @@ package me.marin.lockout.mixin.server;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.mine.ItemFrameInItemFrameGoal;
+import me.marin.lockout.lockout.goals.misc.ItemFrameInItemFrameGoal;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;

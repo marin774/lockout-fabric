@@ -74,7 +74,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.structure.Structure;
 import oshi.util.tuples.Pair;
 
@@ -345,7 +344,7 @@ public class LockoutServer {
                         if (killMobGoal.getEntity().equals(entity.getType())) {
                             boolean allow = true;
                             if (killMobGoal instanceof KillSnowGolemInNetherGoal)  {
-                                allow = (attackerPlayer.getWorld().getDimensionEntry().equals(DimensionTypes.THE_NETHER));
+                                allow = (attackerPlayer.getWorld().getRegistryKey() == ServerWorld.NETHER);
                             }
                             if (allow) {
                                 lockout.completeGoal(goal, attackerPlayer);

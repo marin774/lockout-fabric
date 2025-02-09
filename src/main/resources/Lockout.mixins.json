@@ -17,6 +17,7 @@
     "server.ComposterBlockMixin",
     "server.ConsumeItemCriterionMixin",
     "server.CraftingResultSlotMixin",
+    "server.CrossbowItemMixin",
     "server.EndCrystalItemMixin",
     "server.EntityMixin",
     "server.FoodComponentMixin",

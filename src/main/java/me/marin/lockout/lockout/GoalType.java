@@ -227,5 +227,6 @@ public class GoalType {
     public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
     public static final String FILL_CHISELED_BOOKSHELF = "FILL_CHISELED_BOOKSHELF";
     public static final String USE_BRUSH_ON_SUSPICIOUS_BLOCK = "USE_BRUSH_ON_SUSPICIOUS_BLOCK";
+    public static final String SHOOT_FIREWORK_FROM_CROSSBOW = "SHOOT_FIREWORK_FROM_CROSSBOW";
 
 }

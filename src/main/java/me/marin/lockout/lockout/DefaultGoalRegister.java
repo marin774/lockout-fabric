@@ -388,6 +388,8 @@ public class DefaultGoalRegister {
                 .structures(List.of(OCEAN_RUIN_WARM, TRAIL_RUINS))
                 .build()
         );
+
+        INSTANCE.register(GoalType.SHOOT_FIREWORK_FROM_CROSSBOW, ShootFireworkFromCrossbowGoal.class);
     }
 
 }

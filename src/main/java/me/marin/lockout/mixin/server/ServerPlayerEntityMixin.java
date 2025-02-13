@@ -26,14 +26,14 @@ public class ServerPlayerEntityMixin {
         int i = 0;
         for (ItemStack item : player.getInventory().main) {
             if (CompassItemHandler.isCompass(item)) {
-                break;
+                LockoutServer.compassHandler.compassSlots.put(player.getUuid(), i);
+                return;
             }
             i++;
         }
-        if (CompassItemHandler.isCompass(player.getInventory().offHand.get(0))) {
-            i = 40;
+        if (CompassItemHandler.isCompass(player.getInventory().offHand.getFirst())) {
+            LockoutServer.compassHandler.compassSlots.put(player.getUuid(), 40);
         }
-        LockoutServer.compassHandler.compassSlots.put(player.getUuid(), i);
     }
 
 }

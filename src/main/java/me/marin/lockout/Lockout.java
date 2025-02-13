@@ -174,7 +174,7 @@ public class Lockout {
         }
 
         sendGoalCompletedPacket(goal, winnerTeam);
-        evaluateWinnerAndEndGame(team);
+        evaluateWinnerAndEndGame(winnerTeam);
     }
 
     public void updateGoalCompletion(Goal goal, UUID playerId) {

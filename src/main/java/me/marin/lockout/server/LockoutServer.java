@@ -320,11 +320,18 @@ public class LockoutServer {
         });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (!Lockout.isLockoutRunning(lockout)) return;
+            if (!Lockout.isLockoutRunning(lockout)) {
+                return;
+            }
+            if (entity instanceof PlayerEntity player && !lockout.isLockoutPlayer(player)) {
+                return;
+            }
 
             if (entity instanceof PlayerEntity player) {
-                lockout.deaths.putIfAbsent(player.getUuid(), 0);
-                lockout.deaths.merge(player.getUuid(), 1, Integer::sum);
+                LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
+
+                lockout.deaths.putIfAbsent(team, 0);
+                lockout.deaths.merge(team, 1, Integer::sum);
             } else {
                 if (entity.getPrimeAdversary() instanceof PlayerEntity player) {
                     if (lockout.isLockoutPlayer(player.getUuid())) {
@@ -411,11 +418,13 @@ public class LockoutServer {
 
                 }
                 if (entity instanceof PlayerEntity player) {
+                    LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
+
                     if (goal instanceof OpponentDiesGoal) {
                         lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died.");
                     }
-                    if (goal instanceof OpponentDies3TimesGoal && lockout.deaths.get(player.getUuid()) >= 3) {
-                        lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died 3 times.");
+                    if (goal instanceof OpponentDies3TimesGoal && lockout.deaths.get(team) >= 3) {
+                        lockout.complete1v1Goal(goal, player, false, team.getDisplayName() + " died 3 times.");
                     }
                     if (goal instanceof DieToDamageTypeGoal dieToDamageTypeGoal) {
                         for (RegistryKey<DamageType> key : dieToDamageTypeGoal.getDamageRegistryKeys()) {
@@ -709,7 +718,7 @@ public class LockoutServer {
             ServerPlayNetworking.send(player, lockout.getTeamsGoalsPacket());
             ServerPlayNetworking.send(player, lockout.getUpdateTimerPacket());
 
-            if (!lockout.isSoloBlackout() && allLockoutPlayers.contains(player.getUuid())) {
+            if (!lockout.isSoloBlackout() && lockout.isLockoutPlayer(player.getUuid())) {
                 player.giveItemStack(compassHandler.newCompass());
             }
         }

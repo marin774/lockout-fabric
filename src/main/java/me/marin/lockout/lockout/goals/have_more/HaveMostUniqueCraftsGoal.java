@@ -26,7 +26,7 @@ public class HaveMostUniqueCraftsGoal extends Goal implements CustomTextureRende
         return ITEM_STACK;
     }
 
-    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/have_more_overlay.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/up_arrow.png");
     @Override
     public boolean renderTexture(DrawContext context, int x, int y, int tick) {
         context.drawItem(ITEM_STACK, x, y);

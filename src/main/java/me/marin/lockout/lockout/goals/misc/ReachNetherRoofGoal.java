@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 public class ReachNetherRoofGoal extends Goal implements CustomTextureRenderer {
 
     private static final ItemStack ITEM_STACK = Items.BEDROCK.getDefaultStack();
-    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/have_more_overlay.png");
+    private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/up_arrow.png");
 
     public ReachNetherRoofGoal(String id, String data) {
         super(id, data);

@@ -20,7 +20,7 @@ public class ReachNetherRoofGoal extends Goal implements CustomTextureRenderer {
 
     @Override
     public String getGoalName() {
-        return "Get to Nether Roof";
+        return "Get on Nether Roof";
     }
 
     @Override

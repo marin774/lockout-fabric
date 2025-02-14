@@ -12,7 +12,7 @@ public class UseComposterGoal extends Goal {
 
     @Override
     public String getGoalName() {
-        return "Fill up Composter to get Bone Meal";
+        return "Fill Composter to get Bone Meal";
     }
 
     private static final ItemStack ITEM_STACK = Items.COMPOSTER.getDefaultStack();

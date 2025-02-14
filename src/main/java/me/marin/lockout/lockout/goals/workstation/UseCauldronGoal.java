@@ -24,7 +24,7 @@ public class UseCauldronGoal extends IncrementStatGoal implements TextureProvide
 
     @Override
     public String getGoalName() {
-        return "Use a Cauldron to wash something";
+        return "Use Cauldron to wash something";
     }
 
     private static final ItemStack ITEM_STACK = Items.ENCHANTING_TABLE.getDefaultStack();

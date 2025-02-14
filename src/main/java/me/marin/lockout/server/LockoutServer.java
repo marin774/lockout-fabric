@@ -536,12 +536,10 @@ public class LockoutServer {
 
                     for (RegistryKey<Biome> biome : goalRequirements.getRequiredBiomes()) {
                         locateBiome(server, biome);
-                        // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
 
                     for (RegistryKey<Structure> structure : goalRequirements.getRequiredStructures()) {
                         locateStructure(server, structure);
-                        // if (data.isInRequiredDistance()) break; // only one needs to be found, and this is a time-expensive operation
                     }
                 }
                 long end = System.currentTimeMillis();

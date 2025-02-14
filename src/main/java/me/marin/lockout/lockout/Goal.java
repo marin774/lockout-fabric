@@ -1,7 +1,9 @@
 package me.marin.lockout.lockout;
 
+import lombok.Getter;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.client.LockoutClient;
+import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -11,9 +13,12 @@ import java.util.Objects;
 
 public abstract class Goal {
 
+    @Getter
     private final String id;
+    @Getter
     private final String data;
     private boolean isCompleted = false;
+    @Getter
     private LockoutTeam completedTeam;
 
     public Goal(String id, String data) {
@@ -37,18 +42,6 @@ public abstract class Goal {
         return isCompleted;
     }
 
-    public LockoutTeam getCompletedTeam() {
-        return completedTeam;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getData() {
-        return data;
-    }
-
     public final void render(DrawContext context, TextRenderer textRenderer, int x, int y) {
         boolean success = false;
         if (this instanceof CustomTextureRenderer customTextureRenderer) {
@@ -59,6 +52,10 @@ public abstract class Goal {
             context.drawItem(this.getTextureItemStack(), x, y);
             context.drawStackOverlay(textRenderer, this.getTextureItemStack(), x, y);
         }
+    }
+
+    public boolean hasData() {
+        return data != null && !Objects.equals(data, GoalDataConstants.DATA_NONE);
     }
 
     @Override

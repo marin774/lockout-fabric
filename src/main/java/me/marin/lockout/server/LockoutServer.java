@@ -16,10 +16,7 @@ import me.marin.lockout.lockout.goals.kill.Kill100MobsGoal;
 import me.marin.lockout.lockout.goals.kill.KillColoredSheepGoal;
 import me.marin.lockout.lockout.goals.kill.KillOtherTeamPlayer;
 import me.marin.lockout.lockout.goals.kill.KillSnowGolemInNetherGoal;
-import me.marin.lockout.lockout.goals.misc.EmptyHungerBarGoal;
-import me.marin.lockout.lockout.goals.misc.ReachBedrockGoal;
-import me.marin.lockout.lockout.goals.misc.ReachHeightLimitGoal;
-import me.marin.lockout.lockout.goals.misc.ReachNetherRoofGoal;
+import me.marin.lockout.lockout.goals.misc.*;
 import me.marin.lockout.lockout.goals.opponent.OpponentDies3TimesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentTouchesWaterGoal;
@@ -33,10 +30,12 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CandleBlock;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Saddleable;
@@ -66,6 +65,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -466,6 +466,27 @@ public class LockoutServer {
                 }
             }
 
+        });
+
+        UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
+            Lockout lockout = LockoutServer.lockout;
+            if (!Lockout.isLockoutRunning(lockout)) return ActionResult.PASS;
+
+            BlockPos blockPos = blockHitResult.getBlockPos();
+            if (!CandleBlock.canBeLit(world.getBlockState(blockPos))) return ActionResult.PASS;
+
+            ItemStack stack = player.getStackInHand(hand);
+            if (!stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE)) return ActionResult.PASS;
+
+            for (Goal goal : lockout.getBoard().getGoals()) {
+                if (goal == null) continue;
+                if (goal.isCompleted()) continue;
+
+                if (goal instanceof LightCandleGoal) {
+                    lockout.completeGoal(goal, player);
+                }
+            }
+            return ActionResult.PASS;
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {

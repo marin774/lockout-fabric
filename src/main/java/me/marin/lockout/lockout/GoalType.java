@@ -229,5 +229,6 @@ public class GoalType {
     public static final String USE_BRUSH_ON_SUSPICIOUS_BLOCK = "USE_BRUSH_ON_SUSPICIOUS_BLOCK";
     public static final String SHOOT_FIREWORK_FROM_CROSSBOW = "SHOOT_FIREWORK_FROM_CROSSBOW";
     public static final String MINE_CRAFTER = "MINE_CRAFTER";
+    public static final String LIGHT_CANDLE = "LIGHT_CANDLE";
 
 }

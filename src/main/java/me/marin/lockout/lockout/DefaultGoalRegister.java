@@ -190,7 +190,7 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.OBTAIN_PISTON, ObtainPistonGoal.class);
         INSTANCE.register(GoalType.OBTAIN_ALL_RAW_ORE_BLOCKS, ObtainAllRawOreBlocksGoal.class);
         INSTANCE.register(GoalType.OBTAIN_ALL_HORSE_ARMOR, ObtainAllHorseArmorGoal.class);
-        INSTANCE.register(GoalType.OBTAIN_ALL_SEEDS, ObtainAllSeedsGoal.class);
+        INSTANCE.register(GoalType.OBTAIN_4_UNIQUE_SEEDS, Obtain4UniqueSeedsGoal.class);
         INSTANCE.register(GoalType.OBTAIN_6_UNIQUE_FLOWERS, Obtain6UniqueFlowersGoal.class);
         INSTANCE.register(GoalType.OBTAIN_COLORED_GLAZED_TERRACOTTA, ObtainColoredGlazedTerracottaGoal.class,
                 null,
@@ -392,6 +392,7 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.SHOOT_FIREWORK_FROM_CROSSBOW, ShootFireworkFromCrossbowGoal.class);
         INSTANCE.register(GoalType.MINE_CRAFTER, MineCrafterGoal.class);
         INSTANCE.register(GoalType.LIGHT_CANDLE, LightCandleGoal.class);
+        INSTANCE.register(GoalType.WEAR_FULL_ENCHANTED_ARMOR, WearFullEnchantedArmorGoal.class);
 
     }
 

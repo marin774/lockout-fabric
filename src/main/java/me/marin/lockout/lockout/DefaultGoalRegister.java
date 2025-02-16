@@ -393,6 +393,9 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.MINE_CRAFTER, MineCrafterGoal.class);
         INSTANCE.register(GoalType.LIGHT_CANDLE, LightCandleGoal.class);
         INSTANCE.register(GoalType.WEAR_FULL_ENCHANTED_ARMOR, WearFullEnchantedArmorGoal.class);
+        INSTANCE.register(GoalType.PUT_WOLF_ARMOR_ON_WOLF, PutWolfArmorOnWolfGoal.class, new GoalRequirements.Builder()
+                .biomes(List.of(SAVANNA, SAVANNA_PLATEAU, WINDSWEPT_SAVANNA, BADLANDS, ERODED_BADLANDS, WOODED_BADLANDS)) /* armadillo spawn biomes */
+                .build());
 
     }
 

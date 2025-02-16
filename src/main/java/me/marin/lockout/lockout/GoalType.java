@@ -230,5 +230,6 @@ public class GoalType {
     public static final String MINE_CRAFTER = "MINE_CRAFTER";
     public static final String LIGHT_CANDLE = "LIGHT_CANDLE";
     public static final String WEAR_FULL_ENCHANTED_ARMOR = "WEAR_FULL_ENCHANTED_ARMOR";
+    public static final String PUT_WOLF_ARMOR_ON_WOLF = "PUT_WOLF_ARMOR_ON_WOLF";
 
 }

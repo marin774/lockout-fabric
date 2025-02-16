@@ -1,5 +1,7 @@
 package me.marin.lockout.generator;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,6 +152,9 @@ public class GoalGroup {
     public static final GoalGroup FIREWORKS = new GoalGroup(List.of(
             DIE_BY_FIREWORK, SHOOT_FIREWORK_FROM_CROSSBOW
     ), 1);
+    public static final GoalGroup WOLF = new GoalGroup(List.of(
+            TAME_WOLF, PUT_WOLF_ARMOR_ON_WOLF
+    ), 1);
 
     static {
         KILL_UNIQUE_HOSTILES.requirePredecessor.add(KILL_13_UNIQUE_HOSTILE_MOBS);
@@ -203,24 +208,21 @@ public class GoalGroup {
         GOAL_GROUPS.add(IRON_HEAVY);
         GOAL_GROUPS.add(LEATHER_HEAVY);
         GOAL_GROUPS.add(FIREWORKS);
+        GOAL_GROUPS.add(WOLF);
+        GOAL_GROUPS.add(TRIAL_CHAMBERS);
+        GOAL_GROUPS.add();
     }
 
 
+    @Getter
     private final List<String> goals;
+    @Getter
     private final int limit;
     private final List<String> requirePredecessor = new ArrayList<>();
 
     private GoalGroup(List<String> goals, int limit) {
         this.goals = goals;
         this.limit = limit;
-    }
-
-    public List<String> getGoals() {
-        return goals;
-    }
-
-    public int getLimit() {
-        return limit;
     }
 
     private int countMatches(List<String> boardGoals) {

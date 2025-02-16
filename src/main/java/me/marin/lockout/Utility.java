@@ -60,7 +60,7 @@ public class Utility {
         y += 1;
         List<String> pointsList = new ArrayList<>();
         for (LockoutTeam team : lockout.getTeams()) {
-            pointsList.add(team.getColor() + "" + team.getPoints() + "" + Formatting.RESET);
+            pointsList.add(team.getColor() + "" + team.getPoints() + Formatting.RESET);
         }
 
         context.drawText(textRenderer, String.join(Formatting.RESET + "" + Formatting.GRAY + "-", pointsList), x, y, 0, true);

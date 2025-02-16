@@ -1,5 +1,6 @@
 package me.marin.lockout;
 
+import lombok.Getter;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.network.UpdateTooltipPayload;
@@ -15,8 +16,10 @@ import java.util.*;
 
 public class LockoutTeamServer extends LockoutTeam {
 
+    @Getter
     private final List<UUID> players = new ArrayList<>();
     private final Map<UUID, String> playerNameMap = new HashMap<>();
+    @Getter
     private final MinecraftServer server;
 
     public LockoutTeamServer(List<String> playerNames, Formatting formattingColor, MinecraftServer server) {
@@ -30,14 +33,6 @@ public class LockoutTeamServer extends LockoutTeam {
             this.players.add(manager.getPlayer(playerName).getUuid());
             this.playerNameMap.put(manager.getPlayer(playerName).getUuid(), playerName);
         }
-    }
-
-    public MinecraftServer getServer() {
-        return server;
-    }
-
-    public List<UUID> getPlayers() {
-        return players;
     }
 
     public String getPlayerName(UUID uuid) {

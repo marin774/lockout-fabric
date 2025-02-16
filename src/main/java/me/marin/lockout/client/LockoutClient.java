@@ -89,7 +89,6 @@ public class LockoutClient implements ClientModInitializer {
             goalTooltipMap.put(payload.goal(), payload.tooltip());
         });
         ClientPlayNetworking.registerGlobalReceiver(StartLockoutPayload.ID, (payload, context) -> {
-            Lockout.log("STARTED");
             lockout.setStarted(true);
             context.client().execute(() -> {
                 if (MinecraftClient.getInstance().currentScreen != null) {

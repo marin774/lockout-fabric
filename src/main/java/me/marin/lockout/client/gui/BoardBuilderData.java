@@ -22,7 +22,7 @@ public class BoardBuilderData {
 
     public static final BoardBuilderData INSTANCE = new BoardBuilderData();
 
-    private List<Goal> goals;
+    private final List<Goal> goals;
 
     @Getter @Setter
     private String title = "";

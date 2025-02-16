@@ -1,5 +1,7 @@
 package me.marin.lockout;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.network.CompleteTaskPayload;
@@ -48,7 +50,9 @@ public class Lockout {
     public UUID mostUniqueCraftsPlayer;
     public int mostUniqueCrafts;
 
+    @Getter
     private final LockoutBoard board;
+    @Getter
     private final List<? extends LockoutTeam> teams;
     private boolean hasStarted = false;
     private boolean isRunning = true;
@@ -58,6 +62,8 @@ public class Lockout {
      * Negative values mean that the game hasn't started yet (players are looking at the board).
      * This value is incremented by 1 every server tick.
      */
+    @Setter
+    @Getter
     private long ticks;
 
     public Lockout(LockoutBoard board, List<? extends LockoutTeam> teams) {
@@ -81,10 +87,6 @@ public class Lockout {
         return exists(lockout) && lockout.isRunning;
     }
 
-    public LockoutBoard getBoard() {
-        return board;
-    }
-
     public String getModeName() {
         return teams.size() > 1 ? "Lockout" : "Blackout";
     }
@@ -95,14 +97,6 @@ public class Lockout {
 
     public void tick() {
         ticks++;
-    }
-
-    public void setTicks(long ticks) {
-        this.ticks = ticks;
-    }
-
-    public long getTicks() {
-        return this.ticks;
     }
 
     public void completeGoal(Goal goal, PlayerEntity player) {
@@ -296,10 +290,6 @@ public class Lockout {
 
     public int getRemainingGoals() {
         return (int) board.getGoals().stream().filter(goal -> !goal.isCompleted()).count();
-    }
-
-    public List<? extends LockoutTeam> getTeams() {
-        return teams;
     }
 
     public void setRunning(boolean running) {

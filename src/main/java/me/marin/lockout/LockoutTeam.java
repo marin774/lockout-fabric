@@ -1,5 +1,6 @@
 package me.marin.lockout;
 
+import lombok.Getter;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +9,9 @@ import java.util.List;
 public class LockoutTeam {
 
     private final List<String> players;
+    @Getter
     private final Formatting color;
+    @Getter
     private int points = 0;
 
     public LockoutTeam(List<String> playerNames, Formatting formattingColor) {
@@ -22,14 +25,6 @@ public class LockoutTeam {
 
     public String getDisplayName() {
         return players.size() == 1 ? players.get(0) : "Team " + formattingToString(color);
-    }
-
-    public Formatting getColor() {
-        return color;
-    }
-
-    public int getPoints() {
-        return points;
     }
 
     public void addPoint() {

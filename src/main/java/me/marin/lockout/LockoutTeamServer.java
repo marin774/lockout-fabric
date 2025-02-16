@@ -52,9 +52,9 @@ public class LockoutTeamServer extends LockoutTeam {
         sendTooltipUpdate(goal, true);
     }
     public <T extends Goal & HasTooltipInfo> void sendTooltipUpdate(T goal, boolean updateSpectators) {
-        var payload = new UpdateTooltipPayload(goal.getId(), String.join("\n", goal.getTooltip(this)));
         for (UUID playerId : players) {
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerId);
+            var payload = new UpdateTooltipPayload(goal.getId(), String.join("\n", goal.getTooltip(this, player)));
             if (player != null) {
                 ServerPlayNetworking.send(player, payload);
             }

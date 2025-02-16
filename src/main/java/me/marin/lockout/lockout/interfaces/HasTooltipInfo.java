@@ -1,6 +1,7 @@
 package me.marin.lockout.lockout.interfaces;
 
 import me.marin.lockout.LockoutTeam;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface HasTooltipInfo {
 
-    List<String> getTooltip(LockoutTeam team);
+    List<String> getTooltip(LockoutTeam team, PlayerEntity player);
     List<String> getSpectatorTooltip();
 
     int MAX_LINE_SIZE = 45;

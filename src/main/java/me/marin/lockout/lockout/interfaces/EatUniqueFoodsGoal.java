@@ -8,6 +8,7 @@ import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -48,7 +49,7 @@ public abstract class EatUniqueFoodsGoal extends Goal implements RequiresAmount,
     }
 
     @Override
-    public List<String> getTooltip(LockoutTeam team) {
+    public List<String> getTooltip(LockoutTeam team, PlayerEntity player) {
         List<String> tooltip = new ArrayList<>();
         var foods = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 

@@ -3,6 +3,7 @@ package me.marin.lockout.lockout.interfaces;
 import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public abstract class KillUniqueHostileMobsGoal extends Goal implements Requires
     }
 
     @Override
-    public List<String> getTooltip(LockoutTeam team) {
+    public List<String> getTooltip(LockoutTeam team, PlayerEntity player) {
         List<String> tooltip = new ArrayList<>();
         var hostiles = LockoutServer.lockout.killedHostileTypes.getOrDefault(team, new LinkedHashSet<>());
 

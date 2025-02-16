@@ -201,7 +201,7 @@ public class LockoutServer {
                 LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(player.getUuid());
                 for (Goal goal : lockout.getBoard().getGoals()) {
                     if (goal instanceof HasTooltipInfo hasTooltipInfo) {
-                        ServerPlayNetworking.send(player, new UpdateTooltipPayload(goal.getId(), String.join("\n", hasTooltipInfo.getTooltip(team))));
+                        ServerPlayNetworking.send(player, new UpdateTooltipPayload(goal.getId(), String.join("\n", hasTooltipInfo.getTooltip(team, player))));
                     }
                 }
                 player.changeGameMode(GameMode.SURVIVAL);

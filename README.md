@@ -14,7 +14,7 @@ I also recommend you install some QoL mods:
 - [Gamma Utils](https://modrinth.com/mod/gamma-utils/versions)
 
 ## Server side installation
-> Note: You can host the server from your own computer using TCP tunneling services and mods such as [e4mc](https://modrinth.com/mod/e4mc) or [Essential mod](https://modrinth.com/mod/essential).
+> Note: You can host the server from your own computer by opening a world to LAN and using TCP tunneling services or mods such as [e4mc](https://modrinth.com/mod/e4mc) or [Essential mod](https://modrinth.com/mod/essential).
 
 If you decide to run Lockout on a dedicated server, make sure to install Fabric.
 Add [Lockout](https://github.com/marin774/lockout-fabric/releases) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api) to server's mods folder.
@@ -53,7 +53,7 @@ Boards are saved locally (client-side), in `.../.minecraft/lockout-boards`
 
 Open the Board Builder:
 - `/BoardBuilder`
-- or press the `Open Board` hotkey (before any match is started)
+- or press the `Open Board` hotkey (before any match starts)
 
 Set a custom board:
 - `/SetCustomBoard <custom board name>` - this board will be used for the next match, but server restarts will unset this.

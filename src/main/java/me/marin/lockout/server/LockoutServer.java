@@ -12,10 +12,7 @@ import me.marin.lockout.lockout.GoalRegistry;
 import me.marin.lockout.lockout.goals.death.DieToFallingOffVinesGoal;
 import me.marin.lockout.lockout.goals.death.DieToTNTMinecartGoal;
 import me.marin.lockout.lockout.goals.have_more.HaveMostXPLevelsGoal;
-import me.marin.lockout.lockout.goals.kill.Kill100MobsGoal;
-import me.marin.lockout.lockout.goals.kill.KillColoredSheepGoal;
-import me.marin.lockout.lockout.goals.kill.KillOtherTeamPlayer;
-import me.marin.lockout.lockout.goals.kill.KillSnowGolemInNetherGoal;
+import me.marin.lockout.lockout.goals.kill.*;
 import me.marin.lockout.lockout.goals.misc.*;
 import me.marin.lockout.lockout.goals.opponent.OpponentDies3TimesGoal;
 import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
@@ -350,18 +347,18 @@ public class LockoutServer {
                     if (goal instanceof KillMobGoal killMobGoal) {
                         if (killMobGoal.getEntity().equals(entity.getType())) {
                             boolean allow = true;
-                            if (killMobGoal instanceof KillSnowGolemInNetherGoal)  {
-                                allow = (attackerPlayer.getWorld().getRegistryKey() == ServerWorld.NETHER);
+                            if (goal instanceof KillSnowGolemInNetherGoal)  {
+                                allow &= attackerPlayer.getWorld().getRegistryKey() == ServerWorld.NETHER;
+                            }
+                            if (goal instanceof KillBreezeWithWindChargeGoal) {
+                                allow &= source.isOf(DamageTypes.WIND_CHARGE);
+                            }
+                            if (goal instanceof KillColoredSheepGoal killColoredSheepGoal) {
+                                allow &= ((SheepEntity) entity).getColor() == killColoredSheepGoal.getDyeColor();
                             }
                             if (allow) {
                                 lockout.completeGoal(goal, attackerPlayer);
                             }
-                        }
-                    }
-                    if (goal instanceof KillColoredSheepGoal killColoredSheepGoal) {
-                        //noinspection ConstantConditions
-                        if (EntityType.SHEEP.equals(entity.getType()) && ((SheepEntity) entity).getColor() == killColoredSheepGoal.getDyeColor()) {
-                            lockout.completeGoal(goal, attackerPlayer);
                         }
                     }
                     if (lockout.isLockoutPlayer(attackerPlayer.getUuid())) {

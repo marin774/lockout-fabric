@@ -11,6 +11,7 @@
     "server.BrewedPotionCriterionMixin",
     "server.BrewingStandScreenHandlerPotionSlotMixin",
     "server.BrushableBlockEntityMixin",
+    "server.BundleItemMixin",
     "server.CampfireBlockEntityMixin",
     "server.ChiseledBookshelfBlockMixin",
     "server.CompassItemMixin",
@@ -37,6 +38,7 @@
     "server.SmithingScreenHandlerMixin",
     "server.StatusEffectMixin",
     "server.TameAnimalCriterionMixin",
+    "server.WolfEntityMixin",
     "server.ZombieEntityMixin",
     "server.ZombifiedPiglinEntityMixin",
     "server.network.ServerCommonNetworkHandlerMixin"

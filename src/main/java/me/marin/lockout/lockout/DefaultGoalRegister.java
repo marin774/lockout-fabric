@@ -396,6 +396,8 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.PUT_WOLF_ARMOR_ON_WOLF, PutWolfArmorOnWolfGoal.class, new GoalRequirements.Builder()
                 .biomes(List.of(SAVANNA, SAVANNA_PLATEAU, WINDSWEPT_SAVANNA, BADLANDS, ERODED_BADLANDS, WOODED_BADLANDS)) /* armadillo spawn biomes */
                 .build());
+        INSTANCE.register(GoalType.KILL_BREEZE_USING_WIND_CHARGE, KillBreezeWithWindChargeGoal.class);
+        INSTANCE.register(GoalType.FILL_BUNDLE_WITH_BUNDLES, FillBundleWithBundlesGoal.class);
 
     }
 

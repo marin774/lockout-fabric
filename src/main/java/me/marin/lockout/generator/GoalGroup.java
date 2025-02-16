@@ -30,8 +30,9 @@ public class GoalGroup {
             WEAR_COLORED_LEATHER_ARMOR_PIECE, WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WEAR_CARVED_PUMPKIN_FOR_5_MINUTES, WEAR_CHAIN_ARMOR_PIECE, FILL_ARMOR_STAND
     ), 2);
     public static final GoalGroup KILL_MOB = new GoalGroup(List.of(
-            KILL_COLORED_SHEEP, KILL_ELDER_GUARDIAN, KILL_GHAST, KILL_SNOW_GOLEM, KILL_SNOW_GOLEM_IN_NETHER, KILL_SILVERFISH, KILL_STRAY, KILL_WITCH, KILL_ZOMBIE_VILLAGER, KILL_ZOGLIN, KILL_BAT
-    ), 1);
+            KILL_COLORED_SHEEP, KILL_ELDER_GUARDIAN, KILL_GHAST, KILL_SNOW_GOLEM, KILL_SNOW_GOLEM_IN_NETHER, KILL_SILVERFISH, KILL_STRAY, KILL_WITCH, KILL_ZOMBIE_VILLAGER, KILL_ZOGLIN, KILL_BAT,
+            KILL_BREEZE_USING_WIND_CHARGE
+    ), 2);
     public static final GoalGroup SNOWMAN = new GoalGroup(List.of(
             KILL_SNOW_GOLEM, KILL_SNOW_GOLEM_IN_NETHER
     ), 1);
@@ -147,13 +148,19 @@ public class GoalGroup {
             USE_ANVIL, DIE_BY_ANVIL, OBTAIN_ALL_MINECARTS, GET_HIRED_HELP_ADVANCEMENT
     ), 1);
     public static final GoalGroup LEATHER_HEAVY = new GoalGroup(List.of(
-            WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR
+            WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR, FILL_BUNDLE_WITH_BUNDLES
     ), 1);
     public static final GoalGroup FIREWORKS = new GoalGroup(List.of(
             DIE_BY_FIREWORK, SHOOT_FIREWORK_FROM_CROSSBOW
     ), 1);
     public static final GoalGroup WOLF = new GoalGroup(List.of(
             TAME_WOLF, PUT_WOLF_ARMOR_ON_WOLF
+    ), 1);
+    public static final GoalGroup TRIAL_CHAMBERS = new GoalGroup(List.of(
+            KILL_BREEZE_USING_WIND_CHARGE, KILL_SILVERFISH
+    ), 1);
+    public static final GoalGroup RAID = new GoalGroup(List.of(
+            GET_BAD_OMEN_STATUS_EFFECT, KILL_ALL_RAID_MOBS
     ), 1);
 
     static {
@@ -210,7 +217,7 @@ public class GoalGroup {
         GOAL_GROUPS.add(FIREWORKS);
         GOAL_GROUPS.add(WOLF);
         GOAL_GROUPS.add(TRIAL_CHAMBERS);
-        GOAL_GROUPS.add();
+        GOAL_GROUPS.add(RAID);
     }
 
 

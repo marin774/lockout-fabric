@@ -7,7 +7,7 @@ public class Constants {
     public static final String NAMESPACE = "lockout";
 
     public static final int MIN_BOARD_SIZE = 3;
-    public static final int MAX_BOARD_SIZE = 9;
+    public static final int MAX_BOARD_SIZE = 7;
 
     public static final Identifier LOCKOUT_GOALS_TEAMS_PACKET = Identifier.of(NAMESPACE, "lockout_goals_teams");
     public static final Identifier START_LOCKOUT_PACKET = Identifier.of(NAMESPACE, "start_lockout");

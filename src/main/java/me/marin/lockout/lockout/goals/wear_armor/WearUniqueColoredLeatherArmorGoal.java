@@ -24,7 +24,7 @@ public class WearUniqueColoredLeatherArmorGoal extends WearArmorGoal {
 
     @Override
     public String getGoalName() {
-        return "Wear Full Leather Armor, all in different colors";
+        return "Wear Full Leather Armor, in different colors";
     }
 
     @Override

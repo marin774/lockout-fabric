@@ -14,7 +14,7 @@ public class FillChiseledBookshelfGoal extends Goal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Fill a Chiseled Bookshelf";
+        return "Fill Chiseled Bookshelf";
     }
 
     @Override

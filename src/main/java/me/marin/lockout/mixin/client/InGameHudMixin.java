@@ -1,6 +1,5 @@
 package me.marin.lockout.mixin.client;
 
-import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
 import me.marin.lockout.client.LockoutClient;
@@ -27,8 +26,6 @@ public abstract class InGameHudMixin {
         if (!Lockout.exists(LockoutClient.lockout)) {
             return;
         }
-
-        int width = context.getScaledWindowWidth();
 
         Utility.drawBingoBoard(context);
     }

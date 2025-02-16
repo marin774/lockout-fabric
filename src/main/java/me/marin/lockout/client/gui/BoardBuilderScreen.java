@@ -135,7 +135,7 @@ public class BoardBuilderScreen extends Screen {
         }
         if (displayEditData) {
             Goal goal = BoardBuilderData.INSTANCE.getModifyingGoal();
-            var generators = GoalRegistry.INSTANCE.getDataGenerator(goal.getId()).getGenerators();
+            var generators = GoalRegistry.INSTANCE.getDataGenerator(goal.getId()).get().getGenerators();
             List<String> dataList = new ArrayList<>(List.of(goal.getData().split(GoalDataConstants.DATA_SEPARATOR)));
             int x = centerX + 100 - CENTER_OFFSET;
             int y = centerY - (18 + generators.size() * 45) / 2;
@@ -211,7 +211,7 @@ public class BoardBuilderScreen extends Screen {
 
             JSONBoard.JSONGoal jsonGoal = new JSONBoard.JSONGoal();
             jsonGoal.id = goal.getId();
-            if (goal.getData() != null && !goal.getData().isBlank()) {
+            if (goal.hasData()) {
                 jsonGoal.data = goal.getData();
             }
             goalList.add(jsonGoal);
@@ -286,7 +286,7 @@ public class BoardBuilderScreen extends Screen {
         Optional<Integer> hoveredIdx = Utility.getBoardHoveredIndex(BoardBuilderData.INSTANCE.size(), width, height, (int) mouseX, (int) mouseY);
         if ((button == LEFT_MOUSE_BUTTON || button == RIGHT_MOUSE_BUTTON) && hoveredIdx.isPresent()) {
             Goal goal = BoardBuilderData.INSTANCE.getGoals().get(hoveredIdx.get());
-            if (button == RIGHT_MOUSE_BUTTON && goal != null && goal.getData() != null) {
+            if (button == RIGHT_MOUSE_BUTTON && goal != null && goal.hasData()) {
                 openEditData(hoveredIdx.get());
             } else {
                 openSearch(hoveredIdx.get());
@@ -394,7 +394,7 @@ public class BoardBuilderScreen extends Screen {
                     if (goal != null) {
                         List<OrderedText> tooltip = new ArrayList<>();
                         tooltip.add(Text.of(goal.getGoalName()).asOrderedText());
-                        if (goal.getData() != null) {
+                        if (goal.hasData()) {
                             tooltip.add(Text.literal("Right-click to edit data.").formatted(Formatting.GRAY, Formatting.ITALIC).asOrderedText());
                         }
                         context.drawOrderedTooltip(textRenderer, tooltip, mouseX, mouseY);

@@ -4,6 +4,7 @@ import me.marin.lockout.LockoutTeam;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Formatting;
@@ -34,7 +35,7 @@ public abstract class GetUniqueAdvancementsGoal extends Goal implements Requires
     }
 
     @Override
-    public List<String> getTooltip(LockoutTeam team) {
+    public List<String> getTooltip(LockoutTeam team, PlayerEntity player) {
         List<String> tooltip = new ArrayList<>();
         var advancements = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 

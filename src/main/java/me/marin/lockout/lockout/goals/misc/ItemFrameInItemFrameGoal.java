@@ -1,4 +1,4 @@
-package me.marin.lockout.lockout.goals.mine;
+package me.marin.lockout.lockout.goals.misc;
 
 import me.marin.lockout.Constants;
 import me.marin.lockout.lockout.Goal;

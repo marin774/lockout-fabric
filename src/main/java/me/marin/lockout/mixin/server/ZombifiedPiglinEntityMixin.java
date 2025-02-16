@@ -18,12 +18,22 @@ public class ZombifiedPiglinEntityMixin {
 
     @Inject(method = "setAngryAt", at = @At("HEAD"))
     public void setAngryAt(UUID angryAt, CallbackInfo ci) {
-        if (((ZombifiedPiglinEntity) (Object) this).getWorld().isClient) return;
-        Lockout lockout = LockoutServer.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
-        ServerPlayerEntity player = ((ZombifiedPiglinEntity) (Object) this).getServer().getPlayerManager().getPlayer(angryAt);
+        ZombifiedPiglinEntity pigman = (ZombifiedPiglinEntity) (Object) this;
+        if (pigman.getWorld().isClient) return;
 
-        if (player == null) {
+        Lockout lockout = LockoutServer.lockout;
+        if (!Lockout.isLockoutRunning(lockout)) {
+            return;
+        }
+
+        ServerPlayerEntity player;
+        try {
+            player = pigman.getServer().getPlayerManager().getPlayer(angryAt);
+            if (player == null) {
+                return;
+            }
+        } catch (Exception ignored) {
+            // angryAt UUID does not belong to a player, ignore
             return;
         }
 

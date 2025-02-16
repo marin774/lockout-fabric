@@ -11,6 +11,7 @@ import me.marin.lockout.server.LockoutServer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Formatting;
@@ -53,7 +54,7 @@ public class Kill100MobsGoal extends Goal implements TextureProvider, CustomText
     }
 
     @Override
-    public List<String> getTooltip(LockoutTeam team) {
+    public List<String> getTooltip(LockoutTeam team, PlayerEntity player) {
         List<String> tooltip = new ArrayList<>();
 
         tooltip.add(" ");

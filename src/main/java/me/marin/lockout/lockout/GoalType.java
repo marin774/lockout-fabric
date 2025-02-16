@@ -63,7 +63,7 @@ public class GoalType {
     public static final String OBTAIN_MOSSY_STONE_BRICK_WALL = "OBTAIN_MOSSY_STONE_BRICK_WALL";
     public static final String OBTAIN_FLOWERING_AZALEA = "OBTAIN_FLOWERING_AZALEA";
     public static final String OBTAIN_SCAFFOLDING = "OBTAIN_SCAFFOLDING";
-    public static final String OBTAIN_END_CRYSTAL = "OBTAIN_END_CRYSTAL";
+    public static final String PLACE_END_CRYSTAL = "PLACE_END_CRYSTAL";
     public static final String OBTAIN_BELL = "OBTAIN_BELL";
     public static final String OBTAIN_ENCHANT_BOTTLE = "OBTAIN_ENCHANT_BOTTLE";
     public static final String OBTAIN_POWDER_SNOW_BUCKET = "OBTAIN_POWDER_SNOW_BUCKET";
@@ -89,7 +89,7 @@ public class GoalType {
     public static final String OBTAIN_PISTON = "OBTAIN_PISTON";
     public static final String OBTAIN_ALL_RAW_ORE_BLOCKS = "OBTAIN_ALL_RAW_ORE_BLOCKS";
     public static final String OBTAIN_ALL_HORSE_ARMOR = "OBTAIN_ALL_HORSE_ARMOR";
-    public static final String OBTAIN_ALL_SEEDS = "OBTAIN_ALL_SEEDS";
+    public static final String OBTAIN_4_UNIQUE_SEEDS = "OBTAIN_4_UNIQUE_SEEDS";
     public static final String OBTAIN_6_UNIQUE_FLOWERS = "OBTAIN_6_UNIQUE_FLOWERS";
     public static final String OBTAIN_COLORED_GLAZED_TERRACOTTA = "OBTAIN_COLORED_GLAZED_TERRACOTTA";
     public static final String OBTAIN_64_COLORED_WOOL = "OBTAIN_64_COLORED_WOOL";
@@ -97,7 +97,6 @@ public class GoalType {
     public static final String OBTAIN_WRITTEN_BOOK = "OBTAIN_WRITTEN_BOOK";
     public static final String FILL_INVENTORY_UNIQUE_ITEMS = "FILL_INVENTORY_UNIQUE_ITEMS";
     public static final String GET_THIS_BOAT_HAS_LEGS_ADVANCEMENT = "GET_THIS_BOAT_HAS_LEGS_ADVANCEMENT";
-    public static final String KILL_ENDER_DRAGON = "KILL_ENDER_DRAGON";
     public static final String USE_BREWING_STAND = "USE_BREWING_STAND";
     public static final String BREW_HEALING_POTION = "BREW_HEALING_POTION";
     public static final String BREW_INVISIBILITY_POTION = "BREW_INVISIBILITY_POTION";
@@ -227,5 +226,12 @@ public class GoalType {
     public static final String KILL_ALL_RAID_MOBS = "KILL_ALL_RAID_MOBS";
     public static final String FILL_CHISELED_BOOKSHELF = "FILL_CHISELED_BOOKSHELF";
     public static final String USE_BRUSH_ON_SUSPICIOUS_BLOCK = "USE_BRUSH_ON_SUSPICIOUS_BLOCK";
+    public static final String SHOOT_FIREWORK_FROM_CROSSBOW = "SHOOT_FIREWORK_FROM_CROSSBOW";
+    public static final String MINE_CRAFTER = "MINE_CRAFTER";
+    public static final String LIGHT_CANDLE = "LIGHT_CANDLE";
+    public static final String WEAR_FULL_ENCHANTED_ARMOR = "WEAR_FULL_ENCHANTED_ARMOR";
+    public static final String PUT_WOLF_ARMOR_ON_WOLF = "PUT_WOLF_ARMOR_ON_WOLF";
+    public static final String KILL_BREEZE_USING_WIND_CHARGE = "KILL_BREEZE_USING_WIND_CHARGE";
+    public static final String FILL_BUNDLE_WITH_BUNDLES = "FILL_BUNDLE_WITH_BUNDLES";
 
 }

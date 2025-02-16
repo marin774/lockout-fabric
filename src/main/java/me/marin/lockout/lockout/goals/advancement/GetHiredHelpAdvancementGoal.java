@@ -24,7 +24,7 @@ public class GetHiredHelpAdvancementGoal extends AdvancementGoal {
 
     @Override
     public String getGoalName() {
-        return "Create an Iron Golem";
+        return "Construct an Iron Golem";
     }
 
     @Override

@@ -17,7 +17,7 @@ public class GetLocalBreweryAdvancementGoal extends AdvancementGoal {
 
     @Override
     public String getGoalName() {
-        return "Use a Brewing Stand";
+        return "Use Brewing Stand";
     }
 
     @Override

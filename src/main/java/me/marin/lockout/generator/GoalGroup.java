@@ -1,5 +1,7 @@
 package me.marin.lockout.generator;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +12,7 @@ public class GoalGroup {
     private final static List<GoalGroup> GOAL_GROUPS = new ArrayList<>();
 
     public static final GoalGroup END = new GoalGroup(List.of(
-            ENTER_END, KILL_ENDER_DRAGON, EAT_CHORUS_FRUIT, OBTAIN_DRAGON_EGG, OBTAIN_END_ROD, GET_LEVITATION_STATUS_EFFECT, GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT, BREW_LINGERING_POTION
-    ), 2);
-    public static final GoalGroup KILL_DRAGON = new GoalGroup(List.of(
-            KILL_ENDER_DRAGON, OBTAIN_DRAGON_EGG
+            ENTER_END, EAT_CHORUS_FRUIT, OBTAIN_DRAGON_EGG, OBTAIN_END_ROD, GET_LEVITATION_STATUS_EFFECT, GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT, BREW_LINGERING_POTION
     ), 2);
     public static final GoalGroup END_STRUCTURE = new GoalGroup(List.of(
             GET_LEVITATION_STATUS_EFFECT, GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT
@@ -28,11 +27,12 @@ public class GoalGroup {
             WEAR_LEATHER_ARMOR, WEAR_IRON_ARMOR, WEAR_GOLDEN_ARMOR, WEAR_DIAMOND_ARMOR
     ), 1);
     public static final GoalGroup ARMOR_SPECIAL = new GoalGroup(List.of(
-            WEAR_COLORED_LEATHER_ARMOR_PIECE, WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WEAR_CARVED_PUMPKIN_FOR_5_MINUTES, WEAR_CHAIN_ARMOR_PIECE
+            WEAR_COLORED_LEATHER_ARMOR_PIECE, WEAR_UNIQUE_COLORED_LEATHER_ARMOR, WEAR_CARVED_PUMPKIN_FOR_5_MINUTES, WEAR_CHAIN_ARMOR_PIECE, FILL_ARMOR_STAND
     ), 2);
     public static final GoalGroup KILL_MOB = new GoalGroup(List.of(
-            KILL_COLORED_SHEEP, KILL_ELDER_GUARDIAN, KILL_GHAST, KILL_SNOW_GOLEM, KILL_SNOW_GOLEM_IN_NETHER, KILL_ENDER_DRAGON, KILL_SILVERFISH, KILL_STRAY, KILL_WITCH, KILL_ZOMBIE_VILLAGER, KILL_ZOGLIN
-    ), 1);
+            KILL_COLORED_SHEEP, KILL_ELDER_GUARDIAN, KILL_GHAST, KILL_SNOW_GOLEM, KILL_SNOW_GOLEM_IN_NETHER, KILL_SILVERFISH, KILL_STRAY, KILL_WITCH, KILL_ZOMBIE_VILLAGER, KILL_ZOGLIN, KILL_BAT,
+            KILL_BREEZE_USING_WIND_CHARGE
+    ), 2);
     public static final GoalGroup SNOWMAN = new GoalGroup(List.of(
             KILL_SNOW_GOLEM, KILL_SNOW_GOLEM_IN_NETHER
     ), 1);
@@ -44,16 +44,16 @@ public class GoalGroup {
     ), 1);
     public static final GoalGroup FORTRESS = new GoalGroup(List.of(
             BREW_HEALING_POTION, BREW_INVISIBILITY_POTION, BREW_LINGERING_POTION, BREW_POISON_POTION, BREW_SWIFTNESS_POTION, BREW_WATER_BREATHING_POTION, BREW_WEAKNESS_POTION,
-            OBTAIN_END_CRYSTAL, OBTAIN_ENDER_CHEST, USE_BREWING_STAND, OBTAIN_ALL_HORSE_ARMOR
+            PLACE_END_CRYSTAL, OBTAIN_ENDER_CHEST, USE_BREWING_STAND, OBTAIN_ALL_HORSE_ARMOR
     ), 3);
     public static final GoalGroup BREW_POTION = new GoalGroup(List.of(
             BREW_HEALING_POTION, BREW_INVISIBILITY_POTION, BREW_LINGERING_POTION, BREW_POISON_POTION, BREW_SWIFTNESS_POTION, BREW_WATER_BREATHING_POTION, BREW_WEAKNESS_POTION
-    ), 2);
+    ), 1);
     public static final GoalGroup HORSE = new GoalGroup(List.of(
             TAME_HORSE, RIDE_HORSE, OBTAIN_ALL_HORSE_ARMOR
     ), 1);
     public static final GoalGroup BREED = new GoalGroup(List.of(
-            BREED_CHICKEN, BREED_COW, BREED_FOX, BREED_GOAT, BREED_HOGLIN, BREED_PIG, BREED_RABBIT, BREED_SHEEP, BREED_STRIDER
+            BREED_CHICKEN, BREED_COW, BREED_FOX, BREED_GOAT, BREED_HOGLIN, BREED_PIG, BREED_RABBIT, BREED_SHEEP, BREED_STRIDER, BREED_FROGS
     ), 2);
     public static final GoalGroup BREED_X_UNIQUE = new GoalGroup(List.of(
             BREED_4_UNIQUE_ANIMALS, BREED_6_UNIQUE_ANIMALS, BREED_8_UNIQUE_ANIMALS
@@ -73,10 +73,11 @@ public class GoalGroup {
     ), 4);
     public static final GoalGroup EFFECT_X = new GoalGroup(List.of(
             GET_3_STATUS_EFFECTS_AT_ONCE, GET_4_STATUS_EFFECTS_AT_ONCE, GET_6_STATUS_EFFECTS_AT_ONCE
-    ), 2);
-    public static final GoalGroup DEATH = new GoalGroup(List.of(
+    ), 1);
+    public static final GoalGroup DEATH_DAMAGE = new GoalGroup(List.of(
             DIE_BY_ANVIL, DIE_BY_BEE_STING, DIE_BY_BERRY_BUSH, DIE_BY_CACTUS, DIE_BY_FALLING_OFF_VINE, DIE_BY_FALLING_STALACTITE, DIE_BY_FIREWORK,
-            DIE_BY_INTENTIONAL_GAME_DESIGN, DIE_BY_IRON_GOLEM, DIE_BY_MAGIC, DIE_BY_TNT_MINECART, OPPONENT_DIES, OPPONENT_DIES_3_TIMES
+            DIE_BY_INTENTIONAL_GAME_DESIGN, DIE_BY_IRON_GOLEM, DIE_BY_MAGIC, DIE_BY_TNT_MINECART, OPPONENT_DIES, OPPONENT_DIES_3_TIMES,
+            DEAL_400_DAMAGE, OPPONENT_TAKES_100_DAMAGE, TAKE_200_DAMAGE
     ), 3);
     public static final GoalGroup BIOME = new GoalGroup(List.of(
             VISIT_BADLANDS_BIOME, VISIT_ICE_SPIKES_BIOME, VISIT_MUSHROOM_BIOME, GET_HOT_TOURIST_DESTINATIONS_ADVANCEMENT
@@ -92,8 +93,8 @@ public class GoalGroup {
             OPPONENT_OBTAINS_CRAFTING_TABLE, OPPONENT_JUMPS, OPPONENT_TOUCHES_WATER,
             OPPONENT_HIT_BY_EGG, OPPONENT_HIT_BY_SNOWBALL, OPPONENT_DIES, OPPONENT_DIES_3_TIMES
     ), 3);
-    public static final GoalGroup OPPONENT_DEATH = new GoalGroup(List.of(
-            OPPONENT_DIES, OPPONENT_DIES_3_TIMES
+    public static final GoalGroup OPPONENT_DEATH_DAMAGE = new GoalGroup(List.of(
+            OPPONENT_DIES, OPPONENT_DIES_3_TIMES, OPPONENT_TAKES_100_DAMAGE
     ), 1);
     public static final GoalGroup OPPONENT_HIT_BY = new GoalGroup(List.of(
             OPPONENT_HIT_BY_EGG, OPPONENT_HIT_BY_SNOWBALL
@@ -102,13 +103,16 @@ public class GoalGroup {
             DEAL_400_DAMAGE, OPPONENT_TAKES_100_DAMAGE, TAKE_200_DAMAGE
     ), 1);
     public static final GoalGroup ADVANCEMENT = new GoalGroup(List.of(
-            GET_10_ADVANCEMENTS, GET_20_ADVANCEMENTS, GET_30_ADVANCEMENTS, KILL_ENDER_DRAGON,
+            GET_10_ADVANCEMENTS, GET_20_ADVANCEMENTS, GET_30_ADVANCEMENTS,
             GET_A_TERRIBLE_FORTRESS_ADVANCEMENT, GET_ANY_SPYGLASS_ADVANCEMENT, GET_BULLSEYE_ADVANCEMENT,
             GET_EYE_SPY_ADVANCEMENT, GET_HOT_TOURIST_DESTINATIONS_ADVANCEMENT, GET_NOT_QUITE_NINE_LIVES_ADVANCEMENT,
             GET_OH_SHINY_ADVANCEMENT, GET_SNIPER_DUEL_ADVANCEMENT, GET_THE_CITY_AT_THE_END_OF_THE_GAME_ADVANCEMENT,
             GET_THIS_BOAT_HAS_LEGS_ADVANCEMENT, GET_THOSE_WERE_THE_DAYS_ADVANCEMENT, GET_WHAT_A_DEAL_ADVANCEMENT,
             GET_HIRED_HELP_ADVANCEMENT, GET_WAX_ON_ADVANCEMENT, GET_WAX_OFF_ADVANCEMENT
     ), 4);
+    public static final GoalGroup X_ADVANCEMENTS = new GoalGroup(List.of(
+            GET_10_ADVANCEMENTS, GET_20_ADVANCEMENTS, GET_30_ADVANCEMENTS
+    ), 2);
     public static final GoalGroup VILLAGE = new GoalGroup(List.of(
             EAT_PUMPKIN_PIE, EAT_COOKIE, GET_WHAT_A_DEAL_ADVANCEMENT, OBTAIN_BELL, DIE_BY_IRON_GOLEM, EAT_RABBIT_STEW,
             WEAR_CHAIN_ARMOR_PIECE
@@ -132,10 +136,10 @@ public class GoalGroup {
             BREED_SHEEP, KILL_COLORED_SHEEP
     ), 1);
     public static final GoalGroup OBTAIN_ALL = new GoalGroup(List.of(
-           OBTAIN_ALL_HORSE_ARMOR, OBTAIN_ALL_MINECARTS, OBTAIN_ALL_PUMPKINS, OBTAIN_ALL_MUSHROOMS, OBTAIN_ALL_RAW_ORE_BLOCKS, OBTAIN_ALL_SEEDS
+           OBTAIN_ALL_HORSE_ARMOR, OBTAIN_ALL_MINECARTS, OBTAIN_ALL_PUMPKINS, OBTAIN_ALL_MUSHROOMS, OBTAIN_ALL_RAW_ORE_BLOCKS, OBTAIN_4_UNIQUE_SEEDS
     ), 2);
     public static final GoalGroup OBTAIN_SEEDS = new GoalGroup(List.of(
-            OBTAIN_ALL_SEEDS, OPPONENT_OBTAINS_SEEDS
+            OBTAIN_4_UNIQUE_SEEDS, OPPONENT_OBTAINS_SEEDS
     ), 1);
     public static final GoalGroup HONEY = new GoalGroup(List.of(
             DRINK_HONEY_BOTTLE, GET_WAX_ON_ADVANCEMENT, GET_WAX_OFF_ADVANCEMENT
@@ -144,7 +148,19 @@ public class GoalGroup {
             USE_ANVIL, DIE_BY_ANVIL, OBTAIN_ALL_MINECARTS, GET_HIRED_HELP_ADVANCEMENT
     ), 1);
     public static final GoalGroup LEATHER_HEAVY = new GoalGroup(List.of(
-            WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR
+            WEAR_LEATHER_ARMOR, WEAR_UNIQUE_COLORED_LEATHER_ARMOR, FILL_BUNDLE_WITH_BUNDLES
+    ), 1);
+    public static final GoalGroup FIREWORKS = new GoalGroup(List.of(
+            DIE_BY_FIREWORK, SHOOT_FIREWORK_FROM_CROSSBOW
+    ), 1);
+    public static final GoalGroup WOLF = new GoalGroup(List.of(
+            TAME_WOLF, PUT_WOLF_ARMOR_ON_WOLF
+    ), 1);
+    public static final GoalGroup TRIAL_CHAMBERS = new GoalGroup(List.of(
+            KILL_BREEZE_USING_WIND_CHARGE, KILL_SILVERFISH
+    ), 1);
+    public static final GoalGroup RAID = new GoalGroup(List.of(
+            GET_BAD_OMEN_STATUS_EFFECT, KILL_ALL_RAID_MOBS
     ), 1);
 
     static {
@@ -153,11 +169,11 @@ public class GoalGroup {
         BREED_X_UNIQUE.requirePredecessor.add(BREED_8_UNIQUE_ANIMALS);
         EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_20_UNIQUE_FOOD);
         EAT_X_UNIQUE_FOOD.requirePredecessor.add(EAT_25_UNIQUE_FOOD);
+        X_ADVANCEMENTS.requirePredecessor.add(GET_30_ADVANCEMENTS);
     }
 
     static {
         GOAL_GROUPS.add(END);
-        GOAL_GROUPS.add(KILL_DRAGON);
         GOAL_GROUPS.add(END_STRUCTURE);
         GOAL_GROUPS.add(TOOLS);
         GOAL_GROUPS.add(DIAMOND);
@@ -177,15 +193,16 @@ public class GoalGroup {
         GOAL_GROUPS.add(EAT_X_UNIQUE_FOOD);
         GOAL_GROUPS.add(EFFECT);
         GOAL_GROUPS.add(EFFECT_X);
-        GOAL_GROUPS.add(DEATH);
+        GOAL_GROUPS.add(DEATH_DAMAGE);
         GOAL_GROUPS.add(BIOME);
         GOAL_GROUPS.add(OPPONENT_HARD);
         GOAL_GROUPS.add(OPPONENT_TAKES_DAMAGE);
         GOAL_GROUPS.add(OPPONENT_GOALS);
-        GOAL_GROUPS.add(OPPONENT_DEATH);
+        GOAL_GROUPS.add(OPPONENT_DEATH_DAMAGE);
         GOAL_GROUPS.add(OPPONENT_HIT_BY);
         GOAL_GROUPS.add(DAMAGE);
         GOAL_GROUPS.add(ADVANCEMENT);
+        GOAL_GROUPS.add(X_ADVANCEMENTS);
         GOAL_GROUPS.add(VILLAGE);
         GOAL_GROUPS.add(MONUMENT);
         GOAL_GROUPS.add(REDSTONE);
@@ -197,24 +214,22 @@ public class GoalGroup {
         GOAL_GROUPS.add(HONEY);
         GOAL_GROUPS.add(IRON_HEAVY);
         GOAL_GROUPS.add(LEATHER_HEAVY);
+        GOAL_GROUPS.add(FIREWORKS);
+        GOAL_GROUPS.add(WOLF);
+        GOAL_GROUPS.add(TRIAL_CHAMBERS);
+        GOAL_GROUPS.add(RAID);
     }
 
 
+    @Getter
     private final List<String> goals;
+    @Getter
     private final int limit;
     private final List<String> requirePredecessor = new ArrayList<>();
 
     private GoalGroup(List<String> goals, int limit) {
         this.goals = goals;
         this.limit = limit;
-    }
-
-    public List<String> getGoals() {
-        return goals;
-    }
-
-    public int getLimit() {
-        return limit;
     }
 
     private int countMatches(List<String> boardGoals) {

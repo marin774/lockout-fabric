@@ -56,8 +56,8 @@ public class BoardGenerator {
                 }
             }
 
-            GoalDataGenerator dataGenerator = GoalRegistry.INSTANCE.getDataGenerator(goal);
-            String data = dataGenerator == null ? GoalDataConstants.DATA_NONE : dataGenerator.generateData(attainableDyes);
+            Optional<GoalDataGenerator> gen = GoalRegistry.INSTANCE.getDataGenerator(goal);
+            String data = gen.map(g -> g.generateData(attainableDyes)).orElse(GoalDataConstants.DATA_NONE);
 
             goals.add(new Pair<>(goal, data));
             goalTypes.add(goal);

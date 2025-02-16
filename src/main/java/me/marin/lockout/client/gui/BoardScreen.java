@@ -1,6 +1,8 @@
 package me.marin.lockout.client.gui;
 
+import me.marin.lockout.Lockout;
 import me.marin.lockout.Utility;
+import me.marin.lockout.client.LockoutClient;
 import me.marin.lockout.lockout.Goal;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -17,6 +19,10 @@ public class BoardScreen extends HandledScreen<BoardScreenHandler> {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (!Lockout.exists(LockoutClient.lockout)) {
+            this.close();
+            return;
+        }
         this.renderBackground(context, mouseX, mouseY, delta);
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 

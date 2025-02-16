@@ -14,7 +14,7 @@ public class RemoveStatusEffectUsingMilkGoal extends Goal {
 
     @Override
     public String getGoalName() {
-        return "Remove an effect using Milk Bucket";
+        return "Remove Effect using Milk Bucket";
     }
 
     @Override

@@ -22,7 +22,7 @@ public class ObtainShieldWithBannerGoal extends ObtainItemsGoal implements Textu
 
     @Override
     public String getGoalName() {
-        return "Put a Banner on a Shield";
+        return "Decorate Shield with Banner";
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ObtainShieldWithBannerGoal extends ObtainItemsGoal implements Textu
             for (ItemStack item : defaultedList) {
                 if (item == null) continue;
                 if (item.isEmpty()) continue;
-                return item.getItem().equals(Items.SHIELD) && item.get(DataComponentTypes.BANNER_PATTERNS) != null;
+                return item.getItem().equals(Items.SHIELD) && item.get(DataComponentTypes.BASE_COLOR) != null;
             }
         }
         return false;

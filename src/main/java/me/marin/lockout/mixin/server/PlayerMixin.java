@@ -1,10 +1,9 @@
 package me.marin.lockout.mixin.server;
 
-import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.lockout.Goal;
-import me.marin.lockout.lockout.goals.mine.HaveShieldDisabledGoal;
+import me.marin.lockout.lockout.goals.misc.HaveShieldDisabledGoal;
 import me.marin.lockout.lockout.goals.misc.Sprint1KmGoal;
 import me.marin.lockout.lockout.goals.misc.Take200DamageGoal;
 import me.marin.lockout.lockout.goals.opponent.*;
@@ -12,7 +11,6 @@ import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
 import me.marin.lockout.lockout.interfaces.ReachXPLevelGoal;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,21 +30,6 @@ import java.util.Objects;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerMixin {
-
-    @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
-    public void onDropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
-        Lockout lockout = LockoutServer.lockout;
-        if (!Lockout.isLockoutRunning(lockout)) return;
-
-        PlayerEntity player = (PlayerEntity) (Object) this;
-        if (player.getWorld().isClient) return;
-        if (!lockout.isLockoutPlayer(player)) return;
-
-        if (CompassItemHandler.isCompass(stack)) {
-            cir.setReturnValue(null);
-            player.getInventory().insertStack(stack);
-        }
-    }
 
     @Inject(method = "collideWithEntity", at = @At("HEAD"))
     public void onCollide(Entity entity, CallbackInfo ci) {

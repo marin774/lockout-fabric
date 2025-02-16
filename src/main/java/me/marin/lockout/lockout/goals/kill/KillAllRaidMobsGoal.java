@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Formatting;
@@ -55,7 +56,7 @@ public class KillAllRaidMobsGoal extends KillAllSpecificMobsGoal implements Cust
     }
 
     @Override
-    public List<String> getTooltip(LockoutTeam team) {
+    public List<String> getTooltip(LockoutTeam team, PlayerEntity player) {
         List<String> tooltip = new ArrayList<>();
         var raidMobs = getTrackerMap().getOrDefault(team, new LinkedHashSet<>());
 

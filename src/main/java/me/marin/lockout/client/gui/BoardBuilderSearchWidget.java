@@ -3,6 +3,7 @@ package me.marin.lockout.client.gui;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
+import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -15,7 +16,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
 import java.util.List;
@@ -100,7 +101,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
 
     public void searchUpdated(String search) {
         setScrollY(0);
-        visibleGoals = new ArrayList<>(registeredGoals.values()).stream().filter(goalEntry -> goalEntry.display.toLowerCase().contains(search.toLowerCase())).collect(Collectors.toList());
+        visibleGoals = new ArrayList<>(registeredGoals.values()).stream().filter(goalEntry -> goalEntry.displayName.toLowerCase().contains(search.toLowerCase())).collect(Collectors.toList());
     }
 
     @Override
@@ -118,16 +119,16 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
     public static final class GoalEntry extends AlwaysSelectedEntryListWidget.Entry<GoalEntry> {
 
         private final Goal goal;
-        public final String display;
+        public final String displayName;
 
         public GoalEntry(String id) {
-            GoalDataGenerator goalDataGenerator = GoalRegistry.INSTANCE.getDataGenerator(id);
+            Optional<GoalDataGenerator> gen = GoalRegistry.INSTANCE.getDataGenerator(id);
 
             // generate random data
-            String data = goalDataGenerator == null ? null : goalDataGenerator.generateData(new ArrayList<>(GoalDataGenerator.ALL_DYES));
+            String data = gen.map(g -> g.generateData(new ArrayList<>(GoalDataGenerator.ALL_DYES))).orElse(GoalDataConstants.DATA_NONE);
             this.goal = GoalRegistry.INSTANCE.newGoal(id, data);
 
-            this.display = data == null ? goal.getGoalName() : "[*] " + StringUtils.capitalize(goal.getId().replace("_", " ").toLowerCase());
+            this.displayName = gen.isEmpty() ? goal.getGoalName() : "[*] " + WordUtils.capitalize(goal.getId().replace("_", " ").toLowerCase(), ' ');
         }
 
 
@@ -141,7 +142,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
             TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
             goal.render(context, textRenderer, x, y);
-            context.drawTextWithShadow(textRenderer, display, x + 18, y + 5, Color.WHITE.getRGB());
+            context.drawTextWithShadow(textRenderer, displayName, x + 18, y + 5, Color.WHITE.getRGB());
             if (hovered) {
                 context.drawBorder(x - 1, y - 1, entryWidth + 2, entryHeight, Color.LIGHT_GRAY.getRGB());
             }

@@ -19,7 +19,7 @@ public class RidePigGoal extends RideEntityGoal {
 
     @Override
     public String getGoalName() {
-        return "Ride a Pig with Carrot on a Stick";
+        return "Ride Pig with Carrot on a Stick";
     }
 
     @Override

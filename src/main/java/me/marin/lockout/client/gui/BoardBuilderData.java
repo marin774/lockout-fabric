@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import me.marin.lockout.lockout.Goal;
+import me.marin.lockout.lockout.GoalRegistry;
+import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,7 +113,7 @@ public class BoardBuilderData {
     }
 
     /**
-     * Returns an unmodifiable view of the goals list.
+     * @return unmodifiable view of goals list
      */
     public List<Goal> getGoals() {
         return Collections.unmodifiableList(goals);
@@ -119,6 +121,22 @@ public class BoardBuilderData {
 
     public void setGoal(Goal goal) {
         goals.set(modifyingIdx, goal);
+    }
+
+    public void setBoard(String title, int size, List<Pair<String, String>> goals) {
+        this.title = title;
+        this.size = size;
+        this.modifyingIdx = null;
+
+        this.goals.clear();
+
+        for (Pair<String, String> pair : goals) {
+            Goal goal = null;
+            if (GoalRegistry.INSTANCE.isGoalValid(pair.getA(), pair.getB())) {
+                goal = GoalRegistry.INSTANCE.newGoal(pair.getA(), pair.getB());
+            }
+            this.goals.add(goal);
+        }
     }
 
 }

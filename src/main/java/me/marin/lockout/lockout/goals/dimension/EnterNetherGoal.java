@@ -4,9 +4,9 @@ import me.marin.lockout.lockout.interfaces.EnterDimensionGoal;
 import me.marin.lockout.lockout.texture.TextureProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionTypes;
+import net.minecraft.world.World;
 
 import static me.marin.lockout.Constants.NAMESPACE;
 
@@ -27,8 +27,8 @@ public class EnterNetherGoal extends EnterDimensionGoal implements TextureProvid
     }
 
     @Override
-    public RegistryKey<DimensionType> getDimensionTypeKey() {
-        return DimensionTypes.THE_NETHER;
+    public RegistryKey<World> getWorldRegistryKey() {
+        return ServerWorld.NETHER;
     }
 
     private static final Identifier TEXTURE = Identifier.of(NAMESPACE, "textures/custom/nether_portal.png");

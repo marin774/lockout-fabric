@@ -3,6 +3,7 @@ package me.marin.lockout.lockout;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.generator.GoalDataGenerator;
 import me.marin.lockout.generator.GoalRequirements;
+import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.util.*;
@@ -42,15 +43,29 @@ public class GoalRegistry {
 
     public Goal newGoal(String id, String data) {
         try {
-            return ConstructorUtils.invokeConstructor(registry.get(id), id, data);
+            return ConstructorUtils.invokeConstructor(registry.get(id), id, data == null ? GoalDataConstants.DATA_NONE : data);
         } catch (Exception e) {
             Lockout.error(e);
             return null;
         }
     }
 
-    public GoalDataGenerator getDataGenerator(String id) {
-        return goalDataGenerators.get(id);
+    public boolean isGoalValid(String id, String data) {
+        try {
+            ConstructorUtils.invokeConstructor(registry.get(id), id, data);
+            // goal class was constructed -> goal is valid for the board
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Optional<GoalDataGenerator> getDataGenerator(String id) {
+        if (goalDataGenerators.get(id) != null) {
+            return Optional.of(goalDataGenerators.get(id));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public GoalRequirements getGoalGenerator(String id) {

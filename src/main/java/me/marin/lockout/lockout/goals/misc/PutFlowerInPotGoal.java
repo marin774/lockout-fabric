@@ -23,7 +23,7 @@ public class PutFlowerInPotGoal extends IncrementStatGoal implements TextureProv
 
     @Override
     public String getGoalName() {
-        return "Put a Flower in a Flower Pot";
+        return "Put Flower in Flower Pot";
     }
 
     @Override

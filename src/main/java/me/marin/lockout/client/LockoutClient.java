@@ -4,10 +4,7 @@ import me.marin.lockout.Constants;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.LockoutInitializer;
 import me.marin.lockout.LockoutTeam;
-import me.marin.lockout.client.gui.BoardBuilderIO;
-import me.marin.lockout.client.gui.BoardBuilderScreen;
-import me.marin.lockout.client.gui.BoardScreen;
-import me.marin.lockout.client.gui.BoardScreenHandler;
+import me.marin.lockout.client.gui.*;
 import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
@@ -51,8 +48,6 @@ public class LockoutClient implements ClientModInitializer {
     public static int CURRENT_TICK = 0;
     public static final Map<String, String> goalTooltipMap = new HashMap<>();
 
-    public static boolean shouldOpenBoardBuilder = false;
-
     public static final ScreenHandlerType<BoardScreenHandler> BOARD_SCREEN_HANDLER;
 
     static {
@@ -94,7 +89,6 @@ public class LockoutClient implements ClientModInitializer {
             goalTooltipMap.put(payload.goal(), payload.tooltip());
         });
         ClientPlayNetworking.registerGlobalReceiver(StartLockoutPayload.ID, (payload, context) -> {
-            Lockout.log("STARTED");
             lockout.setStarted(true);
             context.client().execute(() -> {
                 if (MinecraftClient.getInstance().currentScreen != null) {
@@ -157,10 +151,48 @@ public class LockoutClient implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             {
                 var commandNode = ClientCommandManager.literal("BoardBuilder").executes((context) -> {
-                    shouldOpenBoardBuilder = true;
+                    MinecraftClient client = MinecraftClient.getInstance();
+                    client.send(() -> {
+                        if (client.player != null) {
+                            client.setScreen(new BoardBuilderScreen());
+                        }
+                    });
+
                     return 1;
                 }).build();
 
+                var boardNameNode = ClientCommandManager.argument("board name", CustomBoardFileArgumentType.newInstance()).executes((context) -> {
+                    String boardName = context.getArgument("board name", String.class);
+
+                    JSONBoard jsonBoard;
+                    try {
+                        jsonBoard = BoardBuilderIO.INSTANCE.readBoard(boardName);
+                    } catch (IOException e) {
+                        context.getSource().sendError(Text.literal("Error while trying to read board."));
+                        return 0;
+                    }
+
+                    int size = (int) Math.sqrt(jsonBoard.goals.size());
+                    if (size * size != jsonBoard.goals.size() || size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
+                        context.getSource().sendError(Text.literal("Board doesn't have a valid number of goals!"));
+                        return 0;
+                    }
+
+                    List<Pair<String, String>> goals = jsonBoard.goals.stream()
+                            .map(goal -> new Pair<>(goal.id, goal.data != null ? goal.data : GoalDataConstants.DATA_NONE)).toList();
+
+                    MinecraftClient client = MinecraftClient.getInstance();
+                    client.send(() -> {
+                        if (client.player != null) {
+                            BoardBuilderData.INSTANCE.setBoard(boardName, size, goals);
+                            client.setScreen(new BoardBuilderScreen());
+                        }
+                    });
+
+                    return 1;
+                }).build();
+
+                commandNode.addChild(boardNameNode);
                 dispatcher.getRoot().addChild(commandNode);
             }
             {
@@ -199,7 +231,14 @@ public class LockoutClient implements ClientModInitializer {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(LockoutVersionPayload.ID, (payload, context) -> {
-            // just respond with version, it will be compared on server
+            // Compare Lockout versions, disconnect if invalid.
+            String version = payload.version();
+            if (!version.equals(LockoutInitializer.MOD_VERSION.getFriendlyString())) {
+                MinecraftClient.getInstance().player.networkHandler.getConnection().disconnect(Text.of("Wrong Lockout version: v" + LockoutInitializer.MOD_VERSION.getFriendlyString() + ".\nServer is using Lockout v" + version + "."));
+                return;
+            }
+
+            // Respond with version, it will be compared on server as well
             ClientPlayNetworking.send(new LockoutVersionPayload(LockoutInitializer.MOD_VERSION.getFriendlyString()));
         });
 

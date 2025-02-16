@@ -1,11 +1,13 @@
 package me.marin.lockout.generator;
 
+import lombok.Getter;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import net.minecraft.util.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class GoalDataGenerator {
 
     public static final List<DyeColor> ALL_DYES = List.of(
@@ -16,10 +18,6 @@ public class GoalDataGenerator {
     );
 
     private final List<Generator<?>> generators = new ArrayList<>();
-
-    public List<Generator<?>> getGenerators() {
-        return generators;
-    }
 
     private GoalDataGenerator() {}
 

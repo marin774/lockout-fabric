@@ -17,7 +17,7 @@ public class FillBundleWithBundlesGoal extends Goal {
 
     @Override
     public String getGoalName() {
-        return "Fill Bundle with 16 Bundles";
+        return "Fill Bundle with 16 empty Bundles";
     }
 
     @Override

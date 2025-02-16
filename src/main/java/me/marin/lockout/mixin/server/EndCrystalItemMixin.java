@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EndCrystalItemMixin {
 
     @Inject(method = "useOnBlock", at = @At("RETURN"))
-    public void m(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
+    public void onUseOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
         if (context.getWorld().isClient) return;
         if (cir.getReturnValue() != ActionResult.SUCCESS) return;
 

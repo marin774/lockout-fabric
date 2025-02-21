@@ -4,7 +4,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.LevelProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,12 +19,12 @@ public class ZombieEntityMixin {
     @Inject(method = "onKilledOther", at = @At("HEAD"))
     public void setDifficulty(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir) {
         before = world.getDifficulty();
-        ((LevelProperties) world.getLevelProperties()).setDifficulty(Difficulty.HARD);
+        world.getServer().setDifficulty(Difficulty.HARD, true);
     }
 
     @Inject(method = "onKilledOther", at = @At("RETURN"))
     public void restoreDifficulty(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir) {
-        ((LevelProperties) world.getLevelProperties()).setDifficulty(before);
+        world.getServer().setDifficulty(before, true);
     }
 
 }

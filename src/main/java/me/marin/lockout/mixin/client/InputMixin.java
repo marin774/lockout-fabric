@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class InputMixin {
 
     @Inject(method ="tick", at = @At("TAIL"))
-    public void tick(boolean slowDown, float slowDownFactor, CallbackInfo ci) {
+    public void tick(CallbackInfo ci) {
         if (!Lockout.isLockoutRunning(LockoutClient.lockout)) return;
         if (!LockoutClient.amIPlayingLockout) return;
 

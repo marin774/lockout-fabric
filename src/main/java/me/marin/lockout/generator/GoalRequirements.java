@@ -64,7 +64,7 @@ public abstract class GoalRequirements {
         boolean hasRequiredBiome = true;
         if (getRequiredBiomes() != null) {
             for (RegistryKey<Biome> biome : getRequiredBiomes()) {
-                if (biomes.get(biome).isInRequiredDistance()) {
+                if (biomes.get(biome).wasLocated()) {
                     hasRequiredBiome = true;
                     break;
                 } else {
@@ -77,7 +77,7 @@ public abstract class GoalRequirements {
         boolean hasRequiredStructure = true;
         if (getRequiredStructures() != null) {
             for (RegistryKey<Structure> structure : getRequiredStructures()) {
-                if (structures.get(structure).isInRequiredDistance()) {
+                if (structures.get(structure).wasLocated()) {
                     hasRequiredStructure = true;
                     break;
                 } else {

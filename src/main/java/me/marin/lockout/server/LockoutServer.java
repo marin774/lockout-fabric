@@ -505,24 +505,24 @@ public class LockoutServer {
                 AVAILABLE_DYE_COLORS.add(DyeColor.PINK);
                 AVAILABLE_DYE_COLORS.add(DyeColor.PURPLE);
 
-                boolean hasCactus = locateBiome(server, BiomeKeys.DESERT).isInRequiredDistance();
-                hasCactus |= locateBiome(server, BiomeKeys.BADLANDS).isInRequiredDistance();
-                hasCactus |= locateBiome(server, BiomeKeys.ERODED_BADLANDS).isInRequiredDistance();
-                hasCactus |= locateBiome(server, BiomeKeys.WOODED_BADLANDS).isInRequiredDistance();
+                boolean hasCactus = locateBiome(server, BiomeKeys.DESERT).wasLocated();
+                hasCactus |= locateBiome(server, BiomeKeys.BADLANDS).wasLocated();
+                hasCactus |= locateBiome(server, BiomeKeys.ERODED_BADLANDS).wasLocated();
+                hasCactus |= locateBiome(server, BiomeKeys.WOODED_BADLANDS).wasLocated();
                 if (hasCactus) {
                     AVAILABLE_DYE_COLORS.add(DyeColor.GREEN);
                     AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
                     AVAILABLE_DYE_COLORS.add(DyeColor.CYAN);
                 } else {
-                    if (locateBiome(server, BiomeKeys.WARM_OCEAN).isInRequiredDistance()) {
+                    if (locateBiome(server, BiomeKeys.WARM_OCEAN).wasLocated()) {
                         AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
                     }
                 }
 
                 boolean hasCocoaBeans;
-                hasCocoaBeans  = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
-                hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).isInRequiredDistance();
-                hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
+                hasCocoaBeans  = locateBiome(server, BiomeKeys.JUNGLE).wasLocated();
+                hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).wasLocated();
+                hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).wasLocated();
                 if (hasCocoaBeans) {
                     AVAILABLE_DYE_COLORS.add(DyeColor.BROWN);
                 }
@@ -579,10 +579,10 @@ public class LockoutServer {
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
         if (BIOME_LOCATE_DATA.containsKey(biome)) return BIOME_LOCATE_DATA.get(biome);
 
-        var source = server.getCommandSource();
-        var currentPos = BlockPos.ofFloored(source.getPosition());
+        var currentPos = BlockPos.ofFloored(server.getOverworld().getSpawnPos().toCenterPos());
+        Lockout.log("Spawn pos biomes: " + currentPos);
 
-        var pair = source.getWorld().locateBiome(
+        var pair = server.getOverworld().locateBiome(
                 biomeRegistryEntry -> biomeRegistryEntry.matchesId(biome.getValue()),
                 currentPos,
                 LOCATE_SEARCH,
@@ -591,10 +591,10 @@ public class LockoutServer {
 
         LocateData data;
         if (pair == null) {
-            data = new LocateData(false, false,0);
+            data = new LocateData(false,0);
         } else {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
-            data = new LocateData(true, distance < LOCATE_SEARCH, distance);
+            data = new LocateData(true, distance);
         }
         BIOME_LOCATE_DATA.put(biome, data);
 
@@ -604,14 +604,14 @@ public class LockoutServer {
     public static LocateData locateStructure(MinecraftServer server, RegistryKey<Structure> structure) {
         if (STRUCTURE_LOCATE_DATA.containsKey(structure)) return STRUCTURE_LOCATE_DATA.get(structure);
 
-        var source = server.getCommandSource();
-        var currentPos = BlockPos.ofFloored(source.getPosition());
+        var currentPos = BlockPos.ofFloored(server.getOverworld().getSpawnPos().toCenterPos());
+        Lockout.log("Spawn pos structures: " + currentPos);
 
-        Registry<Structure> registry = source.getWorld().getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
+        Registry<Structure> registry = server.getOverworld().getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
         RegistryEntryList<Structure> structureList = RegistryEntryList.of(registry.getOrThrow(structure));
 
-        var pair = source.getWorld().getChunkManager().getChunkGenerator().locateStructure(
-                source.getWorld(),
+        var pair = server.getOverworld().getChunkManager().getChunkGenerator().locateStructure(
+                server.getOverworld(),
                 structureList,
                 currentPos,
                 LOCATE_SEARCH,
@@ -619,10 +619,10 @@ public class LockoutServer {
 
         LocateData data;
         if (pair == null) {
-            data = new LocateData(false, false,0);
+            data = new LocateData(false, 0);
         } else {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
-            data = new LocateData(true, distance < LOCATE_SEARCH, distance);
+            data = new LocateData(true, distance);
         }
         STRUCTURE_LOCATE_DATA.put(structure, data);
 

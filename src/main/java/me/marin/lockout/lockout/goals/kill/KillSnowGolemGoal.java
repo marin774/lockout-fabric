@@ -15,7 +15,7 @@ public class KillSnowGolemGoal extends KillMobGoal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Kill a Snow Golem";
+        return "Kill Snow Golem";
     }
 
     @Override

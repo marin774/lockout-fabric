@@ -15,7 +15,7 @@ public class KillSilverfishGoal extends KillMobGoal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Kill a Silverfish";
+        return "Kill Silverfish";
     }
 
     @Override

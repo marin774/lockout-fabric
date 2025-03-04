@@ -15,7 +15,7 @@ public class KillBatGoal extends KillMobGoal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Kill a Bat";
+        return "Kill Bat";
     }
 
     @Override

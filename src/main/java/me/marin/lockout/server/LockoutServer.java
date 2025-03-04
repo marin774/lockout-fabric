@@ -86,6 +86,7 @@ public class LockoutServer {
     public static final List<DyeColor> AVAILABLE_DYE_COLORS = new ArrayList<>();
 
     private static int lockoutStartTime = 60;
+    private static int boardSize;
 
     public static Lockout lockout;
     public static MinecraftServer server;
@@ -108,6 +109,10 @@ public class LockoutServer {
         BIOME_LOCATE_DATA.clear();
         STRUCTURE_LOCATE_DATA.clear();
         AVAILABLE_DYE_COLORS.clear();
+
+        LockoutConfig.load(); // reload config every time the server starts
+        boardSize = LockoutConfig.getInstance().boardSize;
+        Lockout.log("Using default board size: " + boardSize);
 
         if (isInitialized) return;
         isInitialized = true;
@@ -961,6 +966,14 @@ public class LockoutServer {
 
         lockoutStartTime = seconds;
         context.getSource().sendMessage(Text.of("Updated start time to " + seconds + "s."));
+        return 1;
+    }
+
+    public static int setBoardSize(CommandContext<ServerCommandSource> context) {
+        int size = context.getArgument("board size", Integer.class);
+
+        boardSize = size;
+        context.getSource().sendMessage(Text.of("Updated board size to " + size + "."));
         return 1;
     }
 

@@ -9,9 +9,6 @@ import me.marin.lockout.server.LockoutServer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
-import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
@@ -30,31 +27,27 @@ import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.GameRules;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static me.marin.lockout.Constants.*;
+import static me.marin.lockout.Constants.MAX_BOARD_SIZE;
+import static me.marin.lockout.Constants.NAMESPACE;
 
 public class LockoutInitializer implements ModInitializer {
 
     private static final Predicate<ServerCommandSource> PERMISSIONS = (ssc) -> ssc.hasPermissionLevel(2) || ssc.getServer().isSingleplayer();
 
     public static Version MOD_VERSION;
-    public static final CustomGameRuleCategory CATEGORY = new CustomGameRuleCategory(Identifier.of(NAMESPACE, "gamerule"), Text.translatable("gamerule.category.lockout"));
-    public static final GameRules.Key<GameRules.IntRule> BOARD_SIZE = GameRuleRegistry.register("lockoutBoardSize", CATEGORY, GameRuleFactory.createIntRule(5, MIN_BOARD_SIZE, MAX_BOARD_SIZE));
 
     @Override
     public void onInitialize() {
-        Networking.registerPayloads();
-
-        DefaultGoalRegister.registerGoals();
-
         MOD_VERSION = FabricLoader.getInstance().getModContainer(NAMESPACE).get().getMetadata().getVersion();
+
+        LockoutConfig.load();
+        Networking.registerPayloads();
+        DefaultGoalRegister.registerGoals();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             {
@@ -132,6 +125,16 @@ public class LockoutInitializer implements ModInitializer {
                     ClientPlayNetworking.send(new CustomBoardPayload(Optional.empty()));
                     return 1;
                 }).build());
+            }
+
+            {
+                // SetBoardSize command
+
+                var setBoardTimeRoot = CommandManager.literal("SetBoardTime").requires(PERMISSIONS).build();
+                var size = CommandManager.argument("board size", IntegerArgumentType.integer(3, 7)).executes(LockoutServer::setBoardSize).build();
+
+                dispatcher.getRoot().addChild(setBoardTimeRoot);
+                setBoardTimeRoot.addChild(size);
             }
 
         });

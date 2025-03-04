@@ -45,9 +45,11 @@
   ],
   "client": [
     "client.DebugHudMixin",
+    "client.InGameHudAccessor",
     "client.InGameHudMixin",
     "client.InputMixin",
     "client.ItemInHandRendererMixin",
+    "client.LayeredDrawerAccessor",
     "client.integrated.IntegratedServerMixin",
     "client.toasts.AdvancementToastMixin",
     "client.toasts.RecipeToastMixin",

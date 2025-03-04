@@ -22,6 +22,7 @@ public class Constants {
     public static final Identifier BOARD_SCREEN_ID = Identifier.of(NAMESPACE, "board");
 
     public static final Identifier BOARD_FILE_ARGUMENT_TYPE = Identifier.of(NAMESPACE, "board_file");
+    public static final Identifier BOARD_SIDE_ARGUMENT_TYPE = Identifier.of(NAMESPACE, "board_side");
 
     public static final Identifier GUI_IDENTIFIER = Identifier.of(NAMESPACE, "gui");
 
@@ -34,5 +35,8 @@ public class Constants {
     public static final int GUI_CENTER_SLOT_SIZE = 18; // both x and y
 
     public static final int GUI_CENTER_HOVERED_COLOR = -2130706433;
+
+    public static final String BOARD_SIDE_LEFT = "left";
+    public static final String BOARD_SIDE_RIGHT = "right";
 
 }

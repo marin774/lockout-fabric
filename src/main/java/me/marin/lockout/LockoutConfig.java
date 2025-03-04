@@ -19,7 +19,10 @@ public class LockoutConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @SerializedName("default board size")
-    public int boardSize;
+    public int boardSize = 5;
+
+    @SerializedName("board side")
+    public BoardSide boardSide = BoardSide.RIGHT;
 
     public static void load() {
         if (!Files.exists(CONFIG_PATH)) {
@@ -39,6 +42,7 @@ public class LockoutConfig {
     public static void loadDefaultConfig() {
         instance = new LockoutConfig();
         instance.boardSize = 5;
+        instance.boardSide = BoardSide.RIGHT;
     }
 
     public static void save() {
@@ -46,6 +50,21 @@ public class LockoutConfig {
             Files.writeString(CONFIG_PATH, GSON.toJson(instance));
         } catch (Exception e) {
             Lockout.error(e);
+        }
+    }
+
+    public enum BoardSide {
+        @SerializedName("left")
+        LEFT,
+        @SerializedName("right")
+        RIGHT;
+
+        public static BoardSide match(String boardSide) {
+            return switch (boardSide) {
+                case "left" -> LEFT;
+                case "right" -> RIGHT;
+                default -> null;
+            };
         }
     }
 

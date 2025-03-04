@@ -229,9 +229,9 @@ public class LockoutServer {
                 if (gameStartRunnables.get(runnable) <= 0) {
                     runnable.run();
                     gameStartRunnables.remove(runnable);
-                    return;
+                } else {
+                    gameStartRunnables.merge(runnable, -1L, Long::sum);
                 }
-                gameStartRunnables.merge(runnable, -1L, Long::sum);
             }
 
             for (Goal goal : lockout.getBoard().getGoals()) {

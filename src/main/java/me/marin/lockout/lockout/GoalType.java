@@ -233,5 +233,6 @@ public class GoalType {
     public static final String PUT_WOLF_ARMOR_ON_WOLF = "PUT_WOLF_ARMOR_ON_WOLF";
     public static final String KILL_BREEZE_USING_WIND_CHARGE = "KILL_BREEZE_USING_WIND_CHARGE";
     public static final String FILL_BUNDLE_WITH_BUNDLES = "FILL_BUNDLE_WITH_BUNDLES";
+    public static final String OBTAIN_64_ARROWS = "OBTAIN_64_ARROWS";
 
 }

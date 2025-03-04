@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.OrderedText;
@@ -163,6 +164,17 @@ public class Utility {
             }
         }
         context.drawOrderedTooltip(textRenderer, tooltip, mouseX, mouseY);
+    }
+
+    /**
+     * Code from {@link DrawContext#drawStackCount(TextRenderer, ItemStack, int, int, String)}, but without ItemStack argument requirement
+     */
+    public static void drawStackCount(DrawContext context, int x, int y, String count) {
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        context.getMatrices().push();
+        context.getMatrices().translate(0.0F, 0.0F, 200.0F);
+        context.drawText(textRenderer, count, x + 19 - 2 - textRenderer.getWidth(count), y + 6 + 3, -1, true);
+        context.getMatrices().pop();
     }
 
     public static List<ServerPlayerEntity> getSpectators(Lockout lockout, MinecraftServer server) {

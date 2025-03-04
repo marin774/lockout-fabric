@@ -399,6 +399,8 @@ public class DefaultGoalRegister {
         INSTANCE.register(GoalType.KILL_BREEZE_USING_WIND_CHARGE, KillBreezeWithWindChargeGoal.class);
         INSTANCE.register(GoalType.FILL_BUNDLE_WITH_BUNDLES, FillBundleWithBundlesGoal.class, GoalRequirements.NOT_IN_RANDOM_POOL);
 
+        INSTANCE.register(GoalType.OBTAIN_64_ARROWS, Obtain64ArrowsGoal.class);
+
     }
 
 }

@@ -130,7 +130,7 @@ public class LockoutInitializer implements ModInitializer {
             {
                 // SetBoardSize command
 
-                var setBoardTimeRoot = CommandManager.literal("SetBoardTime").requires(PERMISSIONS).build();
+                var setBoardTimeRoot = CommandManager.literal("SetBoardSize").requires(PERMISSIONS).build();
                 var size = CommandManager.argument("board size", IntegerArgumentType.integer(3, 7)).executes(LockoutServer::setBoardSize).build();
 
                 dispatcher.getRoot().addChild(setBoardTimeRoot);

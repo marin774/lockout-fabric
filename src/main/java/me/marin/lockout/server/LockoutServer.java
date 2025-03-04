@@ -614,7 +614,7 @@ public class LockoutServer {
                 source.getWorld(),
                 structureList,
                 currentPos,
-                100,
+                LOCATE_SEARCH,
                 false);
 
         LocateData data;

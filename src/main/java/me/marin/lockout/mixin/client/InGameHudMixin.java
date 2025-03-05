@@ -21,7 +21,7 @@ public abstract class InGameHudMixin {
             return width;
         }
 
-        if (LockoutConfig.getInstance().boardSide != LockoutConfig.BoardSide.RIGHT) {
+        if (LockoutConfig.getInstance().boardPosition != LockoutConfig.BoardPosition.RIGHT) {
             return width;
         }
 
@@ -33,7 +33,7 @@ public abstract class InGameHudMixin {
             return width;
         }
 
-        if (LockoutConfig.getInstance().boardSide != LockoutConfig.BoardSide.RIGHT) {
+        if (LockoutConfig.getInstance().boardPosition != LockoutConfig.BoardPosition.RIGHT) {
             return width;
         }
 

@@ -21,8 +21,11 @@ public class LockoutConfig {
     @SerializedName("default board size")
     public int boardSize = 5;
 
-    @SerializedName("board side")
-    public BoardSide boardSide = BoardSide.RIGHT;
+    @SerializedName("board position")
+    public BoardPosition boardPosition = BoardPosition.RIGHT;
+
+    @SerializedName("show NoiseRouter line")
+    public boolean showNoiseRouterLine = false;
 
     public static void load() {
         if (!Files.exists(CONFIG_PATH)) {
@@ -32,6 +35,7 @@ public class LockoutConfig {
             try {
                 String s = Files.readString(CONFIG_PATH);
                 instance = GSON.fromJson(s, LockoutConfig.class);
+                save(); // saves "new" config values (from updates)
             } catch (Exception e) {
                 Lockout.log("Invalid config file, using default values.");
                 loadDefaultConfig();
@@ -42,7 +46,8 @@ public class LockoutConfig {
     public static void loadDefaultConfig() {
         instance = new LockoutConfig();
         instance.boardSize = 5;
-        instance.boardSide = BoardSide.RIGHT;
+        instance.boardPosition = BoardPosition.RIGHT;
+        instance.showNoiseRouterLine = false;
     }
 
     public static void save() {
@@ -53,14 +58,14 @@ public class LockoutConfig {
         }
     }
 
-    public enum BoardSide {
+    public enum BoardPosition {
         @SerializedName("left")
         LEFT,
         @SerializedName("right")
         RIGHT;
 
-        public static BoardSide match(String boardSide) {
-            return switch (boardSide) {
+        public static BoardPosition match(String boardPosition) {
+            return switch (boardPosition) {
                 case "left" -> LEFT;
                 case "right" -> RIGHT;
                 default -> null;

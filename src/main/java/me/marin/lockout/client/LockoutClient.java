@@ -160,29 +160,29 @@ public class LockoutClient implements ClientModInitializer {
         });
 
         ArgumentTypeRegistry.registerArgumentType(Constants.BOARD_FILE_ARGUMENT_TYPE, CustomBoardFileArgumentType.class, ConstantArgumentSerializer.of(CustomBoardFileArgumentType::newInstance));
-        ArgumentTypeRegistry.registerArgumentType(Constants.BOARD_SIDE_ARGUMENT_TYPE, BoardSideArgumentType.class, ConstantArgumentSerializer.of(BoardSideArgumentType::newInstance));
+        ArgumentTypeRegistry.registerArgumentType(Constants.BOARD_POSITION_ARGUMENT_TYPE, BoardPositionArgumentType.class, ConstantArgumentSerializer.of(BoardPositionArgumentType::newInstance));
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             {
-                var commandNode = ClientCommandManager.literal("BoardSide").build();
-                var sideNode = ClientCommandManager.argument("board side", BoardSideArgumentType.newInstance()).executes((context) -> {
-                    String side = context.getArgument("board side", String.class);
+                var commandNode = ClientCommandManager.literal("BoardPosition").build();
+                var positionNode = ClientCommandManager.argument("board position", BoardPositionArgumentType.newInstance()).executes((context) -> {
+                    String position = context.getArgument("board position", String.class);
 
-                    LockoutConfig.BoardSide boardSide = LockoutConfig.BoardSide.match(side);
-                    if (boardSide == null) {
-                        context.getSource().sendError(Text.literal("Invalid board side: " + side + "."));
+                    LockoutConfig.BoardPosition boardPosition = LockoutConfig.BoardPosition.match(position);
+                    if (boardPosition == null) {
+                        context.getSource().sendError(Text.literal("Invalid board position: " + position + "."));
                         return 0;
                     }
-                    LockoutConfig.getInstance().boardSide = boardSide;
+                    LockoutConfig.getInstance().boardPosition = boardPosition;
                     LockoutConfig.save();
 
-                    context.getSource().sendFeedback(Text.literal("Updated board side." + (boardSide == LockoutConfig.BoardSide.LEFT ? " Note: Opening debug hud (F3) will hide the board." : "")));
+                    context.getSource().sendFeedback(Text.literal("Updated board position." + (boardPosition == LockoutConfig.BoardPosition.LEFT ? " Note: Opening debug hud (F3) will hide the board." : "")));
 
                     return 1;
                 }).build();
 
                 dispatcher.getRoot().addChild(commandNode);
-                commandNode.addChild(sideNode);
+                commandNode.addChild(positionNode);
             }
             {
                 var commandNode = ClientCommandManager.literal("BoardBuilder").executes((context) -> {

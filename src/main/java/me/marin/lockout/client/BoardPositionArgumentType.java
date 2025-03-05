@@ -14,25 +14,25 @@ import net.minecraft.text.Text;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class BoardSideArgumentType implements ArgumentType<String> {
+public class BoardPositionArgumentType implements ArgumentType<String> {
 
-    final static List<String> BOARD_SIDES = List.of(Constants.BOARD_SIDE_LEFT, Constants.BOARD_SIDE_RIGHT);
+    final static List<String> BOARD_POSITIONS = List.of(Constants.BOARD_POSITION_LEFT, Constants.BOARD_POSITION_RIGHT);
 
-    public static BoardSideArgumentType newInstance() {
-        return new BoardSideArgumentType();
+    public static BoardPositionArgumentType newInstance() {
+        return new BoardPositionArgumentType();
     }
 
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
         String s = reader.readString();
-        if (!BOARD_SIDES.contains(s)) {
-            throw new SimpleCommandExceptionType(Text.of("Invalid board side.")).createWithContext(reader);
+        if (!BOARD_POSITIONS.contains(s)) {
+            throw new SimpleCommandExceptionType(Text.of("Invalid board position.")).createWithContext(reader);
         }
         return s;
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(BOARD_SIDES, builder);
+        return CommandSource.suggestMatching(BOARD_POSITIONS, builder);
     }
 }

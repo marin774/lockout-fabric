@@ -21,15 +21,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static me.marin.lockout.Constants.*;
-import static me.marin.lockout.LockoutConfig.BoardSide.LEFT;
+import static me.marin.lockout.LockoutConfig.BoardPosition.LEFT;
 
 public class Utility {
 
     public static void drawBingoBoard(DrawContext context) {
-        LockoutConfig.BoardSide boardSide = LockoutConfig.getInstance().boardSide;
+        LockoutConfig.BoardPosition boardPosition = LockoutConfig.getInstance().boardPosition;
 
         // Don't render board if F3 is open with left-side board.
-        if (boardSide == LockoutConfig.BoardSide.LEFT && MinecraftClient.getInstance().inGameHud.getDebugHud().shouldShowDebugHud()) {
+        if (boardPosition == LockoutConfig.BoardPosition.LEFT && MinecraftClient.getInstance().inGameHud.getDebugHud().shouldShowDebugHud()) {
             return;
         }
 
@@ -41,7 +41,7 @@ public class Utility {
         int boardWidth = 2 * GUI_PADDING + board.size() * GUI_SLOT_SIZE;
         int boardHeight = GUI_PADDING + GUI_PADDING_BOTTOM + board.size() * GUI_SLOT_SIZE;
 
-        int boardRightEdgeX = boardSide == LEFT ? boardWidth : context.getScaledWindowWidth();
+        int boardRightEdgeX = boardPosition == LEFT ? boardWidth : context.getScaledWindowWidth();
         int boardLeftEdgeX = boardRightEdgeX - boardWidth;
 
         int x = boardLeftEdgeX;
@@ -91,7 +91,7 @@ public class Utility {
         }
 
         y += 20;
-        switch (boardSide) {
+        switch (boardPosition) {
             case RIGHT -> {
                 context.fill(context.getScaledWindowWidth() - maxWidth - 3 - 1,  y - 2, context.getScaledWindowWidth() - 1, y + formattedNames.size() * textRenderer.fontHeight + 1, 0x80_00_00_00);
 

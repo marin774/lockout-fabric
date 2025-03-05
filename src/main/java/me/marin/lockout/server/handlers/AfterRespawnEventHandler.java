@@ -14,6 +14,7 @@ public class AfterRespawnEventHandler implements ServerPlayerEvents.AfterRespawn
         if (!Lockout.isLockoutRunning(lockout)) return;
         if (lockout.isSoloBlackout()) return;
         if (!lockout.isLockoutPlayer(newPlayer.getUuid())) return;
+        if (alive) return; // end exit portal
 
         int slot = compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
         if (slot == 40) {

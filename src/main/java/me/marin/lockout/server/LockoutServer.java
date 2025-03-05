@@ -97,15 +97,19 @@ public class LockoutServer {
 
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(new AfterPlayerChangeWorldEventHandler());
 
+        ServerPlayConnectionEvents.JOIN.register(new PlayerJoinEventHandler());
+
+        ServerTickEvents.END_SERVER_TICK.register(new EndServerTickEventHandler());
+
+        ServerLivingEntityEvents.AFTER_DEATH.register(new AfterDeathEventHandler());
+
+        UseBlockCallback.EVENT.register(new UseBlockEventHandler());
+
+        ServerLifecycleEvents.SERVER_STARTED.register(new ServerStartedEventHandler());
+
         ServerPlayConnectionEvents.DISCONNECT.register((handler, minecraftServer) -> {
             waitingForVersionPacketPlayersMap.remove(handler.getPlayer());
         });
-
-        ServerPlayConnectionEvents.JOIN.register(new PlayerJoinEventHandler());
-        ServerTickEvents.END_SERVER_TICK.register(new EndServerTickEventHandler());
-        ServerLivingEntityEvents.AFTER_DEATH.register(new AfterDeathEventHandler());
-        UseBlockCallback.EVENT.register(new UseBlockEventHandler());
-        ServerLifecycleEvents.SERVER_STARTED.register(new ServerStartedEventHandler());
 
         ServerPlayNetworking.registerGlobalReceiver(LockoutVersionPayload.ID, (payload, context) -> {
             // Client has Lockout mod, compare versions, then kick or initialize

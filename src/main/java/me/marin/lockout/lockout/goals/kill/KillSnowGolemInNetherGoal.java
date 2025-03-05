@@ -11,7 +11,7 @@ public class KillSnowGolemInNetherGoal extends KillSnowGolemGoal {
 
     @Override
     public String getGoalName() {
-        return "Kill a Snow Golem in The Nether";
+        return "Kill Snow Golem in The Nether";
     }
 
     private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/kill/kill_snowman_nether.png");

@@ -15,7 +15,7 @@ public class KillGuardianGoal extends KillMobGoal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Kill a Guardian";
+        return "Kill Guardian";
     }
 
     @Override

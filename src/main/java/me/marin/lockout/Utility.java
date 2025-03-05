@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.OrderedText;
@@ -20,10 +21,18 @@ import java.util.List;
 import java.util.Optional;
 
 import static me.marin.lockout.Constants.*;
+import static me.marin.lockout.LockoutConfig.BoardPosition.LEFT;
 
 public class Utility {
 
     public static void drawBingoBoard(DrawContext context) {
+        LockoutConfig.BoardPosition boardPosition = LockoutConfig.getInstance().boardPosition;
+
+        // Don't render board if F3 is open with left-side board.
+        if (boardPosition == LockoutConfig.BoardPosition.LEFT && MinecraftClient.getInstance().inGameHud.getDebugHud().shouldShowDebugHud()) {
+            return;
+        }
+
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
         Lockout lockout = LockoutClient.lockout;
@@ -31,7 +40,11 @@ public class Utility {
 
         int boardWidth = 2 * GUI_PADDING + board.size() * GUI_SLOT_SIZE;
         int boardHeight = GUI_PADDING + GUI_PADDING_BOTTOM + board.size() * GUI_SLOT_SIZE;
-        int x = context.getScaledWindowWidth() - boardWidth;
+
+        int boardRightEdgeX = boardPosition == LEFT ? boardWidth : context.getScaledWindowWidth();
+        int boardLeftEdgeX = boardRightEdgeX - boardWidth;
+
+        int x = boardLeftEdgeX;
         int y = 0;
 
         context.drawGuiTexture(RenderLayer::getGuiTextured, Constants.GUI_IDENTIFIER, x, y, boardWidth, boardHeight);
@@ -66,7 +79,7 @@ public class Utility {
         context.drawText(textRenderer, String.join(Formatting.RESET + "" + Formatting.GRAY + "-", pointsList), x, y, 0, true);
 
         String timer = Utility.ticksToTimer(lockout.getTicks());
-        context.drawText(textRenderer, Formatting.WHITE + timer, context.getScaledWindowWidth() - textRenderer.getWidth(timer) - 4, y, 0, true);
+        context.drawText(textRenderer, Formatting.WHITE + timer, boardRightEdgeX - textRenderer.getWidth(timer) - 4, y, 0, true);
 
         List<String> formattedNames = new ArrayList<>();
         int maxWidth = 0;
@@ -78,12 +91,25 @@ public class Utility {
         }
 
         y += 20;
-        context.fill(context.getScaledWindowWidth() - maxWidth - 4,  y - 2, context.getScaledWindowWidth() - 1, y + formattedNames.size() * textRenderer.fontHeight + 1, 0x80_00_00_00);
+        switch (boardPosition) {
+            case RIGHT -> {
+                context.fill(context.getScaledWindowWidth() - maxWidth - 3 - 1,  y - 2, context.getScaledWindowWidth() - 1, y + formattedNames.size() * textRenderer.fontHeight + 1, 0x80_00_00_00);
 
-        for (String formattedName : formattedNames) {
-            context.drawText(textRenderer, formattedName, context.getScaledWindowWidth() - textRenderer.getWidth(formattedName) - 2, y, 0, true);
-            y += textRenderer.fontHeight;
+                for (String formattedName : formattedNames) {
+                    context.drawText(textRenderer, formattedName, context.getScaledWindowWidth() - textRenderer.getWidth(formattedName) - 2, y, 0, true);
+                    y += textRenderer.fontHeight;
+                }
+            }
+            case LEFT -> {
+                context.fill(1,  y - 2, 4 + maxWidth, y + formattedNames.size() * textRenderer.fontHeight + 1, 0x80_00_00_00);
+
+                for (String formattedName : formattedNames) {
+                    context.drawText(textRenderer, formattedName, 3, y, 0, true);
+                    y += textRenderer.fontHeight;
+                }
+            }
         }
+
     }
 
     public static void drawCenterBingoBoard(DrawContext context, TextRenderer textRenderer, int mouseX, int mouseY) {
@@ -163,6 +189,17 @@ public class Utility {
             }
         }
         context.drawOrderedTooltip(textRenderer, tooltip, mouseX, mouseY);
+    }
+
+    /**
+     * Code from {@link DrawContext#drawStackCount(TextRenderer, ItemStack, int, int, String)}, but without ItemStack argument requirement
+     */
+    public static void drawStackCount(DrawContext context, int x, int y, String count) {
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        context.getMatrices().push();
+        context.getMatrices().translate(0.0F, 0.0F, 200.0F);
+        context.drawText(textRenderer, count, x + 19 - 2 - textRenderer.getWidth(count), y + 6 + 3, -1, true);
+        context.getMatrices().pop();
     }
 
     public static List<ServerPlayerEntity> getSpectators(Lockout lockout, MinecraftServer server) {

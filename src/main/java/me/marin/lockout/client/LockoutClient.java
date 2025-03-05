@@ -1,13 +1,12 @@
 package me.marin.lockout.client;
 
-import me.marin.lockout.Constants;
-import me.marin.lockout.Lockout;
-import me.marin.lockout.LockoutInitializer;
-import me.marin.lockout.LockoutTeam;
+import me.marin.lockout.*;
 import me.marin.lockout.client.gui.*;
 import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
+import me.marin.lockout.mixin.client.InGameHudAccessor;
+import me.marin.lockout.mixin.client.LayeredDrawerAccessor;
 import me.marin.lockout.network.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -57,6 +56,20 @@ public class LockoutClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         Registry.register(Registries.SCREEN_HANDLER, Constants.BOARD_SCREEN_ID, BOARD_SCREEN_HANDLER);
+
+        MinecraftClient.getInstance().send(() -> {
+            // Render board above effects (vignette, nausea etc.), but below subtitles, player list, chat etc.
+            ((LayeredDrawerAccessor) ((InGameHudAccessor) MinecraftClient.getInstance().inGameHud).getLayeredDrawer()).getLayers().add(
+                    2, (context, tickCounter) -> {
+                        // Show lockout screen
+                        if (!Lockout.exists(LockoutClient.lockout)) {
+                            return;
+                        }
+
+                        Utility.drawBingoBoard(context);
+                    }
+            );
+        });
 
         ClientPlayNetworking.registerGlobalReceiver(LockoutGoalsTeamsPayload.ID, (payload, context) -> {
             List<LockoutTeam> teams = payload.teams();
@@ -147,8 +160,30 @@ public class LockoutClient implements ClientModInitializer {
         });
 
         ArgumentTypeRegistry.registerArgumentType(Constants.BOARD_FILE_ARGUMENT_TYPE, CustomBoardFileArgumentType.class, ConstantArgumentSerializer.of(CustomBoardFileArgumentType::newInstance));
+        ArgumentTypeRegistry.registerArgumentType(Constants.BOARD_POSITION_ARGUMENT_TYPE, BoardPositionArgumentType.class, ConstantArgumentSerializer.of(BoardPositionArgumentType::newInstance));
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            {
+                var commandNode = ClientCommandManager.literal("BoardPosition").build();
+                var positionNode = ClientCommandManager.argument("board position", BoardPositionArgumentType.newInstance()).executes((context) -> {
+                    String position = context.getArgument("board position", String.class);
+
+                    LockoutConfig.BoardPosition boardPosition = LockoutConfig.BoardPosition.match(position);
+                    if (boardPosition == null) {
+                        context.getSource().sendError(Text.literal("Invalid board position: " + position + "."));
+                        return 0;
+                    }
+                    LockoutConfig.getInstance().boardPosition = boardPosition;
+                    LockoutConfig.save();
+
+                    context.getSource().sendFeedback(Text.literal("Updated board position." + (boardPosition == LockoutConfig.BoardPosition.LEFT ? " Note: Opening debug hud (F3) will hide the board." : "")));
+
+                    return 1;
+                }).build();
+
+                dispatcher.getRoot().addChild(commandNode);
+                commandNode.addChild(positionNode);
+            }
             {
                 var commandNode = ClientCommandManager.literal("BoardBuilder").executes((context) -> {
                     MinecraftClient client = MinecraftClient.getInstance();
@@ -270,6 +305,10 @@ public class LockoutClient implements ClientModInitializer {
                 // Open GUI
                 client.setScreen(new BoardScreen(BOARD_SCREEN_HANDLER.create(0, client.player.getInventory()), client.player.getInventory(), Text.empty()));
             }
+        });
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            LockoutConfig.load(); // reload config every time player joins world
+
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
             lockout = null;

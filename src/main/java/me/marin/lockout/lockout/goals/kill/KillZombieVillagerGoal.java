@@ -15,7 +15,7 @@ public class KillZombieVillagerGoal extends KillMobGoal implements TextureProvid
 
     @Override
     public String getGoalName() {
-        return "Kill a Zombie Villager";
+        return "Kill Zombie Villager";
     }
 
     @Override

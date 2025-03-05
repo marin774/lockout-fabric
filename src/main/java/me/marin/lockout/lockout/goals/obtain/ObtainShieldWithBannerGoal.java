@@ -36,7 +36,11 @@ public class ObtainShieldWithBannerGoal extends ObtainItemsGoal implements Textu
             for (ItemStack item : defaultedList) {
                 if (item == null) continue;
                 if (item.isEmpty()) continue;
-                return item.getItem().equals(Items.SHIELD) && item.get(DataComponentTypes.BASE_COLOR) != null;
+                if (!item.getItem().equals(Items.SHIELD)) continue;
+
+                if (item.get(DataComponentTypes.BASE_COLOR) != null) {
+                    return true;
+                }
             }
         }
         return false;

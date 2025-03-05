@@ -185,7 +185,6 @@ public class LockoutServer {
         if (BIOME_LOCATE_DATA.containsKey(biome)) return BIOME_LOCATE_DATA.get(biome);
 
         var currentPos = BlockPos.ofFloored(server.getOverworld().getSpawnPos().toCenterPos());
-        Lockout.log("Spawn pos biomes: " + currentPos);
 
         var pair = server.getOverworld().locateBiome(
                 biomeRegistryEntry -> biomeRegistryEntry.matchesId(biome.getValue()),
@@ -210,7 +209,6 @@ public class LockoutServer {
         if (STRUCTURE_LOCATE_DATA.containsKey(structure)) return STRUCTURE_LOCATE_DATA.get(structure);
 
         var currentPos = BlockPos.ofFloored(server.getOverworld().getSpawnPos().toCenterPos());
-        Lockout.log("Spawn pos structures: " + currentPos);
 
         Registry<Structure> registry = server.getOverworld().getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
         RegistryEntryList<Structure> structureList = RegistryEntryList.of(registry.getOrThrow(structure));

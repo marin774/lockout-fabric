@@ -1,4 +1,4 @@
 package me.marin.lockout;
 
-public record LocateData(boolean wasLocated, boolean isInRequiredDistance, int distance) {
+public record LocateData(boolean wasLocated, int distance) {
 }

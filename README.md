@@ -31,8 +31,11 @@ Create teams using the vanilla `/team` command:
 Chat with your team:
 - `/chat team`
 
+Change the board position:
+- `/BoardPosition <left/right>` - changes the position of the board. If you select left, board will be hidden when you enable debug hud (F3).
+
 Change the board size:
-- `/gamerule lockoutBoardSize <size>` - Between 3 (3x3) and 7 (7x7), default is 5 (5x5)
+- `/SetBoardSize <size>` - Between 3 (3x3) and 7 (7x7), default is 5 (5x5)
 
 Change the match start time:
 - `/SetStartTime <seconds>` (between 5-300s)

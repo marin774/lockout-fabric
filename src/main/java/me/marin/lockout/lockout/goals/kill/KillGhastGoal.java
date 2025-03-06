@@ -15,7 +15,7 @@ public class KillGhastGoal extends KillMobGoal implements TextureProvider {
 
     @Override
     public String getGoalName() {
-        return "Kill a Ghast";
+        return "Kill Ghast";
     }
 
     @Override

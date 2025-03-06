@@ -1,5 +1,6 @@
 package me.marin.lockout.mixin.client;
 
+import me.marin.lockout.LockoutConfig;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
@@ -10,12 +11,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,6 +41,10 @@ public abstract class DebugHudMixin {
     @Shadow
     private ChunkPos pos;
 
+    @Final
+    @Shadow
+    private static Map<Heightmap.Type, String> HEIGHT_MAP_TYPES;
+
     @Shadow
     private void drawText(DrawContext context, List<String> text, boolean left) {}
 
@@ -50,6 +60,12 @@ public abstract class DebugHudMixin {
     private static String getBiomeString(RegistryEntry<Biome> biome) {
         throw new AbstractMethodError("Shadow");
     }
+
+    @Shadow
+    private ServerWorld getServerWorld() { throw new AbstractMethodError("Shadow"); }
+
+    @Shadow
+    private WorldChunk getChunk() { throw new AbstractMethodError("Shadow"); }
 
     @Unique
     private final DebugHud INSTANCE = (DebugHud) (Object) this;
@@ -90,8 +106,32 @@ public abstract class DebugHudMixin {
         if (worldChunk.isEmpty()) {
             text.add("Waiting for chunk...");
         } else {
+            WorldChunk wc = this.getChunk();
+            StringBuilder sb = new StringBuilder("SH");
+            for (Heightmap.Type typex : Heightmap.Type.values()) {
+                if (typex.isStoredServerSide()) {
+                    sb.append(" ").append(HEIGHT_MAP_TYPES.get(typex)).append(": ");
+                    if (wc != null) {
+                        sb.append(wc.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
+                    } else {
+                        sb.append("??");
+                    }
+                }
+            }
+            text.add(sb.toString());
+
             RegistryEntry<Biome> var27 = this.client.world.getBiome(blockPos);
             text.add("Biome: " + getBiomeString(var27));
+        }
+
+        if (LockoutConfig.getInstance().showNoiseRouterLine) {
+            ServerWorld serverWorld = this.getServerWorld();
+            if (serverWorld != null) {
+                ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+                ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
+                NoiseConfig noiseConfig = serverChunkManager.getNoiseConfig();
+                chunkGenerator.appendDebugHudText(text, noiseConfig, blockPos);
+            }
         }
 
         Map.Entry<Property<?>, Comparable<?>> entry;

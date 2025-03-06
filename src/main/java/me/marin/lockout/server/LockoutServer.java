@@ -6,22 +6,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.marin.lockout.*;
 import me.marin.lockout.client.LockoutBoard;
 import me.marin.lockout.generator.BoardGenerator;
-import me.marin.lockout.generator.GoalRequirements;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.GoalRegistry;
-import me.marin.lockout.lockout.goals.death.DieToFallingOffVinesGoal;
-import me.marin.lockout.lockout.goals.death.DieToTNTMinecartGoal;
-import me.marin.lockout.lockout.goals.have_more.HaveMostXPLevelsGoal;
-import me.marin.lockout.lockout.goals.kill.*;
-import me.marin.lockout.lockout.goals.misc.*;
-import me.marin.lockout.lockout.goals.opponent.OpponentDies3TimesGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentDiesGoal;
-import me.marin.lockout.lockout.goals.opponent.OpponentTouchesWaterGoal;
-import me.marin.lockout.lockout.interfaces.*;
+import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.network.CustomBoardPayload;
 import me.marin.lockout.network.LockoutVersionPayload;
 import me.marin.lockout.network.StartLockoutPayload;
 import me.marin.lockout.network.UpdateTooltipPayload;
+import me.marin.lockout.server.handlers.*;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -31,21 +23,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CandleBlock;
 import net.minecraft.command.argument.GameProfileArgumentType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.damage.FallLocation;
-import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.TntMinecartEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.s2c.common.CommonPingS2CPacket;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -62,7 +40,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -70,22 +47,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.structure.Structure;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
 
-import static me.marin.lockout.LockoutInitializer.BOARD_SIZE;
-
 public class LockoutServer {
 
-    public static final int LOCATE_SEARCH = 1000;
+    public static final int LOCATE_SEARCH = 750;
     public static final Map<RegistryKey<Biome>, LocateData> BIOME_LOCATE_DATA = new HashMap<>();
     public static final Map<RegistryKey<Structure>, LocateData> STRUCTURE_LOCATE_DATA = new HashMap<>();
     public static final List<DyeColor> AVAILABLE_DYE_COLORS = new ArrayList<>();
 
     private static int lockoutStartTime = 60;
+    private static int boardSize;
 
     public static Lockout lockout;
     public static MinecraftServer server;
@@ -109,79 +84,31 @@ public class LockoutServer {
         STRUCTURE_LOCATE_DATA.clear();
         AVAILABLE_DYE_COLORS.clear();
 
+        LockoutConfig.load(); // reload config every time the server starts
+        boardSize = LockoutConfig.getInstance().boardSize;
+        Lockout.log("Using default board size: " + boardSize);
+
         if (isInitialized) return;
         isInitialized = true;
 
-        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> {
-            if (ChatManager.getChat(sender) == ChatManager.Type.TEAM) {
-                String m = "[Team Chat] " + Formatting.RESET + "<" + sender.getName().getString() + "> " + message.getContent().getString();
-                if (Lockout.isLockoutRunning(lockout)) {
-                    LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(sender.getUuid());
-                    team.sendMessage(team.getColor() + m);
-                } else {
-                    Team team = sender.getScoreboardTeam();
-                    if (team == null) {
-                        return true;
-                    }
-                    MinecraftServer server = sender.getServer();
-                    PlayerManager pm = server.getPlayerManager();
+        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register(new AllowChatMessageEventHandler());
 
-                    team.getPlayerList().stream().filter(p -> pm.getPlayer(p) != null).map(pm::getPlayer).forEach(p ->{
-                        p.sendMessage(Text.literal(team.getColor() + m));
-                    });
-                }
-                return false;
-            }
-            return true;
-        });
+        ServerPlayerEvents.AFTER_RESPAWN.register(new AfterRespawnEventHandler());
 
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (!Lockout.isLockoutRunning(lockout)) return;
-            if (lockout.isSoloBlackout()) return;
-            if (!lockout.isLockoutPlayer(newPlayer.getUuid())) return;
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(new AfterPlayerChangeWorldEventHandler());
 
-            int slot = LockoutServer.compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
-            if (slot == 40) {
-                newPlayer.getInventory().offHand.set(0, compassHandler.newCompass());
-            }
-            if (slot >= 0 && slot <= 35) {
-                newPlayer.getInventory().setStack(slot, compassHandler.newCompass());
-            }
-        });
+        ServerPlayConnectionEvents.JOIN.register(new PlayerJoinEventHandler());
 
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
-            if (!Lockout.isLockoutRunning(lockout)) return;
+        ServerTickEvents.END_SERVER_TICK.register(new EndServerTickEventHandler());
 
-            for (Goal goal : lockout.getBoard().getGoals()) {
-                if (goal == null) continue;
-                if (!(goal instanceof EnterDimensionGoal enterDimensionGoal)) continue;
-                if (goal.isCompleted()) continue;
+        ServerLivingEntityEvents.AFTER_DEATH.register(new AfterDeathEventHandler());
 
-                if (destination.getRegistryKey() == enterDimensionGoal.getWorldRegistryKey()) {
-                    lockout.completeGoal(goal, player);
-                }
-            }
-        });
+        UseBlockCallback.EVENT.register(new UseBlockEventHandler());
+
+        ServerLifecycleEvents.SERVER_STARTED.register(new ServerStartedEventHandler());
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, minecraftServer) -> {
             waitingForVersionPacketPlayersMap.remove(handler.getPlayer());
-        });
-
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            // Check if the client has the correct mod version:
-            // 1. Send the Lockout version packet
-            // 2. Follow it with a Minecraft ping packet (id is hash of 'username + version' string)
-            // 3. Wait for the packets.
-            // 4. If ping response is received before the version response, they don't have the mod
-            // 5. Otherwise, compare the versions, and kick them if needed.
-
-            ServerPlayerEntity player = handler.getPlayer();
-            int id = (player.getName().getString() + LockoutInitializer.MOD_VERSION.getFriendlyString()).hashCode();
-
-            ServerPlayNetworking.send(player, new LockoutVersionPayload(LockoutInitializer.MOD_VERSION.getFriendlyString()));
-            player.networkHandler.sendPacket(new CommonPingS2CPacket(id));
-
-            waitingForVersionPacketPlayersMap.put(player, id);
         });
 
         ServerPlayNetworking.registerGlobalReceiver(LockoutVersionPayload.ID, (payload, context) -> {
@@ -222,328 +149,6 @@ public class LockoutServer {
             }
         });
 
-        ServerTickEvents.END_SERVER_TICK.register((server) -> {
-            if (!Lockout.isLockoutRunning(lockout)) return;
-
-            for (LockoutRunnable runnable : new HashSet<>(gameStartRunnables.keySet())) {
-                if (gameStartRunnables.get(runnable) <= 0) {
-                    runnable.run();
-                    gameStartRunnables.remove(runnable);
-                    return;
-                }
-                gameStartRunnables.merge(runnable, -1L, Long::sum);
-            }
-
-            for (Goal goal : lockout.getBoard().getGoals()) {
-                if (goal == null) continue;
-
-                if (goal instanceof HaveMostXPLevelsGoal) {
-                    for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                        lockout.levels.put(player.getUuid(), player.isDead() ? 0 : player.experienceLevel);
-                    }
-                    lockout.recalculateXPGoal(goal);
-                }
-
-                if (goal.isCompleted()) continue;
-
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                    if (goal instanceof ObtainItemsGoal obtainItemsGoal) {
-                        if (obtainItemsGoal.satisfiedBy(player.getInventory())) {
-                            if (goal instanceof OpponentObtainsItemGoal opponentObtainsItemGoal) {
-                                lockout.complete1v1Goal(goal, player, false, opponentObtainsItemGoal.getMessage(player));
-                            } else {
-                                lockout.completeGoal(goal, player);
-                            }
-                        }
-                    }
-
-                    if (goal instanceof RideEntityGoal rideEntityGoal && player.hasVehicle()) {
-                        EntityType<?> vehicle = player.getVehicle().getType();
-
-                        if (Objects.equals(vehicle, rideEntityGoal.getEntityType())) {
-                            boolean allow = true;
-                            if (player.getVehicle() instanceof Saddleable saddleable) {
-                                allow = saddleable.isSaddled();
-                            }
-                            if (Objects.equals(vehicle, EntityType.PIG)) {
-                                boolean hasCarrotOnAStick = false;
-                                for (ItemStack handItem : player.getHandItems()) {
-                                    if (handItem.getItem().equals(Items.CARROT_ON_A_STICK)) {
-                                        hasCarrotOnAStick = true;
-                                        break;
-                                    }
-                                }
-                                allow &= hasCarrotOnAStick;
-                            }
-                            if (allow) {
-                                lockout.completeGoal(goal, player);
-                            }
-                        }
-                    }
-                    if (goal instanceof EmptyHungerBarGoal) {
-                        if (player.getHungerManager().getFoodLevel() == 0) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    }
-                    if (goal instanceof ReachHeightLimitGoal) {
-                        if (player.getY() >= 320 && player.getWorld().getRegistryKey() == ServerWorld.OVERWORLD) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    }
-                    if (goal instanceof ReachNetherRoofGoal) {
-                        if (player.getY() >= 128 && player.getWorld().getRegistryKey() == ServerWorld.NETHER) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    }
-                    if (goal instanceof ReachBedrockGoal) {
-                        if (player.getY() < 10 && Objects.equals(player.getWorld().getBlockState(player.getBlockPos().down()).getBlock(), Blocks.BEDROCK)) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    }
-                    if (goal instanceof OpponentTouchesWaterGoal) {
-                        if (Objects.equals(player.getWorld().getBlockState(player.getBlockPos()).getBlock(), Blocks.WATER)) {
-                            lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " touched water.");
-                        }
-                    }
-                }
-            }
-
-            lockout.tick();
-            if (lockout.getTicks() % 20 == 0) {
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                    ServerPlayNetworking.send(player, lockout.getUpdateTimerPacket());
-                }
-            }
-        });
-
-        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (!Lockout.isLockoutRunning(lockout)) {
-                return;
-            }
-            if (entity instanceof PlayerEntity player && !lockout.isLockoutPlayer(player)) {
-                return;
-            }
-
-            if (entity instanceof PlayerEntity player) {
-                LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
-
-                lockout.deaths.putIfAbsent(team, 0);
-                lockout.deaths.merge(team, 1, Integer::sum);
-            } else {
-                if (entity.getPrimeAdversary() instanceof PlayerEntity player) {
-                    if (lockout.isLockoutPlayer(player.getUuid())) {
-                        LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
-                        lockout.mobsKilled.putIfAbsent(team, 0);
-                        lockout.mobsKilled.merge(team, 1, Integer::sum);
-                    }
-                }
-            }
-
-            for (Goal goal : lockout.getBoard().getGoals()) {
-                if (goal == null) continue;
-                if (goal.isCompleted()) continue;
-
-                if (entity.getPrimeAdversary() instanceof PlayerEntity attackerPlayer) {
-                    if (goal instanceof KillMobGoal killMobGoal) {
-                        if (killMobGoal.getEntity().equals(entity.getType())) {
-                            boolean allow = true;
-                            if (goal instanceof KillSnowGolemInNetherGoal)  {
-                                allow &= attackerPlayer.getWorld().getRegistryKey() == ServerWorld.NETHER;
-                            }
-                            if (goal instanceof KillBreezeWithWindChargeGoal) {
-                                allow &= source.isOf(DamageTypes.WIND_CHARGE);
-                            }
-                            if (goal instanceof KillColoredSheepGoal killColoredSheepGoal) {
-                                allow &= ((SheepEntity) entity).getColor() == killColoredSheepGoal.getDyeColor();
-                            }
-                            if (allow) {
-                                lockout.completeGoal(goal, attackerPlayer);
-                            }
-                        }
-                    }
-                    if (lockout.isLockoutPlayer(attackerPlayer.getUuid())) {
-                        LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(attackerPlayer.getUuid());
-
-                        if (goal instanceof KillAllSpecificMobsGoal killAllSpecificMobsGoal) {
-                            if (killAllSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
-                                killAllSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> new LinkedHashSet<>());
-                                killAllSpecificMobsGoal.getTrackerMap().get(team).add(entity.getType());
-
-                                int size = killAllSpecificMobsGoal.getTrackerMap().get(team).size();
-
-                                team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                                if (size >= killAllSpecificMobsGoal.getEntityTypes().size()) {
-                                    lockout.completeGoal(killAllSpecificMobsGoal, team);
-                                }
-                            }
-                        }
-                        if (goal instanceof KillUniqueHostileMobsGoal killUniqueHostileMobsGoal) {
-                            if (entity instanceof Monster) {
-                                lockout.killedHostileTypes.computeIfAbsent(team, t -> new LinkedHashSet<>());
-                                lockout.killedHostileTypes.get(team).add(entity.getType());
-
-                                int size = lockout.killedHostileTypes.get(team).size();
-
-                                team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                                if (size >= killUniqueHostileMobsGoal.getAmount()) {
-                                    lockout.completeGoal(killUniqueHostileMobsGoal, team);
-                                }
-                            }
-                        }
-                        if (goal instanceof Kill100MobsGoal kill100MobsGoal) {
-                            int size = lockout.mobsKilled.get(team);
-
-                            team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                            if (size >= kill100MobsGoal.getAmount()) {
-                                lockout.completeGoal(goal, team);
-                            }
-                        }
-                        if (goal instanceof KillSpecificMobsGoal killSpecificMobsGoal) {
-                            if (killSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
-                                killSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> 0);
-                                killSpecificMobsGoal.getTrackerMap().merge(team, 1, Integer::sum);
-
-                                int size = killSpecificMobsGoal.getTrackerMap().get(team);
-
-                                team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                                if (size >= killSpecificMobsGoal.getAmount()) {
-                                    lockout.completeGoal(killSpecificMobsGoal, attackerPlayer);
-                                }
-                            }
-                        }
-                    }
-
-                }
-                if (entity instanceof PlayerEntity player) {
-                    LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
-
-                    if (goal instanceof OpponentDiesGoal) {
-                        lockout.complete1v1Goal(goal, player, false, player.getName().getString() + " died.");
-                    }
-                    if (goal instanceof OpponentDies3TimesGoal && lockout.deaths.get(team) >= 3) {
-                        lockout.complete1v1Goal(goal, player, false, team.getDisplayName() + " died 3 times.");
-                    }
-                    if (goal instanceof DieToDamageTypeGoal dieToDamageTypeGoal) {
-                        for (RegistryKey<DamageType> key : dieToDamageTypeGoal.getDamageRegistryKeys()) {
-                            if (source.getTypeRegistryEntry().matchesKey(key)) {
-                                lockout.completeGoal(goal, player);
-                            }
-                        }
-                    }
-                    if (goal instanceof DieToEntityGoal dieToEntityGoal) {
-                        if (source.getAttacker() != null && source.getAttacker().getType() == dieToEntityGoal.getEntityType()) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    }
-                    if (goal instanceof DieToFallingOffVinesGoal) {
-                        if (source.getTypeRegistryEntry().matchesKey(DamageTypes.FALL)) {
-                            FallLocation fallLocation = FallLocation.fromEntity(player);
-                            if (fallLocation != null) {
-                                if (List.of(FallLocation.VINES, FallLocation.TWISTING_VINES, FallLocation.WEEPING_VINES).contains(fallLocation)) {
-                                    lockout.completeGoal(goal, player);
-                                }
-                            }
-                        }
-                    }
-                    if (goal instanceof DieToTNTMinecartGoal) {
-                        if (source.getSource() instanceof TntMinecartEntity) {
-                            lockout.completeGoal(goal, player);
-                        }
-                    }
-                }
-
-                if (goal instanceof KillOtherTeamPlayer) {
-                    if (entity instanceof PlayerEntity player) {
-                        if (entity.getPrimeAdversary() instanceof PlayerEntity killer) {
-                            if (!Objects.equals(player, killer) && !Objects.equals(lockout.getPlayerTeam(killer.getUuid()), lockout.getPlayerTeam(player.getUuid()))) {
-                                lockout.completeGoal(goal, killer);
-                            }
-                        }
-                    }
-                }
-            }
-
-        });
-
-        UseBlockCallback.EVENT.register((player, world, hand, blockHitResult) -> {
-            Lockout lockout = LockoutServer.lockout;
-            if (!Lockout.isLockoutRunning(lockout)) return ActionResult.PASS;
-
-            BlockPos blockPos = blockHitResult.getBlockPos();
-            if (!CandleBlock.canBeLit(world.getBlockState(blockPos))) return ActionResult.PASS;
-
-            ItemStack stack = player.getStackInHand(hand);
-            if (!stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE)) return ActionResult.PASS;
-
-            for (Goal goal : lockout.getBoard().getGoals()) {
-                if (goal == null) continue;
-                if (goal.isCompleted()) continue;
-
-                if (goal instanceof LightCandleGoal) {
-                    lockout.completeGoal(goal, player);
-                }
-            }
-            return ActionResult.PASS;
-        });
-
-        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-            server.execute(() -> {
-                Lockout.log("Locating all required Structures and Biomes");
-                LockoutServer.server = server;
-                long start = System.currentTimeMillis();
-
-                AVAILABLE_DYE_COLORS.add(DyeColor.BLACK);
-                AVAILABLE_DYE_COLORS.add(DyeColor.WHITE);
-                AVAILABLE_DYE_COLORS.add(DyeColor.GRAY);
-                AVAILABLE_DYE_COLORS.add(DyeColor.LIGHT_GRAY);
-                AVAILABLE_DYE_COLORS.add(DyeColor.BLUE);
-                AVAILABLE_DYE_COLORS.add(DyeColor.LIGHT_BLUE);
-                AVAILABLE_DYE_COLORS.add(DyeColor.ORANGE);
-                AVAILABLE_DYE_COLORS.add(DyeColor.RED);
-                AVAILABLE_DYE_COLORS.add(DyeColor.YELLOW);
-                AVAILABLE_DYE_COLORS.add(DyeColor.MAGENTA);
-                AVAILABLE_DYE_COLORS.add(DyeColor.PINK);
-                AVAILABLE_DYE_COLORS.add(DyeColor.PURPLE);
-
-                boolean hasCactus = locateBiome(server, BiomeKeys.DESERT).isInRequiredDistance();
-                hasCactus |= locateBiome(server, BiomeKeys.BADLANDS).isInRequiredDistance();
-                hasCactus |= locateBiome(server, BiomeKeys.ERODED_BADLANDS).isInRequiredDistance();
-                hasCactus |= locateBiome(server, BiomeKeys.WOODED_BADLANDS).isInRequiredDistance();
-                if (hasCactus) {
-                    AVAILABLE_DYE_COLORS.add(DyeColor.GREEN);
-                    AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
-                    AVAILABLE_DYE_COLORS.add(DyeColor.CYAN);
-                } else {
-                    if (locateBiome(server, BiomeKeys.WARM_OCEAN).isInRequiredDistance()) {
-                        AVAILABLE_DYE_COLORS.add(DyeColor.LIME);
-                    }
-                }
-
-                boolean hasCocoaBeans;
-                hasCocoaBeans  = locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
-                hasCocoaBeans |= locateBiome(server, BiomeKeys.BAMBOO_JUNGLE).isInRequiredDistance();
-                hasCocoaBeans |= locateBiome(server, BiomeKeys.JUNGLE).isInRequiredDistance();
-                if (hasCocoaBeans) {
-                    AVAILABLE_DYE_COLORS.add(DyeColor.BROWN);
-                }
-
-                for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-                    GoalRequirements goalRequirements = GoalRegistry.INSTANCE.getGoalGenerator(id);
-                    if (goalRequirements == null) continue;
-
-                    for (RegistryKey<Biome> biome : goalRequirements.getRequiredBiomes()) {
-                        locateBiome(server, biome);
-                    }
-
-                    for (RegistryKey<Structure> structure : goalRequirements.getRequiredStructures()) {
-                        locateStructure(server, structure);
-                    }
-                }
-                long end = System.currentTimeMillis();
-                Lockout.log("Located " + BIOME_LOCATE_DATA.size() + " biomes and " + STRUCTURE_LOCATE_DATA.size() + " structures in " + String.format("%.2f", ((end-start)/1000.0)) + "s!");
-            });
-        });
-
         ServerPlayNetworking.registerGlobalReceiver(CustomBoardPayload.ID, (payload, context) -> {
             ServerPlayerEntity player = context.player();
 
@@ -579,10 +184,9 @@ public class LockoutServer {
     public static LocateData locateBiome(MinecraftServer server, RegistryKey<Biome> biome) {
         if (BIOME_LOCATE_DATA.containsKey(biome)) return BIOME_LOCATE_DATA.get(biome);
 
-        var source = server.getCommandSource();
-        var currentPos = BlockPos.ofFloored(source.getPosition());
+        var currentPos = BlockPos.ofFloored(server.getOverworld().getSpawnPos().toCenterPos());
 
-        var pair = source.getWorld().locateBiome(
+        var pair = server.getOverworld().locateBiome(
                 biomeRegistryEntry -> biomeRegistryEntry.matchesId(biome.getValue()),
                 currentPos,
                 LOCATE_SEARCH,
@@ -591,10 +195,10 @@ public class LockoutServer {
 
         LocateData data;
         if (pair == null) {
-            data = new LocateData(false, false,0);
+            data = new LocateData(false,0);
         } else {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
-            data = new LocateData(true, distance < LOCATE_SEARCH, distance);
+            data = new LocateData(true, distance);
         }
         BIOME_LOCATE_DATA.put(biome, data);
 
@@ -604,25 +208,24 @@ public class LockoutServer {
     public static LocateData locateStructure(MinecraftServer server, RegistryKey<Structure> structure) {
         if (STRUCTURE_LOCATE_DATA.containsKey(structure)) return STRUCTURE_LOCATE_DATA.get(structure);
 
-        var source = server.getCommandSource();
-        var currentPos = BlockPos.ofFloored(source.getPosition());
+        var currentPos = BlockPos.ofFloored(server.getOverworld().getSpawnPos().toCenterPos());
 
-        Registry<Structure> registry = source.getWorld().getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
+        Registry<Structure> registry = server.getOverworld().getRegistryManager().getOrThrow(RegistryKeys.STRUCTURE);
         RegistryEntryList<Structure> structureList = RegistryEntryList.of(registry.getOrThrow(structure));
 
-        var pair = source.getWorld().getChunkManager().getChunkGenerator().locateStructure(
-                source.getWorld(),
+        var pair = server.getOverworld().getChunkManager().getChunkGenerator().locateStructure(
+                server.getOverworld(),
                 structureList,
                 currentPos,
-                100,
+                LOCATE_SEARCH,
                 false);
 
         LocateData data;
         if (pair == null) {
-            data = new LocateData(false, false,0);
+            data = new LocateData(false, 0);
         } else {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
-            data = new LocateData(true, distance < LOCATE_SEARCH, distance);
+            data = new LocateData(true, distance);
         }
         STRUCTURE_LOCATE_DATA.put(structure, data);
 
@@ -695,13 +298,12 @@ public class LockoutServer {
         }
 
         ServerWorld world = server.getCommandSource().getWorld();
-        int lockoutBoardSize = world.getGameRules().getInt(BOARD_SIZE);
 
         // Generate & set board
         LockoutBoard lockoutBoard;
         if (CUSTOM_BOARD == null) {
             BoardGenerator boardGenerator = new BoardGenerator(GoalRegistry.INSTANCE.getRegisteredGoals(), teams, AVAILABLE_DYE_COLORS, BIOME_LOCATE_DATA, STRUCTURE_LOCATE_DATA);
-            lockoutBoard = boardGenerator.generateBoard(lockoutBoardSize);
+            lockoutBoard = boardGenerator.generateBoard(boardSize);
         } else {
             // Reset custom board (TODO: do this somewhere else)
             for (Goal goal : CUSTOM_BOARD.getGoals()) {
@@ -961,6 +563,14 @@ public class LockoutServer {
 
         lockoutStartTime = seconds;
         context.getSource().sendMessage(Text.of("Updated start time to " + seconds + "s."));
+        return 1;
+    }
+
+    public static int setBoardSize(CommandContext<ServerCommandSource> context) {
+        int size = context.getArgument("board size", Integer.class);
+
+        boardSize = size;
+        context.getSource().sendMessage(Text.of("Updated board size to " + size + "."));
         return 1;
     }
 

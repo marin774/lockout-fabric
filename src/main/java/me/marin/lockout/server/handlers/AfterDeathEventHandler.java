@@ -39,18 +39,22 @@ public class AfterDeathEventHandler implements ServerLivingEntityEvents.AfterDea
             return;
         }
 
-        if (entity instanceof PlayerEntity player) {
-            LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
+        boolean playerDied = entity instanceof PlayerEntity;
+        boolean mobDied = !playerDied;
+        boolean killedByPlayer = entity.getPrimeAdversary() instanceof PlayerEntity;
+
+        if (playerDied) {
+            LockoutTeam team = lockout.getPlayerTeam(entity.getUuid());
 
             lockout.deaths.putIfAbsent(team, 0);
             lockout.deaths.merge(team, 1, Integer::sum);
-        } else {
-            if (entity.getPrimeAdversary() instanceof PlayerEntity player) {
-                if (lockout.isLockoutPlayer(player.getUuid())) {
-                    LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
-                    lockout.mobsKilled.putIfAbsent(team, 0);
-                    lockout.mobsKilled.merge(team, 1, Integer::sum);
-                }
+        }
+        if (mobDied && killedByPlayer) {
+            PlayerEntity killer = (PlayerEntity) entity.getPrimeAdversary();
+            if (lockout.isLockoutPlayer(killer.getUuid())) {
+                LockoutTeam team = lockout.getPlayerTeam(killer.getUuid());
+                lockout.mobsKilled.putIfAbsent(team, 0);
+                lockout.mobsKilled.merge(team, 1, Integer::sum);
             }
         }
 
@@ -58,12 +62,14 @@ public class AfterDeathEventHandler implements ServerLivingEntityEvents.AfterDea
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
 
-            if (entity.getPrimeAdversary() instanceof PlayerEntity attackerPlayer) {
+            if (mobDied && killedByPlayer) {
+                PlayerEntity killer = (PlayerEntity) entity.getPrimeAdversary();
+
                 if (goal instanceof KillMobGoal killMobGoal) {
                     if (killMobGoal.getEntity().equals(entity.getType())) {
                         boolean allow = true;
                         if (goal instanceof KillSnowGolemInNetherGoal)  {
-                            allow = attackerPlayer.getWorld().getRegistryKey() == ServerWorld.NETHER;
+                            allow = killer.getWorld().getRegistryKey() == ServerWorld.NETHER;
                         }
                         if (goal instanceof KillBreezeWithWindChargeGoal) {
                             allow = source.isOf(DamageTypes.WIND_CHARGE);
@@ -72,64 +78,62 @@ public class AfterDeathEventHandler implements ServerLivingEntityEvents.AfterDea
                             allow = ((SheepEntity) entity).getColor() == killColoredSheepGoal.getDyeColor();
                         }
                         if (allow) {
-                            lockout.completeGoal(goal, attackerPlayer);
+                            lockout.completeGoal(goal, killer);
                         }
                     }
                 }
-                if (lockout.isLockoutPlayer(attackerPlayer.getUuid())) {
-                    LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(attackerPlayer.getUuid());
+                LockoutTeamServer team = (LockoutTeamServer) lockout.getPlayerTeam(killer.getUuid());
 
-                    if (goal instanceof KillAllSpecificMobsGoal killAllSpecificMobsGoal) {
-                        if (killAllSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
-                            killAllSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> new LinkedHashSet<>());
-                            killAllSpecificMobsGoal.getTrackerMap().get(team).add(entity.getType());
+                if (goal instanceof KillAllSpecificMobsGoal killAllSpecificMobsGoal) {
+                    if (killAllSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
+                        killAllSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> new LinkedHashSet<>());
+                        killAllSpecificMobsGoal.getTrackerMap().get(team).add(entity.getType());
 
-                            int size = killAllSpecificMobsGoal.getTrackerMap().get(team).size();
-
-                            team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                            if (size >= killAllSpecificMobsGoal.getEntityTypes().size()) {
-                                lockout.completeGoal(killAllSpecificMobsGoal, team);
-                            }
-                        }
-                    }
-                    if (goal instanceof KillUniqueHostileMobsGoal killUniqueHostileMobsGoal) {
-                        if (entity instanceof Monster) {
-                            lockout.killedHostileTypes.computeIfAbsent(team, t -> new LinkedHashSet<>());
-                            lockout.killedHostileTypes.get(team).add(entity.getType());
-
-                            int size = lockout.killedHostileTypes.get(team).size();
-
-                            team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                            if (size >= killUniqueHostileMobsGoal.getAmount()) {
-                                lockout.completeGoal(killUniqueHostileMobsGoal, team);
-                            }
-                        }
-                    }
-                    if (goal instanceof Kill100MobsGoal kill100MobsGoal) {
-                        int size = lockout.mobsKilled.get(team);
+                        int size = killAllSpecificMobsGoal.getTrackerMap().get(team).size();
 
                         team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                        if (size >= kill100MobsGoal.getAmount()) {
-                            lockout.completeGoal(goal, team);
-                        }
-                    }
-                    if (goal instanceof KillSpecificMobsGoal killSpecificMobsGoal) {
-                        if (killSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
-                            killSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> 0);
-                            killSpecificMobsGoal.getTrackerMap().merge(team, 1, Integer::sum);
-
-                            int size = killSpecificMobsGoal.getTrackerMap().get(team);
-
-                            team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
-                            if (size >= killSpecificMobsGoal.getAmount()) {
-                                lockout.completeGoal(killSpecificMobsGoal, attackerPlayer);
-                            }
+                        if (size >= killAllSpecificMobsGoal.getEntityTypes().size()) {
+                            lockout.completeGoal(killAllSpecificMobsGoal, team);
                         }
                     }
                 }
+                if (goal instanceof KillUniqueHostileMobsGoal killUniqueHostileMobsGoal) {
+                    if (entity instanceof Monster) {
+                        lockout.killedHostileTypes.computeIfAbsent(team, t -> new LinkedHashSet<>());
+                        lockout.killedHostileTypes.get(team).add(entity.getType());
 
+                        int size = lockout.killedHostileTypes.get(team).size();
+
+                        team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
+                        if (size >= killUniqueHostileMobsGoal.getAmount()) {
+                            lockout.completeGoal(killUniqueHostileMobsGoal, team);
+                        }
+                    }
+                }
+                if (goal instanceof Kill100MobsGoal kill100MobsGoal) {
+                    int size = lockout.mobsKilled.get(team);
+
+                    team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
+                    if (size >= kill100MobsGoal.getAmount()) {
+                        lockout.completeGoal(goal, team);
+                    }
+                }
+                if (goal instanceof KillSpecificMobsGoal killSpecificMobsGoal) {
+                    if (killSpecificMobsGoal.getEntityTypes().contains(entity.getType())) {
+                        killSpecificMobsGoal.getTrackerMap().computeIfAbsent(team, t -> 0);
+                        killSpecificMobsGoal.getTrackerMap().merge(team, 1, Integer::sum);
+
+                        int size = killSpecificMobsGoal.getTrackerMap().get(team);
+
+                        team.sendTooltipUpdate((Goal & HasTooltipInfo) goal);
+                        if (size >= killSpecificMobsGoal.getAmount()) {
+                            lockout.completeGoal(killSpecificMobsGoal, killer);
+                        }
+                    }
+                }
             }
-            if (entity instanceof PlayerEntity player) {
+            if (playerDied) {
+                PlayerEntity player = (PlayerEntity) entity;
                 LockoutTeam team = lockout.getPlayerTeam(player.getUuid());
 
                 if (goal instanceof OpponentDiesGoal) {
@@ -165,17 +169,17 @@ public class AfterDeathEventHandler implements ServerLivingEntityEvents.AfterDea
                         lockout.completeGoal(goal, player);
                     }
                 }
-            }
 
-            if (goal instanceof KillOtherTeamPlayer) {
-                if (entity instanceof PlayerEntity player) {
-                    if (entity.getPrimeAdversary() instanceof PlayerEntity killer) {
-                        if (!Objects.equals(player, killer) && !Objects.equals(lockout.getPlayerTeam(killer.getUuid()), lockout.getPlayerTeam(player.getUuid()))) {
-                            lockout.completeGoal(goal, killer);
-                        }
+                if (goal instanceof KillOtherTeamPlayer && killedByPlayer) {
+                    PlayerEntity killer = (PlayerEntity) entity.getPrimeAdversary();
+
+                    if (!Objects.equals(player, killer) && !Objects.equals(lockout.getPlayerTeam(killer.getUuid()), lockout.getPlayerTeam(player.getUuid()))) {
+                        lockout.completeGoal(goal, killer);
                     }
                 }
             }
+
+
         }
 
     }

@@ -1,5 +1,7 @@
 package me.marin.lockout.lockout.interfaces;
 
+import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,7 +18,15 @@ public abstract class WearArmorGoal extends ObtainAllItemsGoal {
     @Override
     public boolean satisfiedBy(PlayerInventory playerInventory) {
         List<Item> items = new ArrayList<>(getItems());
-        for (ItemStack item : playerInventory.armor) {
+
+        // TODO: Do better
+        var armor = new ArrayList<ItemStack>();
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.HEAD));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.CHEST));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.LEGS));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.FEET));
+
+        for (ItemStack item : armor) {
             if (item == null) continue;
             if (items.remove(item.getItem())) {
                 if (items.isEmpty()) {

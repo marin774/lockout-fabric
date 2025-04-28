@@ -16,7 +16,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Saddleable;
+import net.minecraft.entity.SaddledComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
@@ -72,18 +72,13 @@ public class EndServerTickEventHandler implements ServerTickEvents.EndTick {
 
                     if (Objects.equals(vehicle, rideEntityGoal.getEntityType())) {
                         boolean allow = true;
-                        if (player.getVehicle() instanceof Saddleable saddleable) {
-                            allow = saddleable.isSaddled();
-                        }
                         if (Objects.equals(vehicle, EntityType.PIG)) {
                             boolean hasCarrotOnAStick = false;
-                            for (ItemStack handItem : player.getHandItems()) {
-                                if (handItem.getItem().equals(Items.CARROT_ON_A_STICK)) {
-                                    hasCarrotOnAStick = true;
-                                    break;
-                                }
+                            var handItem = player.getInventory().getSelectedStack();
+                            if (handItem.getItem().equals(Items.CARROT_ON_A_STICK)) {
+                                hasCarrotOnAStick = true;
                             }
-                            allow &= hasCarrotOnAStick;
+                            allow = hasCarrotOnAStick;
                         }
                         if (allow) {
                             lockout.completeGoal(goal, player);

@@ -287,7 +287,7 @@ public class LockoutServer {
             }
             serverPlayer.getStatHandler().sendStats(serverPlayer);
             // Clear all advancements
-            AdvancementCommand.Operation.REVOKE.processAll(serverPlayer, server.getAdvancementLoader().getAdvancements());
+            AdvancementCommand.Operation.REVOKE.processAll(serverPlayer, server.getAdvancementLoader().getAdvancements(), false);
 
             if (allLockoutPlayers.contains(serverPlayer.getUuid())) {
                 serverPlayer.changeGameMode(GameMode.ADVENTURE);

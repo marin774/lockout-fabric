@@ -56,7 +56,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
     }
 
     @Override
-    protected int getContentsHeight() {
+    protected int getContentsHeightWithPadding() {
         return visibleGoals.size() * ITEM_HEIGHT;
     }
 
@@ -66,7 +66,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
     }
 
     @Override
-    protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         this.rowWidth = getWidth() - MARGIN_X * 2;
         this.left = getX() + MARGIN_X;
         this.top = getY();

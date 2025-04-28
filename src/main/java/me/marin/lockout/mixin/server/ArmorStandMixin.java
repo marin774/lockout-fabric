@@ -4,6 +4,7 @@ import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.misc.FillArmorStandGoal;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.ArrayList;
 
 @Mixin(ArmorStandEntity.class)
 public class ArmorStandMixin {
@@ -34,8 +37,15 @@ public class ArmorStandMixin {
             if (!(goal instanceof FillArmorStandGoal fillArmorStandGoal)) continue;
             if (goal.isCompleted()) continue;
 
+            // TODO: Do better
+            var armor = new ArrayList<ItemStack>();
+            armor.add(armorStand.getEquippedStack(EquipmentSlot.HEAD));
+            armor.add(armorStand.getEquippedStack(EquipmentSlot.CHEST));
+            armor.add(armorStand.getEquippedStack(EquipmentSlot.LEGS));
+            armor.add(armorStand.getEquippedStack(EquipmentSlot.FEET));
+
             if (serverPlayer.interactionManager.getGameMode() != GameMode.SPECTATOR && cir.getReturnValue() == ActionResult.SUCCESS_SERVER) {
-                for (ItemStack armorItem : armorStand.getArmorItems()) {
+                for (ItemStack armorItem : armor) {
                     if (armorItem == null || armorItem.isEmpty()) return;
                 }
                 // Armor stand is now full

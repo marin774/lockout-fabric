@@ -3,6 +3,7 @@ package me.marin.lockout.mixin.server;
 import me.marin.lockout.CompassItemHandler;
 import me.marin.lockout.Lockout;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,14 +42,14 @@ public class ServerPlayerEntityMixin {
         if (player.getWorld().isClient) return;
 
         int i = 0;
-        for (ItemStack item : player.getInventory().main) {
+        for (ItemStack item : player.getInventory().getMainStacks()) {
             if (CompassItemHandler.isCompass(item)) {
                 LockoutServer.compassHandler.compassSlots.put(player.getUuid(), i);
                 return;
             }
             i++;
         }
-        if (CompassItemHandler.isCompass(player.getInventory().offHand.getFirst())) {
+        if (CompassItemHandler.isCompass(((PlayerInventoryAccessor)player.getInventory()).getEquipment().get(EquipmentSlot.OFFHAND))) {
             LockoutServer.compassHandler.compassSlots.put(player.getUuid(), 40);
         }
     }

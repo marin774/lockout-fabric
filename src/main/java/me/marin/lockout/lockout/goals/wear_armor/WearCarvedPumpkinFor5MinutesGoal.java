@@ -5,7 +5,9 @@ import me.marin.lockout.LockoutTeamServer;
 import me.marin.lockout.Utility;
 import me.marin.lockout.lockout.interfaces.HasTooltipInfo;
 import me.marin.lockout.lockout.interfaces.WearArmorPieceGoal;
+import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
 import me.marin.lockout.server.LockoutServer;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -44,8 +46,15 @@ public class WearCarvedPumpkinFor5MinutesGoal extends WearArmorPieceGoal impleme
 
         long wornTime = map.getOrDefault(player.getUuid(), 0L);
 
+        // TODO: Do better
+        var armor = new ArrayList<ItemStack>();
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.HEAD));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.CHEST));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.LEGS));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.FEET));
+
         boolean wearingPumpkin = false;
-        for (ItemStack item : playerInventory.armor) {
+        for (ItemStack item : armor) {
             if (item == null) continue;
             if (item.getItem() == Items.CARVED_PUMPKIN) {
                 wearingPumpkin = true;

@@ -30,7 +30,7 @@ public class FillInventoryWithUniqueItemsGoal extends ObtainItemsGoal {
     @Override
     public boolean satisfiedBy(PlayerInventory playerInventory) {
         Set<Item> itemTypes = new HashSet<>();
-        for (ItemStack item : playerInventory.main) {
+        for (ItemStack item : playerInventory.getMainStacks()) {
             if (item == null || item.isEmpty()) return false;
 
             if (!itemTypes.add(item.getItem())) return false;

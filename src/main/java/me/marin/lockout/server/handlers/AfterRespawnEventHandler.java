@@ -2,6 +2,7 @@ package me.marin.lockout.server.handlers;
 
 import me.marin.lockout.Lockout;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import static me.marin.lockout.server.LockoutServer.compassHandler;
@@ -18,7 +19,7 @@ public class AfterRespawnEventHandler implements ServerPlayerEvents.AfterRespawn
 
         int slot = compassHandler.compassSlots.getOrDefault(newPlayer.getUuid(), 0);
         if (slot == 40) {
-            newPlayer.getInventory().offHand.set(0, compassHandler.newCompass());
+            newPlayer.getInventory().setStack(40, compassHandler.newCompass());
         }
         if (slot >= 0 && slot <= 35) {
             newPlayer.getInventory().setStack(slot, compassHandler.newCompass());

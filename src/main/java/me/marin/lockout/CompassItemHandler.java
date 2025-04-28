@@ -45,7 +45,7 @@ public class CompassItemHandler {
     public ItemStack newCompass() {
         ItemStack compass = Items.COMPASS.getDefaultStack();
         NbtCompound compound = new NbtCompound();
-        compound.putUuid("PlayerTracker", UUID.randomUUID());
+        compound.putString("PlayerTracker", UUID.randomUUID().toString());
         compass.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(compound));
         return compass;
     }

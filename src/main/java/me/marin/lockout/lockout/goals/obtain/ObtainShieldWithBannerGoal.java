@@ -6,6 +6,7 @@ import me.marin.lockout.lockout.texture.TextureProvider;
 import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,18 +33,19 @@ public class ObtainShieldWithBannerGoal extends ObtainItemsGoal implements Textu
 
     @Override
     public boolean satisfiedBy(PlayerInventory playerInventory) {
-        for (var defaultedList : ((PlayerInventoryAccessor) playerInventory).getCombinedInventory()) {
-            for (ItemStack item : defaultedList) {
-                if (item == null) continue;
-                if (item.isEmpty()) continue;
-                if (!item.getItem().equals(Items.SHIELD)) continue;
+        for (ItemStack item : ((PlayerInventoryAccessor) playerInventory).getPlayerInventory()) {
+            if (item == null) continue;
+            if (item.isEmpty()) continue;
+            if (!item.getItem().equals(Items.SHIELD)) continue;
 
-                if (item.get(DataComponentTypes.BASE_COLOR) != null) {
-                    return true;
-                }
+            if (item.get(DataComponentTypes.BASE_COLOR) != null) {
+                return true;
             }
         }
-        return false;
+
+        var offHandItem = ((PlayerInventoryAccessor) playerInventory).getEquipment().get(EquipmentSlot.OFFHAND);
+        return offHandItem != null && !offHandItem.isEmpty() && offHandItem.getItem().equals(Items.SHIELD)
+                && offHandItem.get(DataComponentTypes.BASE_COLOR) != null;
     }
 
     private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/custom/apply_banner_shield.png");

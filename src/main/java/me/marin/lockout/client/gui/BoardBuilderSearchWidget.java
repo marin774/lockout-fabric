@@ -79,11 +79,12 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
         int y = 4;
         int idx = 0;
         for (GoalEntry goalEntry : visibleGoals) {
-            goalEntry.render(context, idx++,getY() + y,getX() + MARGIN_X, rowWidth, 18, mouseX, mouseY, Objects.equals(goalEntry, hovered), delta);
+            goalEntry.render(context, idx++,getY() + y - (int)getScrollY() - 3,getX() + MARGIN_X, rowWidth - 4, 18, mouseX, mouseY, Objects.equals(goalEntry, hovered), delta);
             y += 18;
         }
 
         context.disableScissor();
+        this.drawScrollbar(context);
     }
 
     protected final GoalEntry getEntryAtPosition(double x, double y) {
@@ -91,9 +92,9 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
         int centerX = this.left + this.width / 2;
         int left = centerX - halfRowWidth;
         int right = centerX + halfRowWidth;
-        int scrolledY = MathHelper.floor(y - (double)this.top) + (int)getScrollY() - MARGIN_Y;
+        int scrolledY = MathHelper.floor(y - (double)this.top) + (int)getScrollY() - MARGIN_Y + 3;
         int idx = scrolledY / ITEM_HEIGHT;
-        if (x < (this.right + MARGIN_X) && x >= (double) left && x <= (double) right && idx >= 0 && scrolledY >= 0 && idx < visibleGoals.size()) {
+        if (x < (this.right + MARGIN_X - 6) && x >= (double) left && x <= (double) right && idx >= 0 && scrolledY >= 0 && idx < visibleGoals.size()) {
             return registeredGoals.get(visibleGoals.get(idx).goal.getId());
         }
         return null;
@@ -110,7 +111,8 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
             BoardBuilderData.INSTANCE.setGoal(hovered.goal);
             MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        var bl = checkScrollbarDragged(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button) || bl;
     }
 
     @Override

@@ -11,6 +11,7 @@ import me.marin.lockout.lockout.interfaces.IncrementStatGoal;
 import me.marin.lockout.lockout.interfaces.ReachXPLevelGoal;
 import me.marin.lockout.server.LockoutServer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -169,16 +170,19 @@ public abstract class PlayerMixin {
         }
     }
 
-    @Inject(method = "disableShield", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getItemCooldownManager()Lnet/minecraft/entity/player/ItemCooldownManager;"))
-    public void onShieldDisabled(ItemStack shield, CallbackInfo ci) {
+    @Inject(method = "takeShieldHit", at = @At(value = "TAIL"))
+    public void onTakeShieldHit(ServerWorld world, LivingEntity attacker, CallbackInfo ci) {
         Lockout lockout = LockoutServer.lockout;
         if (!Lockout.isLockoutRunning(lockout)) return;
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player.getWorld().isClient) return;
 
+        float f = attacker.getWeaponDisableBlockingForSeconds();
+
         for (Goal goal : lockout.getBoard().getGoals()) {
             if (goal == null) continue;
             if (goal.isCompleted()) continue;
+            if (f <= 0.0F) continue;
 
             if (goal instanceof HaveShieldDisabledGoal) {
                 lockout.completeGoal(goal, player);

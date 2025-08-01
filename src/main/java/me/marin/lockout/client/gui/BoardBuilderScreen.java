@@ -238,14 +238,15 @@ public class BoardBuilderScreen extends Screen {
         }
 
         String finalBoardName = boardName;
+        // TODO: Fix board builder
         Text openBoardFile = Text.literal("[Open file]").styled(style ->
-                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, BoardBuilderIO.INSTANCE.getBoardPath(finalBoardName).toFile().getAbsolutePath()))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open board file.")))
+                style.withClickEvent(new ClickEvent.OpenFile(BoardBuilderIO.INSTANCE.getBoardPath(finalBoardName).toFile().getAbsolutePath()))
+                        .withHoverEvent(new HoverEvent.ShowText(Text.of("Click to open board file.")))
                         .withFormatting(Formatting.WHITE)
         );
         Text openBoardsDirectory = Text.literal("[View all boards]").styled(style ->
-                style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, BoardBuilderIO.DIRECTORY.toFile().getAbsolutePath()))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Click to open boards directory.")))
+                style.withClickEvent(new ClickEvent.OpenFile(BoardBuilderIO.DIRECTORY.toFile().getAbsolutePath()))
+                        .withHoverEvent(new HoverEvent.ShowText(Text.of("Click to open boards directory.")))
                         .withFormatting(Formatting.WHITE)
         );
         MinecraftClient.getInstance().player.sendMessage(Text.literal("Saved custom board as " + boardName + BoardBuilderIO.FILE_EXTENSION + "!\n").formatted(Formatting.GREEN).append(openBoardFile).append(" ").append(openBoardsDirectory), false);

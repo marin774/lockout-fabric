@@ -193,12 +193,12 @@ public class LockoutServer {
                 32,
                 64);
 
-        LocateData data;
-        if (pair == null) {
-            data = new LocateData(false,0);
-        } else {
+        LocateData data= new LocateData(false,0);
+        if (pair != null) {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
-            data = new LocateData(true, distance);
+            if (distance < LOCATE_SEARCH) {
+                data = new LocateData(true, distance);
+            }
         }
         BIOME_LOCATE_DATA.put(biome, data);
 
@@ -220,12 +220,12 @@ public class LockoutServer {
                 LOCATE_SEARCH,
                 false);
 
-        LocateData data;
-        if (pair == null) {
-            data = new LocateData(false, 0);
-        } else {
+        LocateData data = new LocateData(false, 0);
+        if (pair != null) {
             int distance = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), pair.getFirst().getX(), pair.getFirst().getZ()));
-            data = new LocateData(true, distance);
+            if (distance < LOCATE_SEARCH) {
+                data = new LocateData(true, distance);
+            }
         }
         STRUCTURE_LOCATE_DATA.put(structure, data);
 
@@ -287,7 +287,7 @@ public class LockoutServer {
             }
             serverPlayer.getStatHandler().sendStats(serverPlayer);
             // Clear all advancements
-            AdvancementCommand.Operation.REVOKE.processAll(serverPlayer, server.getAdvancementLoader().getAdvancements());
+            AdvancementCommand.Operation.REVOKE.processAll(serverPlayer, server.getAdvancementLoader().getAdvancements(), false);
 
             if (allLockoutPlayers.contains(serverPlayer.getUuid())) {
                 serverPlayer.changeGameMode(GameMode.ADVENTURE);

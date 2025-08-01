@@ -29,6 +29,7 @@ public class LockoutConfig {
 
     public static void load() {
         if (!Files.exists(CONFIG_PATH)) {
+            createConfigDir();
             loadDefaultConfig();
             save();
         } else {
@@ -48,6 +49,14 @@ public class LockoutConfig {
         instance.boardSize = 5;
         instance.boardPosition = BoardPosition.RIGHT;
         instance.showNoiseRouterLine = false;
+    }
+
+    private static void createConfigDir() {
+        try {
+            Files.createDirectory(Path.of("./config"));
+        } catch (Exception e) {
+            Lockout.error(e);
+        }
     }
 
     public static void save() {

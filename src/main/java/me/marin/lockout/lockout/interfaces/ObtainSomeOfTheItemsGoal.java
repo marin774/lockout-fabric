@@ -1,6 +1,7 @@
 package me.marin.lockout.lockout.interfaces;
 
 import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,14 +19,24 @@ public abstract class ObtainSomeOfTheItemsGoal extends ObtainItemsGoal implement
     public boolean satisfiedBy(PlayerInventory playerInventory) {
         List<Item> items = new ArrayList<>(getItems());
         int count = 0;
-        for (var defaultedList : ((PlayerInventoryAccessor) playerInventory).getCombinedInventory()) {
-            for (ItemStack item : defaultedList) {
-                if (item == null) continue;
-                if (items.remove(item.getItem())) {
-                    count++;
-                    if (count >= getAmount()) {
-                        return true;
-                    }
+        for (ItemStack item : ((PlayerInventoryAccessor) playerInventory).getPlayerInventory()) {
+            if (item == null) continue;
+            if (items.remove(item.getItem())) {
+                count++;
+                if (count >= getAmount()) {
+                    return true;
+                }
+            }
+        }
+        for (var equipmentSlot : EquipmentSlot.values())
+        {
+            var item = ((PlayerInventoryAccessor) playerInventory).getEquipment().get(equipmentSlot);
+
+            if (item == null) continue;
+            if (items.remove(item.getItem())) {
+                count++;
+                if (count >= getAmount()) {
+                    return true;
                 }
             }
         }

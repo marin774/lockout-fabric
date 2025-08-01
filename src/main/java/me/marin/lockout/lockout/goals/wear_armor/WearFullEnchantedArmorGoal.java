@@ -2,13 +2,16 @@ package me.marin.lockout.lockout.goals.wear_armor;
 
 import me.marin.lockout.Lockout;
 import me.marin.lockout.lockout.interfaces.WearArmorGoal;
+import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WearFullEnchantedArmorGoal extends WearArmorGoal {
@@ -35,7 +38,14 @@ public class WearFullEnchantedArmorGoal extends WearArmorGoal {
 
     @Override
     public boolean satisfiedBy(PlayerInventory playerInventory) {
-        for (ItemStack itemStack : playerInventory.armor) {
+
+        var armor = new ArrayList<ItemStack>();
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.HEAD));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.CHEST));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.LEGS));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.FEET));
+
+        for (ItemStack itemStack : armor) {
             if (itemStack.isEmpty() || !itemStack.hasEnchantments()) {
                 return false;
             }

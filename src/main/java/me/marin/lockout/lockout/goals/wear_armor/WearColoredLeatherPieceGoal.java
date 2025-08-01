@@ -2,14 +2,17 @@ package me.marin.lockout.lockout.goals.wear_armor;
 
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.interfaces.WearArmorPieceGoal;
+import me.marin.lockout.mixin.server.PlayerInventoryAccessor;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +32,7 @@ public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
         COLOR = GoalDataConstants.getDyeColorValue(DYE_COLOR);
 
         DISPLAY_ITEM_STACK = ITEM.getDefaultStack();
-        DISPLAY_ITEM_STACK.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(COLOR, false));
+        DISPLAY_ITEM_STACK.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(COLOR));
 
         GOAL_NAME = "Wear " + GoalDataConstants.getDyeColorFormatted(DYE_COLOR) + " " + GoalDataConstants.getArmorPieceFormatted(parts[0]);
     }
@@ -56,7 +59,14 @@ public class WearColoredLeatherPieceGoal extends WearArmorPieceGoal {
 
     @Override
     public boolean satisfiedBy(PlayerInventory playerInventory) {
-        for (ItemStack item : playerInventory.armor) {
+
+        var armor = new ArrayList<ItemStack>();
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.HEAD));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.CHEST));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.LEGS));
+        armor.add(((PlayerInventoryAccessor)playerInventory).getEquipment().get(EquipmentSlot.FEET));
+
+        for (ItemStack item : armor) {
             if (item == null) continue;
             if (item.getItem().equals(ITEM)) {
                 if (Optional.ofNullable(item.get(DataComponentTypes.DYED_COLOR)).map(dyed -> dyed.rgb() == COLOR).orElse(false)) {

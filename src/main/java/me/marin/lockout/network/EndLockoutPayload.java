@@ -8,7 +8,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 
 public record EndLockoutPayload(int[] winners, long time) implements CustomPayload {
-    public static final CustomPayload.Id<EndLockoutPayload> ID = new CustomPayload.Id<>(Constants.END_LOCKOUT_PACKET);
+    public static final Id<EndLockoutPayload> ID = new Id<>(Constants.END_LOCKOUT_PACKET);
     public static final PacketCodec<RegistryByteBuf, EndLockoutPayload> CODEC = PacketCodec.tuple(
             PacketCodec.of((winners, buf) -> buf.writeIntArray(winners), PacketByteBuf::readIntArray),
             EndLockoutPayload::winners,
@@ -17,7 +17,7 @@ public record EndLockoutPayload(int[] winners, long time) implements CustomPaylo
             EndLockoutPayload::new);
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public Id<? extends CustomPayload> getId() {
         return ID;
     }
 }

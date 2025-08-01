@@ -13,7 +13,7 @@ import java.util.List;
 
 public record LockoutGoalsTeamsPayload(List<LockoutTeam> teams, List<Pair<Pair<String, String>, Integer>> goals,
                                        boolean isRunning) implements CustomPayload {
-    public static final CustomPayload.Id<LockoutGoalsTeamsPayload> ID = new CustomPayload.Id<>(Constants.LOCKOUT_GOALS_TEAMS_PACKET);
+    public static final Id<LockoutGoalsTeamsPayload> ID = new Id<>(Constants.LOCKOUT_GOALS_TEAMS_PACKET);
 
     public static final PacketCodec<RegistryByteBuf, LockoutGoalsTeamsPayload> CODEC = new PacketCodec<RegistryByteBuf, LockoutGoalsTeamsPayload>() {
         @Override
@@ -69,7 +69,7 @@ public record LockoutGoalsTeamsPayload(List<LockoutTeam> teams, List<Pair<Pair<S
     };
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public Id<? extends CustomPayload> getId() {
         return ID;
     }
 }

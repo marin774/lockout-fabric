@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 
 public record CompleteTaskPayload(String goal, int teamIndex) implements CustomPayload {
-    public static final CustomPayload.Id<CompleteTaskPayload> ID = new CustomPayload.Id<>(Constants.COMPLETE_TASK_PACKET);
+    public static final Id<CompleteTaskPayload> ID = new Id<>(Constants.COMPLETE_TASK_PACKET);
     public static final PacketCodec<RegistryByteBuf, CompleteTaskPayload> CODEC = PacketCodec.tuple(PacketCodecs.STRING,
             CompleteTaskPayload::goal,
             PacketCodecs.INTEGER,
@@ -15,7 +15,7 @@ public record CompleteTaskPayload(String goal, int teamIndex) implements CustomP
             CompleteTaskPayload::new);
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public Id<? extends CustomPayload> getId() {
         return ID;
     }
 }

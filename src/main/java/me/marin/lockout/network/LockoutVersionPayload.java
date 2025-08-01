@@ -9,14 +9,14 @@ import net.minecraft.network.packet.CustomPayload;
 
 public record LockoutVersionPayload(String version) implements CustomPayload {
 
-    public static final CustomPayload.Id<LockoutVersionPayload> ID = new CustomPayload.Id<>(Constants.LOCKOUT_VERSION_PACKET);
+    public static final Id<LockoutVersionPayload> ID = new Id<>(Constants.LOCKOUT_VERSION_PACKET);
     public static final PacketCodec<RegistryByteBuf, LockoutVersionPayload> CODEC = PacketCodec.tuple(
             PacketCodec.of((version, buf) -> buf.writeString(LockoutInitializer.MOD_VERSION.getFriendlyString()), PacketByteBuf::readString),
             LockoutVersionPayload::version,
             LockoutVersionPayload::new);
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public Id<? extends CustomPayload> getId() {
         return ID;
     }
 

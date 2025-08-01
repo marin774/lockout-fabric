@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public record CustomBoardPayload(Optional<List<Pair<String, String>>> boardOrClear) implements CustomPayload {
-    public static final CustomPayload.Id<CustomBoardPayload> ID = new CustomPayload.Id<>(Constants.CUSTOM_BOARD_PACKET);
+    public static final Id<CustomBoardPayload> ID = new Id<>(Constants.CUSTOM_BOARD_PACKET);
     public static final PacketCodec<RegistryByteBuf, CustomBoardPayload> CODEC = PacketCodec.tuple(PacketCodec.of(
             (boardOrClear, buf) -> {
                 buf.writeInt(boardOrClear.map(pairs -> (int) Math.sqrt(pairs.size())).orElse(0));
@@ -35,7 +35,7 @@ public record CustomBoardPayload(Optional<List<Pair<String, String>>> boardOrCle
     ), CustomBoardPayload::boardOrClear, CustomBoardPayload::new);
 
     @Override
-    public CustomPayload.Id<? extends CustomPayload> getId() {
+    public Id<? extends CustomPayload> getId() {
         return ID;
     }
 }

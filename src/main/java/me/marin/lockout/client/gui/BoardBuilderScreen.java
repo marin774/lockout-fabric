@@ -11,13 +11,13 @@ import me.marin.lockout.lockout.goals.util.GoalDataConstants;
 import me.marin.lockout.lockout.texture.CustomTextureRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
@@ -268,7 +268,7 @@ public class BoardBuilderScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        //this.renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
 
         drawCenterBoard(context, mouseX, mouseY);
@@ -361,7 +361,7 @@ public class BoardBuilderScreen extends Screen {
         int x = width / 2 - boardWidth / 2 - CENTER_OFFSET;
         int y = height / 2 - boardHeight / 2;
 
-        context.drawGuiTexture(RenderLayer::getGuiTextured, GUI_CENTER_IDENTIFIER, x, y, boardWidth, boardHeight);
+        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, GUI_CENTER_IDENTIFIER, x, y, boardWidth, boardHeight);
 
         x += GUI_CENTER_PADDING + 1;
         y += GUI_CENTER_PADDING + 1;
@@ -386,7 +386,7 @@ public class BoardBuilderScreen extends Screen {
                 }
 
                 if (hoveredIdx.isPresent() && hoveredIdx.get() == idx) {
-                    context.fill(x, y, x + 16, y + 16, 400, GUI_CENTER_HOVERED_COLOR);
+                    context.fill(x, y, x + 16, y + 16, GUI_CENTER_HOVERED_COLOR);
                 }
                 if (editingIdx != null && editingIdx == idx) {
                     drawBorder(context, x - 1, y - 1, GUI_SLOT_SIZE, GUI_SLOT_SIZE, Color.RED.getRGB());

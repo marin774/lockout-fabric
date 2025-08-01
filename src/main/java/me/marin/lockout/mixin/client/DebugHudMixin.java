@@ -92,7 +92,7 @@ public abstract class DebugHudMixin {
             this.resetChunk();
         }
 
-        text.add("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")");
+        text.add("Minecraft " + SharedConstants.getGameVersion().name() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")");
         text.add(this.client.fpsDebugString);
         text.add(this.client.worldRenderer.getChunksDebugString()); // C value
         text.add(this.client.worldRenderer.getEntitiesDebugString()); // E value
@@ -155,7 +155,7 @@ public abstract class DebugHudMixin {
             text.add(Formatting.UNDERLINE + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
             text.add(String.valueOf(Registries.FLUID.getId(fluidState.getFluid())));
 
-            for (Map.Entry<net.minecraft.state.property.Property<?>, Comparable<?>> propertyComparableEntry : fluidState.getEntries().entrySet()) {
+            for (Map.Entry<Property<?>, Comparable<?>> propertyComparableEntry : fluidState.getEntries().entrySet()) {
                 entry = propertyComparableEntry;
                 text.add(INSTANCE.propertyToString(entry));
             }

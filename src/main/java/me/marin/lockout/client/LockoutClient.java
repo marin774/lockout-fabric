@@ -5,8 +5,6 @@ import me.marin.lockout.client.gui.*;
 import me.marin.lockout.json.JSONBoard;
 import me.marin.lockout.lockout.Goal;
 import me.marin.lockout.lockout.goals.util.GoalDataConstants;
-import me.marin.lockout.mixin.client.InGameHudAccessor;
-import me.marin.lockout.mixin.client.LayeredDrawerAccessor;
 import me.marin.lockout.network.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -56,20 +54,6 @@ public class LockoutClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         Registry.register(Registries.SCREEN_HANDLER, Constants.BOARD_SCREEN_ID, BOARD_SCREEN_HANDLER);
-
-        MinecraftClient.getInstance().send(() -> {
-            // Render board above effects (vignette, nausea etc.), but below subtitles, player list, chat etc.
-            ((LayeredDrawerAccessor) ((InGameHudAccessor) MinecraftClient.getInstance().inGameHud).getLayeredDrawer()).getLayers().add(
-                    2, (context, tickCounter) -> {
-                        // Show lockout screen
-                        if (!Lockout.exists(LockoutClient.lockout)) {
-                            return;
-                        }
-
-                        Utility.drawBingoBoard(context);
-                    }
-            );
-        });
 
         ClientPlayNetworking.registerGlobalReceiver(LockoutGoalsTeamsPayload.ID, (payload, context) -> {
             List<LockoutTeam> teams = payload.teams();
@@ -235,7 +219,7 @@ public class LockoutClient implements ClientModInitializer {
                     if (MinecraftClient.getInstance().isInSingleplayer()) {
                         return true;
                     }
-                    return ccs.hasPermissionLevel(2);
+                    return ccs.getPlayer().hasPermissionLevel(2);
                 }).build();
 
                 var boardNameNode = ClientCommandManager.argument("board name", CustomBoardFileArgumentType.newInstance()).executes((context) -> {

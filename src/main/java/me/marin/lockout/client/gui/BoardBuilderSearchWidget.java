@@ -41,7 +41,7 @@ public class BoardBuilderSearchWidget extends ScrollableWidget {
     public BoardBuilderSearchWidget(int x, int y, int width, int height, Text text) {
         super(x, y, width, height, text);
         for (String id : GoalRegistry.INSTANCE.getRegisteredGoals()) {
-            registeredGoals.putIfAbsent(id, new BoardBuilderSearchWidget.GoalEntry(id));
+            registeredGoals.putIfAbsent(id, new GoalEntry(id));
         }
         visibleGoals = new ArrayList<>(registeredGoals.values());
         searchUpdated(BoardBuilderData.INSTANCE.getSearch());
